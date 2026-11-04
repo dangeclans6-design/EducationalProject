@@ -1,0 +1,9 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="BankApplication/BankApplication.csproj" Id="37e3d290-835b-4e6e-81b0-9fa31fe01363">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+</Solution>

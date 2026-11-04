@@ -1,0 +1,476 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\shownoti.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\shownoti.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\shownoti.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\shownoti.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|C:\\Users\\Gleb24\\source\\repos\\BankApplication\\bankapplication\\windows\\myrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\myrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|C:\\Users\\Gleb24\\source\\repos\\BankApplication\\bankapplication\\windows\\auth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\auth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\auth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\auth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\clientmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\clientmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\myrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\myrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\adminpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\adminpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\requestexplore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\requestexplore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\tryreg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\tryreg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\maingo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\maingo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\bankcards.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\bankcards.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|C:\\Users\\Gleb24\\source\\repos\\BankApplication\\bankapplication\\windows\\clientmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\clientmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|C:\\Users\\Gleb24\\source\\repos\\BankApplication\\bankapplication\\windows\\managercard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\managercard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|C:\\Users\\Gleb24\\source\\repos\\BankApplication\\bankapplication\\windows\\requestexplore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\requestexplore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\reg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\reg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\managercard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\managercard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\authadmin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\authadmin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\bankapplication.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\bankapplication.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|C:\\Users\\Gleb24\\source\\repos\\BankApplication\\bankapplication\\windows\\authadmin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\authadmin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|C:\\Users\\Gleb24\\source\\repos\\BankApplication\\bankapplication\\windows\\adminpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\adminpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|C:\\Users\\Gleb24\\source\\repos\\BankApplication\\bankapplication\\windows\\reg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\reg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|C:\\Users\\Gleb24\\source\\repos\\BankApplication\\bankapplication\\windows\\startwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\startwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\topaydebt.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\topaydebt.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|c:\\users\\gleb24\\source\\repos\\bankapplication\\bankapplication\\windows\\startwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37E3D290-835B-4E6E-81B0-9FA31FE01363}|BankApplication\\BankApplication.csproj|solutionrelative:bankapplication\\windows\\startwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 246,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "DataBase.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\DataBase.cs",
+              "RelativeDocumentMoniker": "BankApplication\\DataBase.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\DataBase.cs",
+              "RelativeToolTip": "BankApplication\\DataBase.cs",
+              "ViewState": "AgIAAAIGAAAAAAAAAAAkwCEGAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-19T08:11:50.713Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "TryReg.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\TryReg.cs",
+              "RelativeDocumentMoniker": "BankApplication\\TryReg.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\TryReg.cs",
+              "RelativeToolTip": "BankApplication\\TryReg.cs",
+              "ViewState": "AgIAADAAAAAAAAAAAAAawE4AAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-20T05:10:49.456Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "MainGo.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\MainGo.cs",
+              "RelativeDocumentMoniker": "BankApplication\\MainGo.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\MainGo.cs",
+              "RelativeToolTip": "BankApplication\\MainGo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-31T13:23:19.229Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "BankApplication",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\BankApplication.csproj",
+              "RelativeDocumentMoniker": "BankApplication\\BankApplication.csproj",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\BankApplication.csproj",
+              "RelativeToolTip": "BankApplication\\BankApplication.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-10-23T08:41:34.789Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ShowNoti.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ShowNoti.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\ShowNoti.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ShowNoti.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\ShowNoti.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAmwBkAAAA4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-04T07:58:34.564Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ShowNoti.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ShowNoti.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\ShowNoti.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ShowNoti.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "BankApplication\\Windows\\ShowNoti.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-04T07:58:15.632Z",
+              "EditorCaption": " [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{25f7e850-ffa1-11d0-b63f-00a0c922e851}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "AdminPanel.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\AdminPanel.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\AdminPanel.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\AdminPanel.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\AdminPanel.cs",
+              "ViewState": "AgIAALkAAAAAAAAAAAAuwOwAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-23T10:31:58.416Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MyRequest.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\MyRequest.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\MyRequest.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\MyRequest.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "BankApplication\\Windows\\MyRequest.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-01T14:45:15.323Z",
+              "EditorCaption": " [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "RequestExplore.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\RequestExplore.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\RequestExplore.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\RequestExplore.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\RequestExplore.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAwwFAAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-31T19:51:09.484Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "RequestExplore.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\RequestExplore.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\RequestExplore.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\RequestExplore.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "BankApplication\\Windows\\RequestExplore.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-31T19:51:04.804Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "AuthAdmin.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\AuthAdmin.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\AuthAdmin.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\AuthAdmin.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\AuthAdmin.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAADgv1EAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-31T12:13:58.209Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "AuthAdmin.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\AuthAdmin.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\AuthAdmin.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\AuthAdmin.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "BankApplication\\Windows\\AuthAdmin.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-31T12:08:00.838Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Auth.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\Auth.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\Auth.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\Auth.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\Auth.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-22T10:17:53.927Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Reg.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\Reg.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\Reg.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\Reg.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\Reg.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAABxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-19T18:51:42.735Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "ToPayDebt.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ToPayDebt.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\ToPayDebt.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ToPayDebt.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\ToPayDebt.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAADgvycAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-19T18:51:39.503Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "StartWindow.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\StartWindow.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\StartWindow.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\StartWindow.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\StartWindow.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAYwDUAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-19T18:47:07.021Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "AdminPanel.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\AdminPanel.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\AdminPanel.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\AdminPanel.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "BankApplication\\Windows\\AdminPanel.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-26T08:23:05.673Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ManagerCard.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ManagerCard.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\ManagerCard.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ManagerCard.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "BankApplication\\Windows\\ManagerCard.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-25T12:34:58.3Z",
+              "EditorCaption": " [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ClientMenu.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ClientMenu.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\ClientMenu.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ClientMenu.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "BankApplication\\Windows\\ClientMenu.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-23T14:30:03.684Z",
+              "EditorCaption": " [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Auth.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\Auth.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\Auth.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\Auth.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "BankApplication\\Windows\\Auth.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-22T10:17:44.358Z",
+              "EditorCaption": " [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "StartWindow.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\StartWindow.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\StartWindow.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\StartWindow.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "BankApplication\\Windows\\StartWindow.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-19T18:51:12.052Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "Reg.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\Reg.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\Reg.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\Reg.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "BankApplication\\Windows\\Reg.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-19T18:51:08.038Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "486dc2e1-b141-45f5-a4bf-7582b395ef64",
+        "Display": 1,
+        "X": 180,
+        "Y": 0,
+        "Width": 1459,
+        "Height": 1037,
+        "WindowState": 2
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MyRequest.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\MyRequest.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\MyRequest.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\MyRequest.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\MyRequest.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAFkAAABSAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-01T14:45:45.944Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "BankCards.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\BankCards.cs",
+              "RelativeDocumentMoniker": "BankApplication\\BankCards.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\BankCards.cs",
+              "RelativeToolTip": "BankApplication\\BankCards.cs",
+              "ViewState": "AgIAALMAAAAAAAAAAAApwKECAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-25T14:18:44.536Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ClientMenu.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ClientMenu.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\ClientMenu.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ClientMenu.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\ClientMenu.cs",
+              "ViewState": "AgIAAAYCAAAAAAAAAAAowDQCAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-26T08:46:51.726Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "ManagerCard.cs",
+              "DocumentMoniker": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ManagerCard.cs",
+              "RelativeDocumentMoniker": "BankApplication\\Windows\\ManagerCard.cs",
+              "ToolTip": "C:\\Users\\Gleb24\\source\\repos\\BankApplication\\BankApplication\\Windows\\ManagerCard.cs",
+              "RelativeToolTip": "BankApplication\\Windows\\ManagerCard.cs",
+              "ViewState": "AgIAACkEAAAAAAAAAAAowD4EAACEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-26T08:46:38.43Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
