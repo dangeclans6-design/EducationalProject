@@ -150,7 +150,7 @@ namespace BankApplication
             // Координаты элементов "Изменить лимит депозита (запрос)" относительно панели
             ChangeLimitDepositTxt1.Location = PayTxt.Location;
             ChangeLimitDepositTxt2.Location = new Point(x_panel, y_panel + height_panel + 100);
-            ChangeLimitDepositDescription.Location = new Point(x_panel, y_panel + height_panel + 150);
+            Description.Location = new Point(x_panel, y_panel + height_panel + 150);
             ChangeLimitDepositButton.Location = new Point(x_panel + width_panel - ChangeLimitDepositButton.Width, y_panel + height_panel + 240);
 
             // Координаты элементов "Закрыть карту (запрос)" относительно панели
@@ -184,7 +184,7 @@ namespace BankApplication
 
                 ChangeLimitDepositTxt1.Visible = false;
                 ChangeLimitDepositTxt2.Visible = false;
-                ChangeLimitDepositDescription.Visible = false;
+                Description.Visible = false;
                 ChangeLimitDepositButton.Visible = false;
 
                 CloseAndOpenTxt.Visible = false;
@@ -502,7 +502,7 @@ namespace BankApplication
 
                 ChangeLimitDepositTxt1.Visible = false;
                 ChangeLimitDepositTxt2.Visible = false;
-                ChangeLimitDepositDescription.Visible = false;
+                Description.Visible = false;
                 ChangeLimitDepositButton.Visible = false;
 
                 CloseAndOpenTxt.Visible = false;
@@ -691,7 +691,7 @@ namespace BankApplication
 
                 ChangeLimitDepositTxt1.Visible = false;
                 ChangeLimitDepositTxt2.Visible = false;
-                ChangeLimitDepositDescription.Visible = false;
+                Description.Visible = false;
                 ChangeLimitDepositButton.Visible = false;
 
                 CloseAndOpenTxt.Visible = false;
@@ -894,7 +894,7 @@ namespace BankApplication
                 Amount.Visible = true;
                 ChangeLimitDepositTxt1.Visible = true;
                 ChangeLimitDepositTxt2.Visible = true;
-                ChangeLimitDepositDescription.Visible = true;
+                Description.Visible = true;
                 ChangeLimitDepositButton.Visible = true;
             }
             catch (Exception ex)
@@ -918,10 +918,10 @@ namespace BankApplication
                     case "U2":
                         {
                             decimal newDeposit = TryReg.TryDecimal(Amount.Text);
-                            TryReg.TryString1000(ChangeLimitDepositDescription.Text);
+                            TryReg.TryString1000(Description.Text);
 
                             var CurrentCard = CurrentClient.UsuallyCard[id0];
-                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, ChangeLimitDepositDescription.Text);
+                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, Description.Text);
 
                             DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на изменние депозита?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
@@ -947,10 +947,10 @@ namespace BankApplication
                     case "D2":
                         {
                             decimal newDeposit = TryReg.TryDecimal(Amount.Text);
-                            TryReg.TryString1000(ChangeLimitDepositDescription.Text);
+                            TryReg.TryString1000(Description.Text);
 
                             var CurrentCard = CurrentClient.DebitCard[id0];
-                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, ChangeLimitDepositDescription.Text);
+                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, Description.Text);
 
                             DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на изменние депозита?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
@@ -976,10 +976,10 @@ namespace BankApplication
                     case "C2":
                         {
                             decimal newDeposit = TryReg.TryDecimal(Amount.Text);
-                            TryReg.TryString1000(ChangeLimitDepositDescription.Text);
+                            TryReg.TryString1000(Description.Text);
 
                             var CurrentCard = CurrentClient.CreditCard[id0];
-                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, ChangeLimitDepositDescription.Text);
+                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, Description.Text);
 
                             DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на изменние депозита?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
@@ -1005,10 +1005,10 @@ namespace BankApplication
                     case "B2":
                         {
                             decimal newDeposit = TryReg.TryDecimal(Amount.Text);
-                            TryReg.TryString1000(ChangeLimitDepositDescription.Text);
+                            TryReg.TryString1000(Description.Text);
 
                             var CurrentCard = CurrentClient.BusinessCard[id0];
-                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, ChangeLimitDepositDescription.Text);
+                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, Description.Text);
 
                             DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на изменние депозита?" +
                                                                   $"С Вашего баланса будет списано 400.000 рублей. В случае, если Вам откажут, деньги будут зачисленны обратно." +
@@ -1071,7 +1071,7 @@ namespace BankApplication
                 OpenCardButton.Visible = false;
 
                 // Отображаем нужные поля
-                ChangeLimitDepositDescription.Visible = true;
+                Description.Visible = true;
                 CloseAndOpenTxt.Visible = true;
                 CloseCardButton.Visible = true;
             }
@@ -1092,10 +1092,10 @@ namespace BankApplication
                     case "U1":
                     case "U2":
                         {
-                            TryReg.TryString1000(ChangeLimitDepositDescription.Text);
+                            TryReg.TryString1000(Description.Text);
 
                             var CurrentCard = CurrentClient.UsuallyCard[id0];
-                            var preview = CurrentCard.PrepareCloseCard(CurrentClient.Id, CurrentCard.CardNumber, "U", CurrentCard.Id, ChangeLimitDepositDescription.Text);
+                            var preview = CurrentCard.PrepareCloseCard("U", Description.Text);
 
                             DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на закрытие карты номер: {CurrentCard.CardNumber}?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!",
@@ -1106,7 +1106,7 @@ namespace BankApplication
                                 Enabled = false;
                                 Cursor = Cursors.WaitCursor;
 
-                                await CurrentCard.RequestCloseCard(preview, CurrentCard.Balance, CurrentCard.Deposit, CurrentCard.LimitDeposit);
+                                await CurrentCard.RequestCloseCard(preview);
 
                                 Close();
 
@@ -1114,11 +1114,9 @@ namespace BankApplication
                                                 $"Ожидайте рассмотрения заявки в течение 72 часов.");
 
                                 CurrentCard.Status = 0;
-                                CurrentCard.Reason = "Заявка на закрытие карты";
+                                CurrentCard.Reason = $"Заявка на закрытие карты (номер: {CurrentCard.CardNumber})";
                             }
                             else return;
-
-
 
                             break;
                         }
@@ -1126,6 +1124,31 @@ namespace BankApplication
                     case "D1":
                     case "D2":
                         {
+                            TryReg.TryString1000(Description.Text);
+
+                            var CurrentCard = CurrentClient.DebitCard[id0];
+                            var preview = CurrentCard.PrepareCloseCard("D", Description.Text);
+
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на закрытие карты номер: {CurrentCard.CardNumber}?" +
+                                                                  $"Учтите, после подтверждения, отменить заявку будет нельзя!",
+                                                                  "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                Enabled = false;
+                                Cursor = Cursors.WaitCursor;
+
+                                await CurrentCard.RequestCloseCard(preview);
+
+                                Close();
+
+                                MessageBox.Show($"Вы успешно отправили запрос на закрытие карты.\n" +
+                                                $"Ожидайте рассмотрения заявки в течение 72 часов.");
+
+                                CurrentCard.Status = 0;
+                                CurrentCard.Reason = $"Заявка на закрытие карты";
+                            }
+                            else return;
 
                             break;
                         }
@@ -1181,7 +1204,7 @@ namespace BankApplication
                 CloseCardButton.Visible = false;
 
                 // Отображаем нужные поля
-                ChangeLimitDepositDescription.Visible = true;
+                Description.Visible = true;
                 CloseAndOpenTxt.Visible = true;
                 OpenCardButton.Visible = true;
             }
@@ -1210,10 +1233,10 @@ namespace BankApplication
                         {
                             windowError = "Обычная карта";
 
-                            TryReg.TryString1000(ChangeLimitDepositDescription.Text);
+                            TryReg.TryString1000(Description.Text);
 
                             var CurrentCard = CurrentClient.UsuallyCard[id0];
-                            var preview = CurrentCard.PrepareOpenCard(CurrentClient.Id, "U", ChangeLimitDepositDescription.Text);
+                            var preview = CurrentCard.PrepareOpenCard(CurrentClient.Id, "U", Description.Text);
 
                             DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на открытие 'Обычной' карты?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!",

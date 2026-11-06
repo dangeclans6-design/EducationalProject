@@ -101,7 +101,7 @@
             ReplenishDepositButton = new ReaLTaiizor.Controls.CyberButton();
             PayTxt = new ReaLTaiizor.Controls.BigLabel();
             ChangeLimitDepositTxt1 = new ReaLTaiizor.Controls.BigLabel();
-            ChangeLimitDepositDescription = new ReaLTaiizor.Controls.DungeonTextBox();
+            Description = new ReaLTaiizor.Controls.DungeonTextBox();
             ChangeLimitDepositTxt2 = new ReaLTaiizor.Controls.BigLabel();
             ChangeLimitDepositButton = new ReaLTaiizor.Controls.CyberButton();
             CloseAndOpenTxt = new ReaLTaiizor.Controls.BigLabel();
@@ -1407,23 +1407,23 @@
             ChangeLimitDepositTxt1.Text = "Введите желаемый лимит депозита:";
             ChangeLimitDepositTxt1.Visible = false;
             // 
-            // ChangeLimitDepositDescription
+            // Description
             // 
-            ChangeLimitDepositDescription.BackColor = System.Drawing.Color.Transparent;
-            ChangeLimitDepositDescription.BorderColor = System.Drawing.Color.FromArgb(180, 180, 180);
-            ChangeLimitDepositDescription.EdgeColor = System.Drawing.Color.White;
-            ChangeLimitDepositDescription.Font = new System.Drawing.Font("Tahoma", 11F);
-            ChangeLimitDepositDescription.ForeColor = System.Drawing.Color.DimGray;
-            ChangeLimitDepositDescription.Location = new System.Drawing.Point(346, 604);
-            ChangeLimitDepositDescription.MaxLength = 32767;
-            ChangeLimitDepositDescription.Multiline = true;
-            ChangeLimitDepositDescription.Name = "ChangeLimitDepositDescription";
-            ChangeLimitDepositDescription.ReadOnly = false;
-            ChangeLimitDepositDescription.Size = new System.Drawing.Size(788, 159);
-            ChangeLimitDepositDescription.TabIndex = 98;
-            ChangeLimitDepositDescription.TextAlignment = System.Windows.Forms.HorizontalAlignment.Left;
-            ChangeLimitDepositDescription.UseSystemPasswordChar = false;
-            ChangeLimitDepositDescription.Visible = false;
+            Description.BackColor = System.Drawing.Color.Transparent;
+            Description.BorderColor = System.Drawing.Color.FromArgb(180, 180, 180);
+            Description.EdgeColor = System.Drawing.Color.White;
+            Description.Font = new System.Drawing.Font("Tahoma", 11F);
+            Description.ForeColor = System.Drawing.Color.DimGray;
+            Description.Location = new System.Drawing.Point(346, 604);
+            Description.MaxLength = 32767;
+            Description.Multiline = true;
+            Description.Name = "Description";
+            Description.ReadOnly = false;
+            Description.Size = new System.Drawing.Size(788, 159);
+            Description.TabIndex = 98;
+            Description.TextAlignment = System.Windows.Forms.HorizontalAlignment.Left;
+            Description.UseSystemPasswordChar = false;
+            Description.Visible = false;
             // 
             // ChangeLimitDepositTxt2
             // 
@@ -1588,7 +1588,7 @@
             Controls.Add(CloseAndOpenTxt);
             Controls.Add(ChangeLimitDepositButton);
             Controls.Add(ChangeLimitDepositTxt2);
-            Controls.Add(ChangeLimitDepositDescription);
+            Controls.Add(Description);
             Controls.Add(ChangeLimitDepositTxt1);
             Controls.Add(ReplenishDepositButton);
             Controls.Add(PayTxt);
@@ -1707,7 +1707,7 @@
         private ReaLTaiizor.Controls.CyberButton ReplenishDepositButton;
         private ReaLTaiizor.Controls.BigLabel PayTxt;
         private ReaLTaiizor.Controls.BigLabel ChangeLimitDepositTxt1;
-        private ReaLTaiizor.Controls.DungeonTextBox ChangeLimitDepositDescription;
+        private ReaLTaiizor.Controls.DungeonTextBox Description;
         private ReaLTaiizor.Controls.BigLabel ChangeLimitDepositTxt2;
         private ReaLTaiizor.Controls.CyberButton ChangeLimitDepositButton;
         private ReaLTaiizor.Controls.BigLabel CloseAndOpenTxt;

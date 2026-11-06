@@ -140,26 +140,23 @@ namespace BankApplication
         }
 
         //--------------------------[Закрыть карту (запрос)]------------------------------//
-        public readonly struct CloseCardPreview(int clientId, string defcard, string typeCard, int idCard, string message)
+        public readonly struct CloseCardPreview(string typeCard, string message)
         {
-            public readonly int ClientId = clientId;
-            public readonly string DefCard = defcard;
             public readonly string TypeCard = typeCard;
-            public readonly int IdCard = idCard;
             public readonly string Message = message;
         }
-        public CloseCardPreview PrepareCloseCard(int clientId, string defcard, string typeCard, int idCard, string message)
+        public CloseCardPreview PrepareCloseCard(string typeCard, string message)
         {
             if (Balance > 0 || Deposit > 0) throw new Exception("Чтобы отправить запрос на закрытие карты, основной баланс и баланс депозита должны быть нулевыми!");
             if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
 
-            return new CloseCardPreview(clientId, defcard, typeCard, idCard, message);
+            return new CloseCardPreview(typeCard, message);
         }
-        public async Task RequestCloseCard(CloseCardPreview preview, decimal current_balance, decimal current_deposit, decimal current_limit)
+        public async Task RequestCloseCard(CloseCardPreview preview)
         {
-            await DataBase.RequestCloseCard(preview.ClientId, preview.DefCard, preview.TypeCard, preview.IdCard, preview.Message, current_balance, current_deposit, current_limit);
+            await DataBase.U_RequestCloseCard(ClientId, CardNumber, preview.TypeCard, Id, preview.Message, Balance, Deposit, LimitDeposit);
 
-            var find_request = await DataBase.SearchRequestClient(preview.ClientId);
+            var find_request = await DataBase.SearchRequestClient(ClientId);
             Session.CurrentClient.OpenRequest = find_request.Request;
         }
 
@@ -343,6 +340,27 @@ namespace BankApplication
                 Session.CurrentClient.OpenRequest = find_request.Request;
             }            
             else throw new Exception($"Произошла непредвиденная ошибка! Пожалуйста, обновите страницу или повторите попытку позже.");
+        }
+
+        //--------------------------[Закрыть карту (запрос)]------------------------------//
+        public readonly struct CloseCardPreview(string typeCard, string message)
+        {
+            public readonly string TypeCard = typeCard;
+            public readonly string Message = message;
+        }
+        public CloseCardPreview PrepareCloseCard(string typeCard, string message)
+        {
+            if (Balance > 0 || Deposit > 0 || Cashback > 0) throw new Exception("Чтобы отправить запрос на закрытие карты, основной баланс, баланс депозита и баланс кешбека должны быть нулевыми!");
+            if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
+
+            return new CloseCardPreview(typeCard, message);
+        }
+        public async Task RequestCloseCard(CloseCardPreview preview)
+        {
+            await DataBase.D_RequestCloseCard(ClientId, CardNumber, preview.TypeCard, Id, preview.Message, Balance, Deposit, LimitDeposit, Cashback);
+
+            var find_request = await DataBase.SearchRequestClient(ClientId);
+            Session.CurrentClient.OpenRequest = find_request.Request;
         }
 
         //--------------------------[Забрать кешбек баланс]------------------------------//

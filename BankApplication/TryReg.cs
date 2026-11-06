@@ -116,12 +116,43 @@ namespace BankApplication
                 case 2: // Закрыть карту
                     {
                         DateTime dateAnswer = DateTime.Now;
+                        string title = $"Ответ на запрос #{idRequest} (Закрытие карты)";
 
-                        //if (answer == "Одобрено") await DataBase.CloseUCardAndAnswerRequest(idCard, answer, comment, dateAnswer, idRequest, typeCard);
-                        //else await DataBase.AnswerRequest(idRequest, answer, comment, dateAnswer);
-
-                        //MyRequestAdmin.RemoveAt(indexMyRequest);
-                        //await DataBase.AddNotification(clientId, $"Ответ по запросу #{idRequest}", $"{answer}. Комментарий:\n{comment}", dateAnswer);
+                        switch (typeCard, answer)
+                        {
+                            case ("U", "Одобрено"):
+                                await DataBase.U_CloseUCardAndAnswerRequest(idCard, answer, comment, dateAnswer, idRequest, typeCard, clientId, title);
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("U", "Отказано"):
+                                await DataBase.U_AnswerRequestAndNotificationClose(idRequest, answer, comment, dateAnswer, clientId, title, comment, idCard);
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("D", "Одобрено"):
+                                
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("D", "Отказано"):
+                                
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("C", "Одобрено"):
+                                ;
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("C", "Отказано"):
+                                
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("B", "Одобрено"):
+                                
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("B", "Отказано"):
+                                
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                        }
 
                         break;
                     }

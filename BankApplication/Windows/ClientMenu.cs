@@ -459,10 +459,6 @@ namespace BankApplication
 
                         y_point += 120;
                     }
-
-                    // Отправляем сообщение в лог
-                    string messegeForLog = $"Пользователь перешел в 'Открытые заявки'.";
-                    await DataBase.AddLogs(Session.CurrentClient.Id, "INFO", messegeForLog, "Меню 'Открытые заявки'");
                 }
             }
             catch (Exception ex)
