@@ -65,27 +65,50 @@ namespace BankApplication
         }
 
         //----------------------[Ответить на запрос]------------------------//
-        public async Task AnswerRequest(int clientId, int idRequest, string answer, string comment, int indexMyRequest, int typeRequest, decimal newDeposit, int idCard, string typeCard)
+        public async Task AnswerRequest(int clientId, int idRequest, string answer, string comment, int indexMyRequest,
+            int typeRequest, decimal newDeposit, int idCard, string typeCard, string newCardNumber)
         {
             switch (typeRequest)
             {
                 case 1: // Измененить депозита
                     {
                         DateTime dateAnswer = DateTime.Now;
+                        string title = $"Ответ на запрос #{idRequest} (Изменение лимита депозита)";
 
-                        if (typeCard == "U" & answer == "Одобрено")
+                        switch (typeCard, answer)
                         {
-                            await DataBase.ChangeLimitDepositAndAnswerRequest(newDeposit, idCard, answer, comment, dateAnswer, idRequest);                            
-                            await DataBase.AddNotification(clientId, $"Ответ по запросу #{idRequest}", $"{answer}. Комментарий:\n{comment}", dateAnswer);
-
-                            MyRequestAdmin.RemoveAt(indexMyRequest);
-                        }
-                        if (typeCard == "U" & answer == "Отказано")
-                        {
-                            await DataBase.AnswerRequest(idRequest, answer, comment, dateAnswer);
-                            await DataBase.AddNotification(clientId, $"Ответ по запросу #{idRequest}", $"{answer}. {comment}", dateAnswer);
-
-                            MyRequestAdmin.RemoveAt(indexMyRequest);
+                            case ("U", "Одобрено"):
+                                await DataBase.U_ChangeLimitDepositAndAnswerRequest(newDeposit, idCard, answer, comment, dateAnswer, idRequest, clientId, title);
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("U", "Отказано"):
+                                await DataBase.AnswerRequestAndNotificationCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("D", "Одобрено"):
+                                await DataBase.D_ChangeLimitDepositAndAnswerRequest(newDeposit, idCard, answer, comment, dateAnswer, idRequest, clientId, title);
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("D", "Отказано"):
+                                await DataBase.AnswerRequestAndNotificationCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("C", "Одобрено"):
+                                await DataBase.C_ChangeLimitDepositAndAnswerRequest(newDeposit, idCard, answer, comment, dateAnswer, idRequest, clientId, title);
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("C", "Отказано"):
+                                await DataBase.AnswerRequestAndNotificationCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("B", "Одобрено"):
+                                await DataBase.B_ChangeLimitDepositAndAnswerRequest(newDeposit, idCard, answer, comment, dateAnswer, idRequest, clientId, title);
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
+                            case ("B", "Отказано"):
+                                await DataBase.B_AnswerRequestAndNotificationCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment, idCard, 400000); // 400000 - стоимость изменения лимита депозита для бизнес карты
+                                MyRequestAdmin.RemoveAt(indexMyRequest);
+                                break;
                         }
 
                         break;
@@ -94,22 +117,11 @@ namespace BankApplication
                     {
                         DateTime dateAnswer = DateTime.Now;
 
-                        if (typeCard == "U" & answer == "Одобрено")
-                        {
-                            bool IsDbUpdate = await DataBase.DeleteUsuallyCard(idCard);
+                        //if (answer == "Одобрено") await DataBase.CloseUCardAndAnswerRequest(idCard, answer, comment, dateAnswer, idRequest, typeCard);
+                        //else await DataBase.AnswerRequest(idRequest, answer, comment, dateAnswer);
 
-                            if (IsDbUpdate)
-                            {
-                                await DataBase.AnswerRequest(idRequest, answer, comment, dateAnswer);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                            }
-                            else throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попотыку позже.");
-                        }
-                        if (typeCard == "U" & answer == "Отказано")
-                        {
-                            await DataBase.AnswerRequest(idRequest, answer, comment, dateAnswer);
-                            MyRequestAdmin.RemoveAt(indexMyRequest);
-                        }
+                        //MyRequestAdmin.RemoveAt(indexMyRequest);
+                        //await DataBase.AddNotification(clientId, $"Ответ по запросу #{idRequest}", $"{answer}. Комментарий:\n{comment}", dateAnswer);
 
                         break;
                     }
@@ -117,22 +129,16 @@ namespace BankApplication
                     {
                         DateTime dateAnswer = DateTime.Now;
 
-                        if (typeCard == "U" & answer == "Одобрено")
-                        {
-                            bool IsDbUpdate = await DataBase.DeleteUsuallyCard(idCard);
-
-                            if (IsDbUpdate)
-                            {
-                                await DataBase.AnswerRequest(idRequest, answer, comment, dateAnswer);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                            }
-                            else throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попотыку позже.");
-                        }
-                        if (typeCard == "U" & answer == "Отказано")
-                        {
-                            await DataBase.AnswerRequest(idRequest, answer, comment, dateAnswer);
-                            MyRequestAdmin.RemoveAt(indexMyRequest);
-                        }
+                        //if (typeCard == "U" & answer == "Одобрено")
+                        //{
+                        //    await DataBase.OpenCardUAndAnswerRequest(clientId, cardNumber, answer, comment, dateAnswer, idRequest);
+                        //}
+                        //if (typeCard == "U" & answer == "Отказано")
+                        //{
+                        //    await DataBase.AnswerRequest(idRequest, answer, comment, dateAnswer);
+                        //}
+                        //MyRequestAdmin.RemoveAt(indexMyRequest);
+                        //await DataBase.AddNotification(clientId, $"Ответ по запросу #{idRequest}", $"{answer}. Комментарий:\n{comment}", dateAnswer);
 
                         break;
                     }
@@ -315,6 +321,21 @@ namespace BankApplication
 
             // Провенрка на длинну
             if (message.Length < 6 || message.Length > 300) throw new Exception("Длина комментария должна быть не менее 6 и не более 300 символов!");
+        }
+
+        //-------------------------[Генерация уникального номера карты (обычная)]----------------------------//
+        public static string GenerateCardNumber(int clientId, string cardTypePrefix = "4000")
+        {
+            // Получаем 10-значный Timestamp (секунды с 1970 года)
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+            // Форматируем ID клиента, чтобы он занимал строго 6 цифр
+            string formattedClientId = clientId.ToString().PadLeft(6, '0');
+
+            // Номер
+            string cardNumber = $"{cardTypePrefix}{timestamp}{formattedClientId}";
+
+            return cardNumber;
         }
     }
 }

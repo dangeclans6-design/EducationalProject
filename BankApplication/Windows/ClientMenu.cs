@@ -648,75 +648,237 @@ namespace BankApplication
         //---------------------[Кнопка "Дебетовая карта 1"]-----------------------//
         private void DebitCard1_Click(object sender, EventArgs e)
         {
-            ManagerCard mc = new("D", 0); // Тип карты: "D", номер в списке 1
+            if (Session.CurrentClient.DebitCard[0].Status == 0)
+            {
+                MessageBox.Show($"Ваша карта заморожена.\nПричина:{Session.CurrentClient.DebitCard[0].Reason}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else
+            {
+                ManagerCard mc = new("D", 0); // Тип карты: "D", номер в списке 1
 
-            mc.ShowDialog();
+                MyCardsPanel.Visible = false;
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "Cyber") control.Visible = false;
+                }
+
+                TxtCard.Visible = false;
+                TxtCard1.Visible = false;
+
+                mc.ShowDialog();
+            }
         }
 
         //---------------------[Кнопка "Дебетовая карта 2"]-----------------------//
         private void DebitCard2_Click(object sender, EventArgs e)
         {
-            ManagerCard mc = new("D", 1); // Тип карты: "D", номер в списке 2
+            if (Session.CurrentClient.DebitCard[1].Status == 0)
+            {
+                MessageBox.Show($"Ваша карта заморожена.\nПричина:{Session.CurrentClient.DebitCard[1].Reason}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else
+            {
+                ManagerCard mc = new("D", 1); // Тип карты: "D", номер в списке 2
 
-            mc.ShowDialog();
+                MyCardsPanel.Visible = false;
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "Cyber") control.Visible = false;
+                }
+
+                TxtCard.Visible = false;
+                TxtCard1.Visible = false;
+
+                mc.ShowDialog();
+            }
         }
 
         //---------------------[Кнопка "Дебетовая карта 3"]-----------------------//
         private void DebitCard3_Click(object sender, EventArgs e)
         {
-            ManagerCard mc = new("D", 2); // Тип карты: "D", номер в списке 3
+            if (Session.CurrentClient.DebitCard[2].Status == 0)
+            {
+                MessageBox.Show($"Ваша карта заморожена.\nПричина:{Session.CurrentClient.DebitCard[2].Reason}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else
+            {
+                ManagerCard mc = new("D", 2); // Тип карты: "D", номер в списке 3
 
-            mc.ShowDialog();
+                MyCardsPanel.Visible = false;
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "Cyber") control.Visible = false;
+                }
+
+                TxtCard.Visible = false;
+                TxtCard1.Visible = false;
+
+                mc.ShowDialog();
+            }
         }
 
         //----------------------------------------------------------------------//
         //---------------------[Кнопка "Кредитная карта 1"]-----------------------//
         private void CreditCard1_Click(object sender, EventArgs e)
         {
-            ManagerCard mc = new("C", 0); // Тип карты: "C", номер в списке 1
+            if (Session.CurrentClient.CreditCard[0].Status == 0)
+            {
+                MessageBox.Show($"Ваша карта заморожена.\nПричина:{Session.CurrentClient.CreditCard[0].Reason}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else
+            {
+                ManagerCard mc = new("C", 0); // Тип карты: "C", номер в списке 1
 
-            mc.ShowDialog();
+                MyCardsPanel.Visible = false;
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "Cyber") control.Visible = false;
+                }
+
+                TxtCard.Visible = false;
+                TxtCard1.Visible = false;
+
+                mc.ShowDialog();
+            }
         }
 
         //---------------------[Кнопка "Кредитная карта 2"]-----------------------//
         private void CreditCard2_Click(object sender, EventArgs e)
         {
-            ManagerCard mc = new("C", 1); // Тип карты: "C", номер в списке 2
+            if (Session.CurrentClient.CreditCard[1].Status == 0)
+            {
+                MessageBox.Show($"Ваша карта заморожена.\nПричина:{Session.CurrentClient.CreditCard[1].Reason}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else
+            {
+                ManagerCard mc = new("C", 1); // Тип карты: "C", номер в списке 2
 
-            mc.ShowDialog();
+                MyCardsPanel.Visible = false;
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "Cyber") control.Visible = false;
+                }
+
+                TxtCard.Visible = false;
+                TxtCard1.Visible = false;
+
+                mc.ShowDialog();
+            }
         }
 
         //---------------------[Кнопка "Кредитная карта 3"]-----------------------//
         private void CreditCard3_Click(object sender, EventArgs e)
         {
-            ManagerCard mc = new("C", 2); // Тип карты: "C", номер в списке 3
+            if (Session.CurrentClient.CreditCard[2].Status == 0)
+            {
+                MessageBox.Show($"Ваша карта заморожена.\nПричина:{Session.CurrentClient.CreditCard[2].Reason}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else
+            {
+                ManagerCard mc = new("C", 2); // Тип карты: "C", номер в списке 3
 
-            mc.ShowDialog();
+                MyCardsPanel.Visible = false;
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "Cyber") control.Visible = false;
+                }
+
+                TxtCard.Visible = false;
+                TxtCard1.Visible = false;
+
+                mc.ShowDialog();
+            }
         }
 
         //----------------------------------------------------------------------//
         //---------------------[Кнопка "Бизнес карта 1"]-----------------------//
         private void BussinesCard1_Click(object sender, EventArgs e)
         {
-            ManagerCard mc = new("B", 0); // Тип карты: "B", номер в списке 1
+            if (Session.CurrentClient.BusinessCard[0].Status == 0)
+            {
+                MessageBox.Show($"Ваша карта заморожена.\nПричина:{Session.CurrentClient.BusinessCard[0].Reason}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else
+            {
+                ManagerCard mc = new("B", 0); // Тип карты: "B", номер в списке 1
 
-            mc.ShowDialog();
+                MyCardsPanel.Visible = false;
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "Cyber") control.Visible = false;
+                }
+
+                TxtCard.Visible = false;
+                TxtCard1.Visible = false;
+
+                mc.ShowDialog();
+            }
         }
 
         //---------------------[Кнопка "Бизнес карта 2"]-----------------------//
         private void BussinesCard2_Click(object sender, EventArgs e)
         {
-            ManagerCard mc = new("B", 1); // Тип карты: "B", номер в списке 2
+            if (Session.CurrentClient.BusinessCard[1].Status == 0)
+            {
+                MessageBox.Show($"Ваша карта заморожена.\nПричина:{Session.CurrentClient.BusinessCard[1].Reason}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else
+            {
+                ManagerCard mc = new("B", 1); // Тип карты: "B", номер в списке 2
 
-            mc.ShowDialog();
+                MyCardsPanel.Visible = false;
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "Cyber") control.Visible = false;
+                }
+
+                TxtCard.Visible = false;
+                TxtCard1.Visible = false;
+
+                mc.ShowDialog();
+            }
         }
 
         //---------------------[Кнопка "Бизнес карта 3"]-----------------------//
         private void BussinesCard3_Click(object sender, EventArgs e)
         {
-            ManagerCard mc = new("B", 2); // Тип карты: "B", номер в списке 3
+            if (Session.CurrentClient.BusinessCard[2].Status == 0)
+            {
+                MessageBox.Show($"Ваша карта заморожена.\nПричина:{Session.CurrentClient.BusinessCard[2].Reason}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else
+            {
+                ManagerCard mc = new("B", 2); // Тип карты: "B", номер в списке 3
 
-            mc.ShowDialog();
+                MyCardsPanel.Visible = false;
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "Cyber") control.Visible = false;
+                }
+
+                TxtCard.Visible = false;
+                TxtCard1.Visible = false;
+
+                mc.ShowDialog();
+            }
         }
     }
 }

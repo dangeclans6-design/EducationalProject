@@ -917,17 +917,15 @@ namespace BankApplication
                     case "U1":
                     case "U2":
                         {
-                            windowError = "Обычная карта";
-
-                            decimal amount = TryReg.TryDecimal(Amount.Text);
+                            decimal newDeposit = TryReg.TryDecimal(Amount.Text);
                             TryReg.TryString1000(ChangeLimitDepositDescription.Text);
 
                             var CurrentCard = CurrentClient.UsuallyCard[id0];
-                            var preview = CurrentCard.PrepareChangeLimitDeposit(amount, CurrentClient.Id, CurrentCard.CardNumber, "U", CurrentCard.Id, ChangeLimitDepositDescription.Text, amount);
+                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, ChangeLimitDepositDescription.Text);
 
                             DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на изменние депозита?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
-                                                                  $"Ваш текущий лимит: {CurrentCard.LimitDeposit} рублей, Вы меняете на: {amount} рублей.",
+                                                                  $"Ваш текущий лимит: {CurrentCard.LimitDeposit} рублей, Вы меняете на: {newDeposit} рублей.",
                                                                   "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                             if (result == DialogResult.Yes)
@@ -942,14 +940,34 @@ namespace BankApplication
                             }
                             else return;
 
-
-
                             break;
                         }
                     case "D0":
                     case "D1":
                     case "D2":
                         {
+                            decimal newDeposit = TryReg.TryDecimal(Amount.Text);
+                            TryReg.TryString1000(ChangeLimitDepositDescription.Text);
+
+                            var CurrentCard = CurrentClient.DebitCard[id0];
+                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, ChangeLimitDepositDescription.Text);
+
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на изменние депозита?" +
+                                                                  $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
+                                                                  $"Ваш текущий лимит: {CurrentCard.LimitDeposit} рублей, Вы меняете на: {newDeposit} рублей.",
+                                                                  "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                Enabled = false;
+                                Cursor = Cursors.WaitCursor;
+
+                                await CurrentCard.RequestChangeLimitDeposit(preview);
+
+                                MessageBox.Show($"Вы успешно отправили запрос на изменение депозита.\n" +
+                                                $"Ожидайте рассмотрения заявки в течение 72 часов.");
+                            }
+                            else return;
 
                             break;
                         }
@@ -957,6 +975,28 @@ namespace BankApplication
                     case "C1":
                     case "C2":
                         {
+                            decimal newDeposit = TryReg.TryDecimal(Amount.Text);
+                            TryReg.TryString1000(ChangeLimitDepositDescription.Text);
+
+                            var CurrentCard = CurrentClient.CreditCard[id0];
+                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, ChangeLimitDepositDescription.Text);
+
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на изменние депозита?" +
+                                                                  $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
+                                                                  $"Ваш текущий лимит: {CurrentCard.LimitDeposit} рублей, Вы меняете на: {newDeposit} рублей.",
+                                                                  "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                Enabled = false;
+                                Cursor = Cursors.WaitCursor;
+
+                                await CurrentCard.RequestChangeLimitDeposit(preview);
+
+                                MessageBox.Show($"Вы успешно отправили запрос на изменение депозита.\n" +
+                                                $"Ожидайте рассмотрения заявки в течение 72 часов.");
+                            }
+                            else return;
 
                             break;
                         }
@@ -964,6 +1004,32 @@ namespace BankApplication
                     case "B1":
                     case "B2":
                         {
+                            decimal newDeposit = TryReg.TryDecimal(Amount.Text);
+                            TryReg.TryString1000(ChangeLimitDepositDescription.Text);
+
+                            var CurrentCard = CurrentClient.BusinessCard[id0];
+                            var preview = CurrentCard.PrepareChangeLimitDeposit(newDeposit, ChangeLimitDepositDescription.Text);
+
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на изменние депозита?" +
+                                                                  $"С Вашего баланса будет списано 400.000 рублей. В случае, если Вам откажут, деньги будут зачисленны обратно." +
+                                                                  $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
+                                                                  $"Ваш текущий лимит: {CurrentCard.LimitDeposit} рублей, Вы меняете на: {newDeposit} рублей.",
+                                                                  "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                Enabled = false;
+                                Cursor = Cursors.WaitCursor;
+
+                                await CurrentCard.RequestChangeLimitDeposit(preview);
+
+                                MessageBox.Show($"Вы успешно отправили запрос на изменение депозита.\n" +
+                                                $"С Вашего баланса было списано 400.000 рублей. Ваш баланс: {CurrentCard.Balance} рублей" +
+                                                $"Ожидайте рассмотрения заявки в течение 72 часов.");
+
+                                B_balanceLabel.Text = $"{CurrentCard.Balance} рублей";
+                            }
+                            else return;
 
                             break;
                         }

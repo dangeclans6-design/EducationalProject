@@ -110,38 +110,33 @@ namespace BankApplication
             bool IsDbUpdate = await DataBase.ReplenishDepositUsuallyCard(id, preview.NewDeposit, current_balance, current_deposit, current_limit);
 
             if (IsDbUpdate) Deposit = preview.NewDeposit;
-            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+            else throw new Exception($"Произошла непредвиденная ошибка! Пожалуйста, обновите страницу или повторите попытку позже.");
         }
 
         //--------------------------[Изменить лимит депозита (запрос)]------------------------------//
-        public readonly struct ChangeLimitDepositPreview(decimal amount, int clientId, string defcard, string typeCard, int idCard, string message, decimal new_deposit)
+        public readonly struct ChangeLimitDepositPreview(decimal newDeposit, string message)
         {
-            public readonly decimal Amount = amount;
-            public readonly int ClientId = clientId;
-            public readonly string DefCard = defcard;
-            public readonly string TypeCard = typeCard;
-            public readonly int IdCard = idCard;
-            public readonly string Message = message;
-            public readonly decimal NewDeposit = new_deposit;
+            public readonly decimal NewDeposit = newDeposit;
+            public readonly string Message = message;            
         }
-        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal amount, int clientId, string defcard, string typeCard, int idCard, string message, decimal new_deposit)
+        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal newDeposit, string message)
         {
-            if(amount <= 10000 || amount > 400000) throw new Exception("Лимит депозита для 'Обычной': от 10 до 400 тысяч рублей!");
-            if(amount == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит!");
+            if(newDeposit <= 10000 || newDeposit > 400000) throw new Exception("Лимит депозита для 'Обычной': от 10 до 400 тысяч рублей!");
+            if(newDeposit == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит!");
             if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
 
-            return new ChangeLimitDepositPreview(amount, clientId, defcard, typeCard, idCard, message, new_deposit);
+            return new ChangeLimitDepositPreview(newDeposit, message);
         }
         public async Task RequestChangeLimitDeposit(ChangeLimitDepositPreview preview)
         {
-            bool IsDbUpdate = await DataBase.RequestChangeLimitDeposit(preview.ClientId, preview.DefCard, preview.TypeCard, preview.IdCard, preview.Message, preview.NewDeposit);
+            bool IsUpdate = await DataBase.U_RequestChangeLimitDeposit(ClientId, CardNumber, "U", Id, preview.Message, preview.NewDeposit);
 
-            if (!IsDbUpdate) throw new Exception($"Вы уже отправляли заявку на изменнеие депозита!\n Пожалуйста, дождитесь ее рассмотрения.");
-            else
+            if (IsUpdate)
             {
-                var find_request = await DataBase.SearchRequestClient(preview.ClientId);
+                var find_request = await DataBase.SearchRequestClient(ClientId);
                 Session.CurrentClient.OpenRequest = find_request.Request;
             }
+            else throw new Exception($"Произошла непредвиденная ошибка! Пожалуйста, обновите страницу или повторите попытку позже.");
         }
 
         //--------------------------[Закрыть карту (запрос)]------------------------------//
@@ -321,25 +316,35 @@ namespace BankApplication
             bool IsDbUpdate = await DataBase.ReplenishDepositDebitCard(id, preview.NewDeposit, current_balance, current_deposit, current_limit, current_cashback);
 
             if (IsDbUpdate) Deposit = preview.NewDeposit;
-            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+            else throw new Exception($"Произошла непредвиденная ошибка! Пожалуйста, обновите страницу или повторите попытку позже.");
         }
 
-        //--------------------------[Изменить лимит депозита]------------------------------//
-        public readonly struct ChangeLimitDepositPreview(decimal amount)
+        //--------------------------[Изменить лимит депозита (запрос)]------------------------------//
+        public readonly struct ChangeLimitDepositPreview(decimal newDeposit, string message)
         {
-            public readonly decimal Amount = amount;
+            public readonly decimal NewDeposit = newDeposit;
+            public readonly string Message = message;         
         }
-        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal amount)
+        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal newDeposit, string message)
         {
-            if (amount <= 10000 || amount > 800000) throw new Exception("Лимит депозита для 'Дебитовой' карты должен быть больше 10-ти тысяч рублей и не более 800.000 рублей!");
-            if (amount == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит!");
+            if (newDeposit <= 10000 || newDeposit > 400000) throw new Exception("Лимит депозита для 'Дебетовой': от 10 до 400 тысяч рублей!");
+            if (newDeposit == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит!");
+            if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
 
-            return new ChangeLimitDepositPreview(amount);
+            return new ChangeLimitDepositPreview(newDeposit, message);
         }
-        public void ChangeLimitD(ChangeLimitDepositPreview preview)
+        public async Task RequestChangeLimitDeposit(ChangeLimitDepositPreview preview)
         {
-            LimitDeposit = preview.Amount;
+            bool IsUpdate = await DataBase.D_RequestChangeLimitDeposit(ClientId, CardNumber, "D", Id, preview.Message, preview.NewDeposit);
+
+            if (IsUpdate)
+            {
+                var find_request = await DataBase.SearchRequestClient(ClientId);
+                Session.CurrentClient.OpenRequest = find_request.Request;
+            }            
+            else throw new Exception($"Произошла непредвиденная ошибка! Пожалуйста, обновите страницу или повторите попытку позже.");
         }
+
         //--------------------------[Забрать кешбек баланс]------------------------------//
         public void ColletCashback(decimal amount)
         {
@@ -482,28 +487,33 @@ namespace BankApplication
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
 
-        //--------------------------[Изменить лимит депозита]------------------------------//
-        public struct ChangeLimitDepositPreview
+        //--------------------------[Изменить лимит депозита (запрос)]------------------------------//
+        public readonly struct ChangeLimitDepositPreview(decimal newDeposit, string message)
         {
-            public decimal amount;
-
-            public ChangeLimitDepositPreview(decimal amount)
-            {
-                this.amount = amount;
-            }
+            public readonly decimal NewDeposit = newDeposit;
+            public readonly string Message = message;
         }
-        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal amount)
+        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal newDeposit, string message)
         {
-            if (amount <= 10000 || amount > 1500000) throw new Exception("Лимит депозита для 'Кредитной' карты должен быть больше 10-ти тысяч и меньше 1.500.000 рублей!");
-            if (amount == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит (для депозита)!");
+            if (newDeposit <= 10000 || newDeposit > 1500000) throw new Exception("Лимит депозита для 'Кредитной' карты должен быть больше 10-ти тысяч и меньше 1.500.000 рублей!");
+            if (newDeposit == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит!");
             if (Debt > 0) throw new Exception($"Невозможно изменить лимит депозита, так как у Вас непогашена задолженость! Ваш долг: {Debt} рублей.");
+            if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
 
-            return new ChangeLimitDepositPreview(amount);
+            return new ChangeLimitDepositPreview(newDeposit, message);
         }
-        public void ChangeLimitD(ChangeLimitDepositPreview preview)
+        public async Task RequestChangeLimitDeposit(ChangeLimitDepositPreview preview)
         {
-            LimitDeposit = preview.amount;
+            bool IsUpdate = await DataBase.C_RequestChangeLimitDeposit(ClientId, CardNumber, "C", Id, preview.Message, preview.NewDeposit);
+
+            if (IsUpdate)
+            {
+                var find_request = await DataBase.SearchRequestClient(ClientId);
+                Session.CurrentClient.OpenRequest = find_request.Request;
+            }
+            else throw new Exception($"Произошла непредвиденная ошибка! Пожалуйста, обновите страницу или повторите попытку позже.");
         }
+
         //--------------------------[Погасить долг]------------------------------//
         public struct ToPayDeebtStruct
         {
@@ -641,27 +651,35 @@ namespace BankApplication
         }
 
         //--------------------------[Изменить лимит депозита]------------------------------//
-        public struct ChangeLimitDepositPreview
+        public readonly struct ChangeLimitDepositPreview(decimal newDeposit, string message)
         {
-            public decimal amount;
+            public readonly decimal NewDeposit = newDeposit;
+            public readonly string Message = message;
+        }
+        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal newDeposit, string message)
+        {
+            if (newDeposit <= 10000 || newDeposit > 1500000) throw new Exception("Лимит депозита для 'Кредитной' карты должен быть больше 10-ти тысяч и меньше 1.500.000 рублей!");
+            if (newDeposit == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит!");
+            if (Balance < 400000) throw new Exception($"Недостаточно средств! Для изменения лимита депозита для 'Бизнес' карты необходимо заплатить 400000 рублей. Ваш баланс: {Balance} рублей.");
+            if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
 
-            public ChangeLimitDepositPreview(decimal amount)
+            return new ChangeLimitDepositPreview(newDeposit, message);
+        }
+        public async Task RequestChangeLimitDeposit(ChangeLimitDepositPreview preview)
+        {
+            // Заранее вычисляем новый баланс
+            decimal newBalance = Balance - 400000;
+
+            bool IsUpdate = await DataBase.B_RequestChangeLimitDeposit(ClientId, CardNumber, "B", Id, preview.Message, preview.NewDeposit, newBalance, Balance);
+
+            if (IsUpdate)
             {
-                this.amount = amount;
-            }
-        }
-        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal amount)
-        {
-            if (amount <= 10000 || amount > 7000000) throw new Exception("Лимит депозита для 'Кредитной' карты должен быть больше 10-ти тысяч и меньше 7.000.000 рублей!");
-            if (amount == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит (для депозита)!");
-            if (Balance < 400000) throw new Exception("Для изменения лимита депозита требуется заплатить 400.000 рублей с личного счета!");
+                Balance = newBalance;
 
-            return new ChangeLimitDepositPreview(amount);
-        }
-        public void ChangeLimitD(ChangeLimitDepositPreview preview)
-        {
-            Balance -= 400000;
-            LimitDeposit = preview.amount;
+                var updateRequest = await DataBase.SearchRequestClient(ClientId);
+                Session.CurrentClient.OpenRequest = updateRequest.Request;
+            }            
+            else throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");           
         }
     }
 

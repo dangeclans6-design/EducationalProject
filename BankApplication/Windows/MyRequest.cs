@@ -34,6 +34,9 @@ namespace BankApplication
                 Text4.Text = $"{currentMyRequest.ClientId}";
                 Text5.Text = $"{currentMyRequest.Message}";
                 Text6.Text = $"{currentMyRequest.Timestamp}";
+
+                GoRequestButton.Visible = true;
+                NumberCardButton.Visible = false;
             }
             if (currentMyRequest.Type == 2)
             {
@@ -43,15 +46,21 @@ namespace BankApplication
                 Text4.Text = $"{currentMyRequest.ClientId}";
                 Text5.Text = $"{currentMyRequest.Message}";
                 Text6.Text = $"{currentMyRequest.Timestamp}";
+
+                GoRequestButton.Visible = true;
+                NumberCardButton.Visible = false;
             }
             if (currentMyRequest.Type == 3)
             {
                 Text1.Text = $"Открыть карту (Тип: {currentMyRequest.TypeCard})";
-                Text2.Text = $"{currentMyRequest.DefCard}";
+                Text2.Text = $"-";
                 Text3.Text = $"-";
                 Text4.Text = $"{currentMyRequest.ClientId}";
                 Text5.Text = $"{currentMyRequest.Message}";
                 Text6.Text = $"{currentMyRequest.Timestamp}";
+
+                GoRequestButton.Visible = false;
+                NumberCardButton.Visible = true;
             }
         }
 
@@ -70,7 +79,7 @@ namespace BankApplication
                 var CurrentAdmin = Session.CurrentAdmin;
                 string answer = "";
 
-                if (FalseCheck.Checked | TrueCheck.Checked)
+                if (FalseCheck.Checked || TrueCheck.Checked)
                 {
                     if (TrueCheck.Checked) answer = "Одобрено";
                     else answer = "Отказано";
@@ -87,13 +96,14 @@ namespace BankApplication
                         Enabled = false;
                         Cursor = Cursors.WaitCursor;
 
-                        await CurrentAdmin.AnswerRequest(currentMyRequest.ClientId, currentMyRequest.Id, answer, comment, index, currentMyRequest.Type, currentMyRequest.NewDeposit, currentMyRequest.IdCard, currentMyRequest.TypeCard);
+                        await CurrentAdmin.AnswerRequest(currentMyRequest.ClientId, currentMyRequest.Id, answer, comment, index,
+                            currentMyRequest.Type, currentMyRequest.NewDeposit, currentMyRequest.IdCard, currentMyRequest.TypeCard, Text7.Text);
 
                         Close();
                         MessageBox.Show($"Вы успешно отправили ответ клиенту", "Ответ на запрос клиента", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         // Отправляем лог
-                        await DataBase.AddLogsAdmin(Session.CurrentAdmin.Id, "INFO", $"Дал ответ на запрос #{currentMyRequest.Id}.", $"MyRequest");
+                        await DataBase.AddLogsAdmin(CurrentAdmin.Id, "INFO", $"Дал ответ на запрос #{currentMyRequest.Id}.", $"MyRequest");
                     }
                     else return;
                 }
@@ -102,6 +112,7 @@ namespace BankApplication
             catch (Exception ex)
             {
                 MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await DataBase.AddLogsAdmin(Session.CurrentAdmin.Id, "INFO", $"{ex}", $"AuthAdmin");
             }
             finally
             {
@@ -122,6 +133,16 @@ namespace BankApplication
         {
             if (TrueCheck.Checked) FalseCheck.Enabled = false;
             else FalseCheck.Enabled = true;
+        }
+
+        //--------------------[Кнопка "Номер карты"]---------------------//
+        private void NumberCardButton_Click(object sender, EventArgs e)
+        {
+            string numberCard = TryReg.GenerateCardNumber(currentMyRequest.ClientId);
+
+            Text7.Text = numberCard;
+
+            GoRequestButton.Visible = true;
         }
     }
 }

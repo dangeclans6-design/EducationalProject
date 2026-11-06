@@ -40,11 +40,11 @@
             // 
             MainLabel.AutoSize = true;
             MainLabel.BackColor = System.Drawing.Color.Transparent;
-            MainLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            MainLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
             MainLabel.ForeColor = System.Drawing.Color.Azure;
-            MainLabel.Location = new System.Drawing.Point(187, -5);
+            MainLabel.Location = new System.Drawing.Point(40, 3);
             MainLabel.Name = "MainLabel";
-            MainLabel.Size = new System.Drawing.Size(360, 45);
+            MainLabel.Size = new System.Drawing.Size(302, 37);
             MainLabel.TabIndex = 13;
             MainLabel.Text = "Уведомление о *******";
             // 

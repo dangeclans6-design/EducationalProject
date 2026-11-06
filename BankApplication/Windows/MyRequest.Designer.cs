@@ -53,6 +53,9 @@
             FalseCheck = new ReaLTaiizor.Controls.AloneCheckBox();
             bigLabel9 = new ReaLTaiizor.Controls.BigLabel();
             bigLabel11 = new ReaLTaiizor.Controls.BigLabel();
+            NumberCardButton = new ReaLTaiizor.Controls.CyberButton();
+            bigLabel12 = new ReaLTaiizor.Controls.BigLabel();
+            Text7 = new ReaLTaiizor.Controls.BigLabel();
             SuspendLayout();
             // 
             // GoRequestButton
@@ -94,6 +97,7 @@
             GoRequestButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             GoRequestButton.Timer_Effect_1 = 5;
             GoRequestButton.Timer_RGB = 300;
+            GoRequestButton.Visible = false;
             GoRequestButton.Click += GoRequestButton_Click;
             // 
             // LabelForm
@@ -203,7 +207,7 @@
             bigLabel1.BackColor = System.Drawing.Color.Transparent;
             bigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
             bigLabel1.ForeColor = System.Drawing.Color.Azure;
-            bigLabel1.Location = new System.Drawing.Point(572, 10);
+            bigLabel1.Location = new System.Drawing.Point(617, 10);
             bigLabel1.Name = "bigLabel1";
             bigLabel1.Size = new System.Drawing.Size(241, 30);
             bigLabel1.TabIndex = 63;
@@ -217,7 +221,7 @@
             Text5.Depth = 0;
             Text5.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
             Text5.HideSelection = true;
-            Text5.Location = new System.Drawing.Point(572, 52);
+            Text5.Location = new System.Drawing.Point(617, 52);
             Text5.MaxLength = 32767;
             Text5.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             Text5.Name = "Text5";
@@ -228,7 +232,7 @@
             Text5.SelectionLength = 0;
             Text5.SelectionStart = 0;
             Text5.ShortcutsEnabled = true;
-            Text5.Size = new System.Drawing.Size(749, 253);
+            Text5.Size = new System.Drawing.Size(704, 253);
             Text5.TabIndex = 62;
             Text5.TabStop = false;
             Text5.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
@@ -418,12 +422,81 @@
             bigLabel11.TabIndex = 81;
             bigLabel11.Text = "Отказано";
             // 
+            // NumberCardButton
+            // 
+            NumberCardButton.Alpha = 20;
+            NumberCardButton.BackColor = System.Drawing.Color.Transparent;
+            NumberCardButton.Background = true;
+            NumberCardButton.Background_WidthPen = 4F;
+            NumberCardButton.BackgroundPen = true;
+            NumberCardButton.ColorBackground = System.Drawing.Color.Transparent;
+            NumberCardButton.ColorBackground_1 = System.Drawing.Color.White;
+            NumberCardButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            NumberCardButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
+            NumberCardButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
+            NumberCardButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
+            NumberCardButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            NumberCardButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
+            NumberCardButton.Effect_1 = true;
+            NumberCardButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
+            NumberCardButton.Effect_1_Transparency = 25;
+            NumberCardButton.Effect_2 = true;
+            NumberCardButton.Effect_2_ColorBackground = System.Drawing.Color.White;
+            NumberCardButton.Effect_2_Transparency = 20;
+            NumberCardButton.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            NumberCardButton.ForeColor = System.Drawing.Color.Tan;
+            NumberCardButton.Lighting = false;
+            NumberCardButton.LinearGradient_Background = false;
+            NumberCardButton.LinearGradientPen = false;
+            NumberCardButton.Location = new System.Drawing.Point(1079, 480);
+            NumberCardButton.Name = "NumberCardButton";
+            NumberCardButton.PenWidth = 15;
+            NumberCardButton.Rounding = true;
+            NumberCardButton.RoundingInt = 20;
+            NumberCardButton.Size = new System.Drawing.Size(224, 72);
+            NumberCardButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            NumberCardButton.TabIndex = 82;
+            NumberCardButton.Tag = "Cyber";
+            NumberCardButton.TextButton = "Номер карты";
+            NumberCardButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            NumberCardButton.Timer_Effect_1 = 5;
+            NumberCardButton.Timer_RGB = 300;
+            NumberCardButton.Visible = false;
+            NumberCardButton.Click += NumberCardButton_Click;
+            // 
+            // bigLabel12
+            // 
+            bigLabel12.AutoSize = true;
+            bigLabel12.BackColor = System.Drawing.Color.Transparent;
+            bigLabel12.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
+            bigLabel12.ForeColor = System.Drawing.Color.Azure;
+            bigLabel12.Location = new System.Drawing.Point(46, 275);
+            bigLabel12.Name = "bigLabel12";
+            bigLabel12.Size = new System.Drawing.Size(151, 30);
+            bigLabel12.TabIndex = 83;
+            bigLabel12.Text = "Номер карты:";
+            // 
+            // Text7
+            // 
+            Text7.AutoSize = true;
+            Text7.BackColor = System.Drawing.Color.Transparent;
+            Text7.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
+            Text7.ForeColor = System.Drawing.Color.Tan;
+            Text7.Location = new System.Drawing.Point(216, 275);
+            Text7.Name = "Text7";
+            Text7.Size = new System.Drawing.Size(21, 30);
+            Text7.TabIndex = 84;
+            Text7.Text = "-";
+            // 
             // MyRequest
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
             ClientSize = new System.Drawing.Size(1336, 760);
+            Controls.Add(Text7);
+            Controls.Add(bigLabel12);
+            Controls.Add(NumberCardButton);
             Controls.Add(bigLabel11);
             Controls.Add(bigLabel9);
             Controls.Add(FalseCheck);
@@ -484,5 +557,8 @@
         private ReaLTaiizor.Controls.AloneCheckBox FalseCheck;
         private ReaLTaiizor.Controls.BigLabel bigLabel9;
         private ReaLTaiizor.Controls.BigLabel bigLabel11;
+        private ReaLTaiizor.Controls.CyberButton NumberCardButton;
+        private ReaLTaiizor.Controls.BigLabel bigLabel12;
+        private ReaLTaiizor.Controls.BigLabel Text7;
     }
 }
