@@ -532,6 +532,27 @@ namespace BankApplication
             else throw new Exception($"Произошла непредвиденная ошибка! Пожалуйста, обновите страницу или повторите попытку позже.");
         }
 
+        //--------------------------[Закрыть карту (запрос)]------------------------------//
+        public readonly struct CloseCardPreview(string typeCard, string message)
+        {
+            public readonly string TypeCard = typeCard;
+            public readonly string Message = message;
+        }
+        public CloseCardPreview PrepareCloseCard(string typeCard, string message)
+        {
+            if (Balance > 0 || Deposit > 0 || Debt > 0) throw new Exception("Чтобы отправить запрос на закрытие карты основной баланс и баланс депозита должны быть нулевыми. А также у Вас не должно быть задолженности.");
+            if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
+
+            return new CloseCardPreview(typeCard, message);
+        }
+        public async Task RequestCloseCard(CloseCardPreview preview)
+        {
+            await DataBase.C_RequestCloseCard(ClientId, CardNumber, preview.TypeCard, Id, preview.Message, Balance, Deposit, LimitDeposit, Debt);
+
+            var find_request = await DataBase.SearchRequestClient(ClientId);
+            Session.CurrentClient.OpenRequest = find_request.Request;
+        }
+
         //--------------------------[Погасить долг]------------------------------//
         public struct ToPayDeebtStruct
         {

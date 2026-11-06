@@ -66,7 +66,7 @@ namespace BankApplication
 
         //----------------------[Ответить на запрос]------------------------//
         public async Task AnswerRequest(int clientId, int idRequest, string answer, string comment, int indexMyRequest,
-            int typeRequest, decimal newDeposit, int idCard, string typeCard, string newCardNumber)
+            int typeRequest, decimal newDeposit, int idCard, string typeCard, string newCardNumber, string cardNumber)
         {
             switch (typeRequest)
             {
@@ -82,7 +82,7 @@ namespace BankApplication
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("U", "Отказано"):
-                                await DataBase.AnswerRequestAndNotificationCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
+                                await DataBase.UDC_RefusalCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("D", "Одобрено"):
@@ -90,7 +90,7 @@ namespace BankApplication
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("D", "Отказано"):
-                                await DataBase.AnswerRequestAndNotificationCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
+                                await DataBase.UDC_RefusalCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("C", "Одобрено"):
@@ -98,7 +98,7 @@ namespace BankApplication
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("C", "Отказано"):
-                                await DataBase.AnswerRequestAndNotificationCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
+                                await DataBase.UDC_RefusalCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("B", "Одобрено"):
@@ -121,19 +121,19 @@ namespace BankApplication
                         switch (typeCard, answer)
                         {
                             case ("U", "Одобрено"):
-                                await DataBase.U_CloseUCardAndAnswerRequest(idCard, answer, comment, dateAnswer, idRequest, typeCard, clientId, title);
+                                await DataBase.U_CloseAccept(idCard, answer, comment, dateAnswer, idRequest, typeCard, cardNumber, clientId, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("U", "Отказано"):
-                                await DataBase.U_AnswerRequestAndNotificationClose(idRequest, answer, comment, dateAnswer, clientId, title, comment, idCard);
+                                await DataBase.U_RefusalClose(idRequest, answer, comment, dateAnswer, clientId, title, comment, idCard);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("D", "Одобрено"):
-                                
+                                await DataBase.D_CloseAccept(idCard, answer, comment, dateAnswer, idRequest, typeCard, cardNumber, clientId, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("D", "Отказано"):
-                                
+                                await DataBase.D_RefusalClose(idRequest, answer, comment, dateAnswer, clientId, title, comment, idCard);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("C", "Одобрено"):

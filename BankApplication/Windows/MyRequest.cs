@@ -97,7 +97,7 @@ namespace BankApplication
                         Cursor = Cursors.WaitCursor;
 
                         await CurrentAdmin.AnswerRequest(currentMyRequest.ClientId, currentMyRequest.Id, answer, comment, index,
-                            currentMyRequest.Type, currentMyRequest.NewDeposit, currentMyRequest.IdCard, currentMyRequest.TypeCard, Text7.Text);
+                            currentMyRequest.Type, currentMyRequest.NewDeposit, currentMyRequest.IdCard, currentMyRequest.TypeCard, Text7.Text, currentMyRequest.DefCard);
 
                         Close();
                         MessageBox.Show($"Вы успешно отправили ответ клиенту", "Ответ на запрос клиента", MessageBoxButtons.OK, MessageBoxIcon.Information);
