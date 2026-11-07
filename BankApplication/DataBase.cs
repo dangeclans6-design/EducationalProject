@@ -871,6 +871,208 @@ namespace BankApplication
         }
         #endregion
 
+        #region Закрыть карту + закрыть Request (C)
+        public async static Task C_CloseAccept(int idCard, string answer, string comment, DateTime dateAnswer,
+                    int idRequest, string typeCard, string cardNumber, int clientId, string title)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            // Открываем транзакцию (оба действия зависят друг от друга)
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                #region Действие 1: Удаляем карту из основного списка
+                await using var cmdDelete = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdDelete.Transaction = transaction;
+                cmdDelete.CommandText = @"
+                    DELETE FROM CreditCard
+                    WHERE Id = @idCard
+                    AND Status = 0";
+                cmdDelete.Parameters.AddWithValue("idCard", idCard);
+
+                // ExecuteNonQueryAsync вернет количество вставленных строк
+                int deleteRows = await cmdDelete.ExecuteNonQueryAsync();
+
+                if (deleteRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалейства, повторите попытку позже.");
+                #endregion
+
+                #region Действие 2: Добавляем карту в архив
+                await using var cmdInsert = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdInsert.Transaction = transaction;
+                cmdInsert.CommandText = @"
+                    INSERT INTO ArchiveCard (TypeCard, CardNumber, ClientId, Reason)
+                    VALUES (@typeCard, @cardNumber, @clietnId, @reason)";
+                cmdInsert.Parameters.AddWithValue("typeCard", typeCard);
+                cmdInsert.Parameters.AddWithValue("cardNumber", cardNumber);
+                cmdInsert.Parameters.AddWithValue("clietnId", clientId);
+                cmdInsert.Parameters.AddWithValue("reason", $"Карта закрыта по заявке владельца (номер заявки: {idRequest})");
+
+                // ExecuteNonQueryAsync вернет количество вставленных строк
+                int insertRows = await cmdInsert.ExecuteNonQueryAsync();
+
+                if (insertRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалейства, повторите попытку позже.");
+                #endregion
+
+                #region Действие 3: Отправляем ответ на запрос
+                await using var cmdUpdateRequest = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdUpdateRequest.Transaction = transaction;
+                cmdUpdateRequest.CommandText = @"
+                    UPDATE Request
+                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
+                    WHERE Id = @idRequest
+                    AND Answer IS NULL
+                    AND Comment IS NULL
+                    AND DateAnswer IS NULL";
+                cmdUpdateRequest.Parameters.AddWithValue("answer", answer);
+                cmdUpdateRequest.Parameters.AddWithValue("comment", comment);
+                cmdUpdateRequest.Parameters.AddWithValue("dateAnswer", dateAnswer);
+                cmdUpdateRequest.Parameters.AddWithValue("idRequest", idRequest);
+
+                int updateRequestRows = await cmdUpdateRequest.ExecuteNonQueryAsync();
+
+                if (updateRequestRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+                #endregion
+
+                #region Действие 4: Отправляем уведомление клиенту
+                await using var notifications = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                notifications.Transaction = transaction;
+                notifications.CommandText = @"
+                    INSERT INTO Notifications (ClientId, Title, Message)
+                    VALUES (@clientId, @title, @message)";
+                notifications.Parameters.AddWithValue("clientId", clientId);
+                notifications.Parameters.AddWithValue("title", title);
+                notifications.Parameters.AddWithValue("message", comment);
+
+                var addNoti = await notifications.ExecuteNonQueryAsync();
+
+                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
+
+                // Если все хорошо: Сохраняем оба действия в БД разом
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                // В случае любой непредвиденной ошибки отменяем все изменения
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        #endregion
+
+        #region Закрыть карту + закрыть Request (B)
+        public async static Task B_CloseAccept(int idCard, string answer, string comment, DateTime dateAnswer,
+                    int idRequest, string typeCard, string cardNumber, int clientId, string title)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            // Открываем транзакцию (действия зависят друг от друга)
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                #region Действие 1: Удаляем карту из основного списка
+                await using var cmdDelete = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdDelete.Transaction = transaction;
+                cmdDelete.CommandText = @"
+                    DELETE FROM BusinessCard
+                    WHERE Id = @idCard
+                    AND Status = 0";
+                cmdDelete.Parameters.AddWithValue("idCard", idCard);
+
+                // ExecuteNonQueryAsync вернет количество вставленных строк
+                int deleteRows = await cmdDelete.ExecuteNonQueryAsync();
+
+                if (deleteRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалейства, повторите попытку позже.");
+                #endregion
+
+                #region Действие 2: Добавляем карту в архив
+                await using var cmdInsert = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdInsert.Transaction = transaction;
+                cmdInsert.CommandText = @"
+                    INSERT INTO ArchiveCard (TypeCard, CardNumber, ClientId, Reason)
+                    VALUES (@typeCard, @cardNumber, @clietnId, @reason)";
+                cmdInsert.Parameters.AddWithValue("typeCard", typeCard);
+                cmdInsert.Parameters.AddWithValue("cardNumber", cardNumber);
+                cmdInsert.Parameters.AddWithValue("clietnId", clientId);
+                cmdInsert.Parameters.AddWithValue("reason", $"Карта закрыта по заявке владельца (номер заявки: {idRequest})");
+
+                // ExecuteNonQueryAsync вернет количество вставленных строк
+                int insertRows = await cmdInsert.ExecuteNonQueryAsync();
+
+                if (insertRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалейства, повторите попытку позже.");
+                #endregion
+
+                #region Действие 3: Отправляем ответ на запрос
+                await using var cmdUpdateRequest = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdUpdateRequest.Transaction = transaction;
+                cmdUpdateRequest.CommandText = @"
+                    UPDATE Request
+                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
+                    WHERE Id = @idRequest
+                    AND Answer IS NULL
+                    AND Comment IS NULL
+                    AND DateAnswer IS NULL";
+                cmdUpdateRequest.Parameters.AddWithValue("answer", answer);
+                cmdUpdateRequest.Parameters.AddWithValue("comment", comment);
+                cmdUpdateRequest.Parameters.AddWithValue("dateAnswer", dateAnswer);
+                cmdUpdateRequest.Parameters.AddWithValue("idRequest", idRequest);
+
+                int updateRequestRows = await cmdUpdateRequest.ExecuteNonQueryAsync();
+
+                if (updateRequestRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+                #endregion
+
+                #region Действие 4: Отправляем уведомление клиенту
+                await using var notifications = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                notifications.Transaction = transaction;
+                notifications.CommandText = @"
+                    INSERT INTO Notifications (ClientId, Title, Message)
+                    VALUES (@clientId, @title, @message)";
+                notifications.Parameters.AddWithValue("clientId", clientId);
+                notifications.Parameters.AddWithValue("title", title);
+                notifications.Parameters.AddWithValue("message", comment);
+
+                var addNoti = await notifications.ExecuteNonQueryAsync();
+
+                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
+
+                // Если все хорошо: Сохраняем оба действия в БД разом
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                // В случае любой непредвиденной ошибки отменяем все изменения
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        #endregion
+
         //-------------------[Открыть карту + закрыть Request]-------------------//
         public async static Task OpenCardUAndAnswerRequest(int clientId, string cardNumber, string answer, string comment, DateTime dateAnswer, int idRequest)
         {
@@ -1765,7 +1967,7 @@ namespace BankApplication
             }
         }
 
-        //-------------------[Одобрено (Изменить лимит депозита) + закрыть Request (U)]-------------------//
+        #region Одобрено (Изменить лимит депозита) + закрыть Request (U)
         public async static Task U_ChangeLimitDepositAndAnswerRequest(decimal newLimit, int idCard, string answer, string comment, DateTime dateAnswer, int idRequest,
             int clientId, string title)
         {
@@ -1779,7 +1981,7 @@ namespace BankApplication
 
             try
             {
-                // Действие 1: Меняем лимит депозита
+                #region Действие 1: Меняем лимит депозита
                 await using var cmdUpdateDeposit = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -1797,8 +1999,9 @@ namespace BankApplication
 
                 // Если депозит не сменился (по какой-то причине)
                 if (updateDepositRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
 
-                // Действие 2: Отправляем ответ на запрос
+                #region Действие 2: Отправляем ответ на запрос
                 await using var cmdUpdateRequest = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -1819,8 +2022,9 @@ namespace BankApplication
 
                 // Если ответ не записался в БД (по какой-то причине)
                 if (updateRequestRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+                #endregion
 
-                // Действие 3: Отправляем уведомление клиенту
+                #region Действие 3: Отправляем уведомление клиенту
                 await using var notifications = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -1835,6 +2039,7 @@ namespace BankApplication
                 var addNoti = await notifications.ExecuteNonQueryAsync();
 
                 if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
 
                 // Если все хорошо: Сохраняем оба действия в БД разом
                 await transaction.CommitAsync();
@@ -1846,8 +2051,9 @@ namespace BankApplication
                 throw;
             }
         }
+        #endregion
 
-        //-------------------[Одобрено (Изменить лимит депозита) + закрыть Request (D)]-------------------//
+        #region Одобрено (Изменить лимит депозита) + закрыть Request (D)
         public async static Task D_ChangeLimitDepositAndAnswerRequest(decimal newLimit, int idCard, string answer, string comment, DateTime dateAnswer, int idRequest,
             int clientId, string title)
         {
@@ -1861,7 +2067,7 @@ namespace BankApplication
 
             try
             {
-                // Действие 1: Меняем лимит депозита
+                #region Действие 1: Меняем лимит депозита
                 await using var cmdUpdateDeposit = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -1879,8 +2085,9 @@ namespace BankApplication
 
                 // Если депозит не сменился (по какой-то причине)
                 if (updateDepositRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
 
-                // Действие 2: Отправляем ответ на запрос
+                #region Действие 2: Отправляем ответ на запрос
                 await using var cmdUpdateRequest = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -1901,8 +2108,9 @@ namespace BankApplication
 
                 // Если ответ не записался в БД (по какой-то причине)
                 if (updateRequestRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+                #endregion
 
-                // Действие 3: Отправляем уведомление клиенту
+                #region Действие 3: Отправляем уведомление клиенту
                 await using var notifications = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -1917,6 +2125,7 @@ namespace BankApplication
                 var addNoti = await notifications.ExecuteNonQueryAsync();
 
                 if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
 
                 // Если все хорошо: Сохраняем оба действия в БД разом
                 await transaction.CommitAsync();
@@ -1928,8 +2137,9 @@ namespace BankApplication
                 throw;
             }
         }
+        #endregion
 
-        //-------------------[Одобрено (Изменить лимит депозита) + закрыть Request (C)]-------------------//
+        #region Одобрено (Изменить лимит депозита) + закрыть Request (C)
         public async static Task C_ChangeLimitDepositAndAnswerRequest(decimal newLimit, int idCard, string answer, string comment, DateTime dateAnswer, int idRequest,
             int clientId, string title)
         {
@@ -1943,7 +2153,7 @@ namespace BankApplication
 
             try
             {
-                // Действие 1: Меняем лимит депозита
+                #region Действие 1: Меняем лимит депозита
                 await using var cmdUpdateDeposit = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -1961,8 +2171,9 @@ namespace BankApplication
 
                 // Если депозит не сменился (по какой-то причине)
                 if (updateDepositRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
 
-                // Действие 2: Отправляем ответ на запрос
+                #region Действие 2: Отправляем ответ на запрос
                 await using var cmdUpdateRequest = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -1983,8 +2194,9 @@ namespace BankApplication
 
                 // Если ответ не записался в БД (по какой-то причине)
                 if (updateRequestRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+                #endregion
 
-                // Действие 3: Отправляем уведомление клиенту
+                #region Действие 3: Отправляем уведомление клиенту
                 await using var notifications = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -1999,6 +2211,7 @@ namespace BankApplication
                 var addNoti = await notifications.ExecuteNonQueryAsync();
 
                 if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
 
                 // Если все хорошо: Сохраняем оба действия в БД разом
                 await transaction.CommitAsync();
@@ -2010,8 +2223,9 @@ namespace BankApplication
                 throw;
             }
         }
+        #endregion
 
-        //-------------------[Одобрено (Изменить лимит депозита) + закрыть Request (B)]-------------------//
+        #region Одобрено (Изменить лимит депозита) + закрыть Request (B)
         public async static Task B_ChangeLimitDepositAndAnswerRequest(decimal newLimit, int idCard, string answer, string comment, DateTime dateAnswer, int idRequest,
             int clientId, string title)
         {
@@ -2025,7 +2239,7 @@ namespace BankApplication
 
             try
             {
-                // Действие 1: Меняем лимит депозита
+                #region Действие 1: Меняем лимит депозита
                 await using var cmdUpdateDeposit = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -2043,8 +2257,9 @@ namespace BankApplication
 
                 // Если депозит не сменился (по какой-то причине)
                 if (updateDepositRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
 
-                // Действие 2: Отправляем ответ на запрос
+                #region Действие 2: Отправляем ответ на запрос
                 await using var cmdUpdateRequest = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -2061,12 +2276,14 @@ namespace BankApplication
                 cmdUpdateRequest.Parameters.AddWithValue("dateAnswer", dateAnswer);
                 cmdUpdateRequest.Parameters.AddWithValue("idRequest", idRequest);
 
+                // ExecuteNonQueryAsync вернет количество вставленных строк
                 int updateRequestRows = await cmdUpdateRequest.ExecuteNonQueryAsync();
 
                 // Если ответ не записался в БД (по какой-то причине)
                 if (updateRequestRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+                #endregion
 
-                // Действие 3: Отправляем уведомление клиенту
+                #region Действие 3: Отправляем уведомление клиенту
                 await using var notifications = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -2078,9 +2295,11 @@ namespace BankApplication
                 notifications.Parameters.AddWithValue("title", title);
                 notifications.Parameters.AddWithValue("message", comment);
 
+                // ExecuteNonQueryAsync вернет количество вставленных строк
                 var addNoti = await notifications.ExecuteNonQueryAsync();
 
                 if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
 
                 // Если все хорошо: Сохраняем оба действия в БД разом
                 await transaction.CommitAsync();
@@ -2092,8 +2311,10 @@ namespace BankApplication
                 throw;
             }
         }
+        #endregion
 
-        #region Запрос на закрытие карты (U)
+
+        #region Запрос - Закрыть карту (U)
         public async static Task U_RequestCloseCard(int clientId, string defcard, string typeCard, int idCard, string message,
                                 decimal current_balance, decimal current_deposit, decimal current_limit)
         {
@@ -2106,8 +2327,8 @@ namespace BankApplication
             await using var transaction = await connection.BeginTransactionAsync();
 
             try
-            {                
-                // Действие 1: Создаем заявку в таблице Request
+            {
+                #region Действие 1: Создаем заявку в таблице Request
                 await using var cmdInsert = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -2135,8 +2356,9 @@ namespace BankApplication
 
                 // Если такая активная заявка уже была (вставка не произошла), прерываем процесс
                 if (insertRows == 0) throw new Exception("Вы уже отправляли заявку такого типа! Дождитесь ее рассмотрения.");
+                #endregion
 
-                // Действие 2: Меняем статус карты в таблице UsuallyCard
+                #region Действие 2: Меняем статус карты в таблице UsuallyCard
                 await using var cmdUpdate = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -2154,12 +2376,13 @@ namespace BankApplication
                 cmdUpdate.Parameters.AddWithValue("current_balance", current_balance);
                 cmdUpdate.Parameters.AddWithValue("current_deposit", current_deposit);
                 cmdUpdate.Parameters.AddWithValue("current_limit", current_limit);
-                cmdUpdate.Parameters.AddWithValue("reason", $"Заявка на закрытие карты (номер {defcard})");
+                cmdUpdate.Parameters.AddWithValue("reason", $"Заявка - Закрыть карту");
 
+                // ExecuteNonQueryAsync вернет количество вставленных строк
                 int updateRows = await cmdUpdate.ExecuteNonQueryAsync();
 
-                // Если карта изменилась, фиксируем транзакцию. Если нет — отменяем всё.
                 if (updateRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+                #endregion
 
                 // Сохраняем оба действия в БД разом (если все хорошо)
                 await transaction.CommitAsync();
@@ -2173,7 +2396,7 @@ namespace BankApplication
         }
         #endregion
 
-        #region Запрос на закрытие карты (D)
+        #region Запрос - Закрыть карту (D)
         public async static Task D_RequestCloseCard(int clientId, string defcard, string typeCard, int idCard, string message,
                                 decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_cashback)
         {
@@ -2237,11 +2460,11 @@ namespace BankApplication
                 cmdUpdate.Parameters.AddWithValue("current_deposit", current_deposit);
                 cmdUpdate.Parameters.AddWithValue("current_limit", current_limit);
                 cmdUpdate.Parameters.AddWithValue("current_cashback", current_cashback);
-                cmdUpdate.Parameters.AddWithValue("reason", $"Заявка на закрытие карты");
+                cmdUpdate.Parameters.AddWithValue("reason", $"Заявка - Закрыть карту");
 
+                // ExecuteNonQueryAsync вернет количество вставленных строк
                 int updateRows = await cmdUpdate.ExecuteNonQueryAsync();
 
-                // Если карта изменилась, фиксируем транзакцию. Если нет — отменяем всё.
                 if (updateRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
                 #endregion
 
@@ -2257,7 +2480,7 @@ namespace BankApplication
         }
         #endregion
 
-        #region Запрос на закрытие карты (C)
+        #region Запрос - Закрыть карту (C)
         public async static Task C_RequestCloseCard(int clientId, string defcard, string typeCard, int idCard, string message,
                                 decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_debt)
         {
@@ -2321,7 +2544,7 @@ namespace BankApplication
                 cmdUpdate.Parameters.AddWithValue("current_deposit", current_deposit);
                 cmdUpdate.Parameters.AddWithValue("current_limit", current_limit);
                 cmdUpdate.Parameters.AddWithValue("current_debt", current_debt);
-                cmdUpdate.Parameters.AddWithValue("reason", $"Заявка на закрытие карты");
+                cmdUpdate.Parameters.AddWithValue("reason", $"Заявка - Закрыть карту");
 
                 int updateRows = await cmdUpdate.ExecuteNonQueryAsync();
 
@@ -2341,7 +2564,88 @@ namespace BankApplication
         }
         #endregion
 
-        //-------------------[Запрос на открытие карты]-------------------//
+        #region Запрос - Закрыть карту (B)
+        public async static Task B_RequestCloseCard(int clientId, string defcard, string typeCard, int idCard, string message,
+                                decimal current_balance, decimal current_deposit, decimal current_limit)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            // Открываем транзакцию (команды зависят друг от друга)
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                #region Действие 1: Создаем заявку в таблице Request
+                await using var cmdInsert = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdInsert.Transaction = transaction;
+                cmdInsert.CommandText = @"
+                    INSERT INTO Request (ClientId, Type, DefCard, TypeCard, IdCard, Message, Done)
+                    SELECT @clientId, @type, @defcard, @typeCard, @idCard, @message, @done
+                    FROM DUAL
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM Request 
+                        WHERE ClientId = @clientId 
+                        AND Type = @type 
+                        AND Done = 0);";
+                cmdInsert.Parameters.AddWithValue("clientId", clientId); // ID клиента (отправивший запрос)
+                cmdInsert.Parameters.AddWithValue("type", 2); // 1 - лимит депозита, 2 - удалить карту, 3 - открыть карту
+                cmdInsert.Parameters.AddWithValue("defcard", defcard); // Номер карты
+                cmdInsert.Parameters.AddWithValue("typeCard", typeCard); // Тип карты (U, D, C, B)
+                cmdInsert.Parameters.AddWithValue("idCard", idCard); // ID карты в БД
+                cmdInsert.Parameters.AddWithValue("message", message); // Описание
+                cmdInsert.Parameters.AddWithValue("done", 0); // 0 - на рассмотрении, 1 - рассмотренно
+
+                // ExecuteNonQueryAsync вернет количество вставленных строк
+                int insertRows = await cmdInsert.ExecuteNonQueryAsync();
+
+                if (insertRows == 0) throw new Exception("Вы уже отправляли заявку такого типа! Дождитесь ее рассмотрения.");
+                #endregion
+
+                #region Действие 2: Меняем статус карты в таблице BusinessCard
+                await using var cmdUpdate = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdUpdate.Transaction = transaction;
+                cmdUpdate.CommandText = @"
+                    UPDATE BusinessCard 
+                    SET Status = 0, Reason = @reason
+                    WHERE Id = @idCard
+                    AND Balance = @current_balance
+                    AND Deposit = @current_deposit
+                    AND LimitDeposit = @current_limit
+                    AND Status = 1
+                    AND Reason IS NULL";
+                cmdUpdate.Parameters.AddWithValue("idCard", idCard);
+                cmdUpdate.Parameters.AddWithValue("current_balance", current_balance);
+                cmdUpdate.Parameters.AddWithValue("current_deposit", current_deposit);
+                cmdUpdate.Parameters.AddWithValue("current_limit", current_limit);
+                cmdUpdate.Parameters.AddWithValue("reason", $"Заявка - Закрыть карту");
+
+                int updateRows = await cmdUpdate.ExecuteNonQueryAsync();
+
+                if (updateRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+                #endregion
+
+                // Сохраняем оба действия в БД разом (если все хорошо)
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                // В случае любой непредвиденной ошибки отменяем все изменения
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        #endregion
+
+
+        #region Запрос - Открыть карту
         public async static Task RequestOpenCard(int clientId, string typeCard, string message)
         {
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
@@ -2408,8 +2712,10 @@ namespace BankApplication
                 throw;
             }
         }
+        #endregion
 
-        //-------------------[Поиск всех открытых запросов клиента]-------------------//
+
+        #region Поиск открытых запросов (клиент)
         public readonly struct StructRequestClient(List<Request> request)
         {
             public readonly List<Request> Request = request;
@@ -2449,8 +2755,10 @@ namespace BankApplication
             // Отдаем структуре полученный список из открытых запросов клиента
             return new StructRequestClient(request);
         }
+        #endregion
 
-        //-------------------[Поиск открытых запросов (для админ панели)]-------------------//
+
+        #region Поиск открытых запросов (админ панель)
         public readonly struct StructRequestAdmin(List<RequestAdmin> request)
         {
             public readonly List<RequestAdmin> Request = request;
@@ -2493,8 +2801,9 @@ namespace BankApplication
 
             return new StructRequestAdmin(request);
         }
+        #endregion
 
-        //-------------------[Поиск принятых запросов запросов (для админ панели)]-------------------//
+        #region Поиск принятых запросов запросов (админ панель)
         public readonly struct StructMyRequestAdmin(List<RequestAdmin> request)
         {
             public readonly List<RequestAdmin> MyRequest = request;
@@ -2536,6 +2845,7 @@ namespace BankApplication
 
             return new StructMyRequestAdmin(request);
         }
+        #endregion
 
         #region [Принять запрос (админ панель)
         public async static Task<bool> ApplyRequest(int idRequest, int adminAnswer)
@@ -2564,7 +2874,8 @@ namespace BankApplication
         }
         #endregion
 
-        #region [Отказано (Ответить на запрос - Изменить депозит (U, D, C))
+
+        #region Отказано (Ответить на запрос - Изменить депозит (U, D, C))
         public async static Task UDC_RefusalCLD(int idRequest, string answer, string comment, DateTime dateAnswer,
             int clientId, string title, string message)
         {
@@ -2625,6 +2936,121 @@ namespace BankApplication
             }           
         }
         #endregion
+
+        #region Отказано (Ответить на запрос - Изменить депозит (B))
+        public async static Task B_AnswerRequestAndNotificationCLD(int idRequest, string answer, string comment, DateTime dateAnswer,
+            int clientId, string title, string message, int idCard, decimal delta)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            // Открываем транзакцию (оба действия зависят друг от друга)
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                #region Действие 1: Обновляем запрос (даем ответ)
+                await using var udpade = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                udpade.Transaction = transaction;
+                udpade.CommandText = @"
+                    UPDATE Request
+                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
+                    WHERE Id = @idRequest
+                    AND Answer IS NULL
+                    AND Comment IS NULL
+                    AND DateAnswer IS NULL";
+                udpade.Parameters.AddWithValue("answer", answer);
+                udpade.Parameters.AddWithValue("comment", comment);
+                udpade.Parameters.AddWithValue("dateAnswer", dateAnswer);
+                udpade.Parameters.AddWithValue("idRequest", idRequest);
+
+                var update = await udpade.ExecuteNonQueryAsync();
+
+                if (update == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
+
+                #region Действие 2: Отправляем уведомление клиенту
+                await using var notifications = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                notifications.Transaction = transaction;
+                notifications.CommandText = @"
+                    INSERT INTO Notifications (ClientId, Title, Message)
+                    VALUES (@clientId, @title, @message)";
+                notifications.Parameters.AddWithValue("clientId", clientId);
+                notifications.Parameters.AddWithValue("title", title);
+                notifications.Parameters.AddWithValue("message", message);
+
+                var addNoti = await notifications.ExecuteNonQueryAsync();
+
+                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
+
+                #region Действие 3: Узнаем баланс карты
+                await using var cmdSelect = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdSelect.Transaction = transaction;
+                cmdSelect.CommandText = @"
+                    SELECT Balance
+                    FROM BusinessCard
+                    WHERE ClientId = @clientid
+                    AND Id = @idCard";
+                cmdSelect.Parameters.AddWithValue("clientid", clientId);
+                cmdSelect.Parameters.AddWithValue("idCard", idCard);
+
+                decimal currentBalance = -1;
+
+                await using (var reader = await cmdSelect.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        currentBalance = reader.GetDecimal(0);
+                    }
+                }
+
+                // Если не нашел карту — отменяем
+                if (currentBalance == -1) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+
+                // Еслив все хорошо считаем новый баланс
+                decimal newBalance = currentBalance + delta;
+                #endregion
+
+                #region Действие 4: Меняем баланс (+ проверяем)
+                await using var cmdUpdate = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdUpdate.Transaction = transaction;
+                cmdUpdate.CommandText = @"
+                    UPDATE BusinessCard
+                    SET Balance = @newBalance
+                    WHERE Id = @idCard
+                    AND Balance = @currentBalance";
+                cmdUpdate.Parameters.AddWithValue("newBalance", newBalance);
+                cmdUpdate.Parameters.AddWithValue("idCard", idCard);
+                cmdUpdate.Parameters.AddWithValue("currentBalance", currentBalance);
+
+                var updateRows = await cmdUpdate.ExecuteNonQueryAsync();
+
+                // Если ответ не записался в БД (по какой-то причине)
+                if (updateRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+                #endregion
+
+                // Сохраняем оба действия в БД разом (если все хорошо)
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        #endregion
+
 
         #region Отказано (Ответить на запрос - Закрыть карту (U))
         public async static Task U_RefusalClose(int idRequest, string answer, string comment, DateTime dateAnswer,
@@ -2786,9 +3212,9 @@ namespace BankApplication
         }
         #endregion
 
-        #region Отказано (Ответить на запрос - Изменить депозит (B))
-        public async static Task B_AnswerRequestAndNotificationCLD(int idRequest, string answer, string comment, DateTime dateAnswer,
-            int clientId, string title, string message, int idCard, decimal delta)
+        #region Отказано (Ответить на запрос - Закрыть карту (C))
+        public async static Task C_RefusalClose(int idRequest, string answer, string comment, DateTime dateAnswer,
+            int clientId, string title, string message, int idCard)
         {
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
 
@@ -2822,7 +3248,23 @@ namespace BankApplication
                 if (update == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
                 #endregion
 
-                #region Действие 2: Отправляем уведомление клиенту
+                #region Действие 2: Разблокируем карту
+                await using var unlock = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                unlock.Transaction = transaction;
+                unlock.CommandText = @"
+                    UPDATE CreditCard
+                    SET Status = 1, Reason = NULL
+                    WHERE Id = @idCard";
+                unlock.Parameters.AddWithValue("idCard", idCard);
+
+                var unlockRows = await unlock.ExecuteNonQueryAsync();
+
+                if (unlockRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
+
+                #region Действие 3: Отправляем уведомление клиенту
                 await using var notifications = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
@@ -2839,54 +3281,84 @@ namespace BankApplication
                 if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
                 #endregion
 
-                #region Действие 3: Узнаем баланс карты
-                await using var cmdSelect = connection.CreateCommand();
+                // Сохраняем оба действия в БД разом (если все хорошо)
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        #endregion
+
+        #region Отказано (Ответить на запрос - Закрыть карту (B))
+        public async static Task B_RefusalClose(int idRequest, string answer, string comment, DateTime dateAnswer,
+            int clientId, string title, string message, int idCard)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            // Открываем транзакцию (оба действия зависят друг от друга)
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                #region Действие 1: Обновляем запрос (даем ответ)
+                await using var udpade = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdSelect.Transaction = transaction;
-                cmdSelect.CommandText = @"
-                    SELECT Balance
-                    FROM BusinessCard
-                    WHERE ClientId = @clientid
-                    AND Id = @idCard";
-                cmdSelect.Parameters.AddWithValue("clientid", clientId);
-                cmdSelect.Parameters.AddWithValue("idCard", idCard);
+                udpade.Transaction = transaction;
+                udpade.CommandText = @"
+                    UPDATE Request
+                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
+                    WHERE Id = @idRequest
+                    AND Answer IS NULL
+                    AND Comment IS NULL
+                    AND DateAnswer IS NULL";
+                udpade.Parameters.AddWithValue("answer", answer);
+                udpade.Parameters.AddWithValue("comment", comment);
+                udpade.Parameters.AddWithValue("dateAnswer", dateAnswer);
+                udpade.Parameters.AddWithValue("idRequest", idRequest);
 
-                decimal currentBalance = -1;
+                var update = await udpade.ExecuteNonQueryAsync();
 
-                await using (var reader = await cmdSelect.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        currentBalance = reader.GetDecimal(0);
-                    }
-                }
-
-                // Если не нашел карту — отменяем
-                if (currentBalance == -1) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
-
-                // Еслив все хорошо считаем новый баланс
-                decimal newBalance = currentBalance + delta;
+                if (update == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
                 #endregion
 
-                #region Действие 4: Меняем баланс (+ проверяем)
-                await using var cmdUpdate = connection.CreateCommand();
+                #region Действие 2: Разблокируем карту
+                await using var unlock = connection.CreateCommand();
 
                 // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdUpdate.Transaction = transaction;
-                cmdUpdate.CommandText = @"
+                unlock.Transaction = transaction;
+                unlock.CommandText = @"
                     UPDATE BusinessCard
-                    SET Balance = @newBalance
-                    WHERE Id = @idCard
-                    AND Balance = @currentBalance";
-                cmdUpdate.Parameters.AddWithValue("newBalance", newBalance);
-                cmdUpdate.Parameters.AddWithValue("idCard", idCard);
-                cmdUpdate.Parameters.AddWithValue("currentBalance", currentBalance);
+                    SET Status = 1, Reason = NULL
+                    WHERE Id = @idCard";
+                unlock.Parameters.AddWithValue("idCard", idCard);
 
-                var updateRows = await cmdUpdate.ExecuteNonQueryAsync();
+                var unlockRows = await unlock.ExecuteNonQueryAsync();
 
-                // Если ответ не записался в БД (по какой-то причине)
-                if (updateRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
+                if (unlockRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
+                #endregion
+
+                #region Действие 3: Отправляем уведомление клиенту
+                await using var notifications = connection.CreateCommand();
+
+                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                notifications.Transaction = transaction;
+                notifications.CommandText = @"
+                    INSERT INTO Notifications (ClientId, Title, Message)
+                    VALUES (@clientId, @title, @message)";
+                notifications.Parameters.AddWithValue("clientId", clientId);
+                notifications.Parameters.AddWithValue("title", title);
+                notifications.Parameters.AddWithValue("message", message);
+
+                var addNoti = await notifications.ExecuteNonQueryAsync();
+
+                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
                 #endregion
 
                 // Сохраняем оба действия в БД разом (если все хорошо)
@@ -2900,7 +3372,8 @@ namespace BankApplication
         }
         #endregion
 
-        //-------------------[Уведомление]-------------------//
+
+        #region Уведомление (simple)
         public async static Task AddNotification(int clientId, string title, string message)
         {
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
@@ -2918,49 +3391,8 @@ namespace BankApplication
 
             await notifications.ExecuteNonQueryAsync();
         }
-
         #endregion
 
-
-
-        //--------------------------------------------------//
-
-
-
-
-        public static void ToPayDebt(int id, decimal new_debt) // Погашение задолженности для кредитной карты
-        {
-            using (var connection = new SqliteConnection(connectionString))
-            {
-                connection.Open();
-
-                var command = connection.CreateCommand();
-                command.CommandText = "UPDATE CreditCard SET Debt = @debt WHERE Id = @id";
-                command.Parameters.AddWithValue("@debt", new_debt);
-                command.Parameters.AddWithValue("@id", id);
-
-                command.ExecuteNonQuery();
-            }
-        }
-
-        public static void DeleteClient(int clientid)
-        {
-            using (var connection = new SqliteConnection(connectionString))
-            {
-                connection.Open();
-
-                var command = connection.CreateCommand();
-                command.CommandText = "DELETE FROM Client WHERE Id = @id";
-                command.Parameters.AddWithValue("@id", clientid);
-
-                int count_change = command.ExecuteNonQuery();
-
-                if (count_change > 0)
-                {
-                    Console.WriteLine($"Успешно: Клиент с ID: {clientid} удалён из базы данных!");
-                }
-                else throw new Exception($"Ошибка: Клиент с ID: {clientid} не найден! Повторите попытку.");
-            }
-        }
+        #endregion
     }
 }

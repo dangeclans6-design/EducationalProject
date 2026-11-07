@@ -137,19 +137,19 @@ namespace BankApplication
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("C", "Одобрено"):
-                                ;
+                                await DataBase.C_CloseAccept(idCard, answer, comment, dateAnswer, idRequest, typeCard, cardNumber, clientId, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("C", "Отказано"):
-                                
+                                await DataBase.C_RefusalClose(idRequest, answer, comment, dateAnswer, clientId, title, comment, idCard);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("B", "Одобрено"):
-                                
+                                await DataBase.B_CloseAccept(idCard, answer, comment, dateAnswer, idRequest, typeCard, cardNumber, clientId, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("B", "Отказано"):
-                                
+                                await DataBase.B_RefusalClose(idRequest, answer, comment, dateAnswer, clientId, title, comment, idCard);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                         }

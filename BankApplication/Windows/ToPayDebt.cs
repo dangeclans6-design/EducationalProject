@@ -57,7 +57,7 @@ namespace BankApplication
                 if (result == DialogResult.Yes)
                 {
                     currentCard.ToPayDebt(preview);
-                    DataBase.ToPayDebt(currentCard.Id, currentCard.Debt);
+                    //DataBase.ToPayDebt(currentCard.Id, currentCard.Debt);
 
                     MessageBox.Show($"Вы успешно погасили задолженность на {preview.amount} рублей.\n" +
                                     $"Ваша задолженность: {currentCard.Debt} рублей.");

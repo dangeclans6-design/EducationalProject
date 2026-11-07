@@ -1097,7 +1097,7 @@ namespace BankApplication
                             var CurrentCard = CurrentClient.UsuallyCard[id0];
                             var preview = CurrentCard.PrepareCloseCard("U", Description.Text);
 
-                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на закрытие карты номер: {CurrentCard.CardNumber}?" +
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Закрыть карту номер: {CurrentCard.CardNumber}?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
                                                                   $"Также Вы не сможете пользоваться картой, она будет заморожена.",
                                                                   "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -1115,7 +1115,7 @@ namespace BankApplication
                                                 $"Ожидайте рассмотрения заявки в течение 72 часов.");
 
                                 CurrentCard.Status = 0;
-                                CurrentCard.Reason = $"Заявка на закрытие карты";
+                                CurrentCard.Reason = $"Заявка - Закрыть карту";
                             }
                             else return;
 
@@ -1130,7 +1130,7 @@ namespace BankApplication
                             var CurrentCard = CurrentClient.DebitCard[id0];
                             var preview = CurrentCard.PrepareCloseCard("D", Description.Text);
 
-                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на закрытие карты номер: {CurrentCard.CardNumber}?" +
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Закрыть карту номер: {CurrentCard.CardNumber}?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
                                                                   $"Также Вы не сможете пользоваться картой, она будет заморожена.",
                                                                   "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -1148,7 +1148,7 @@ namespace BankApplication
                                                 $"Ожидайте рассмотрения заявки в течение 72 часов.");
 
                                 CurrentCard.Status = 0;
-                                CurrentCard.Reason = $"Заявка на закрытие карты";
+                                CurrentCard.Reason = $"Заявка - Закрыть карту";
                             }
                             else return;
 
@@ -1163,7 +1163,7 @@ namespace BankApplication
                             var CurrentCard = CurrentClient.CreditCard[id0];
                             var preview = CurrentCard.PrepareCloseCard("C", Description.Text);
 
-                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на закрытие карты номер: {CurrentCard.CardNumber}?" +
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Закрыть карту номер: {CurrentCard.CardNumber}?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
                                                                   $"Также Вы не сможете пользоваться картой, она будет заморожена.",
                                                                   "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -1181,7 +1181,7 @@ namespace BankApplication
                                                 $"Ожидайте рассмотрения заявки в течение 72 часов.");
 
                                 CurrentCard.Status = 0;
-                                CurrentCard.Reason = $"Заявка на закрытие карты";
+                                CurrentCard.Reason = $"Заявка - Закрыть карту";
                             }
                             else return;
 
@@ -1191,6 +1191,32 @@ namespace BankApplication
                     case "B1":
                     case "B2":
                         {
+                            TryReg.TryString1000(Description.Text);
+
+                            var CurrentCard = CurrentClient.BusinessCard[id0];
+                            var preview = CurrentCard.PrepareCloseCard("B", Description.Text);
+
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Закрыть карту номер:: {CurrentCard.CardNumber}? " +
+                                                                  $"Учтите, после подтверждения, отменить заявку будет нельзя!" +
+                                                                  $"Также Вы не сможете пользоваться картой, она будет заморожена.",
+                                                                  "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                Enabled = false;
+                                Cursor = Cursors.WaitCursor;
+
+                                await CurrentCard.RequestCloseCard(preview);
+
+                                Close();
+
+                                MessageBox.Show($"Вы успешно отправили запрос на закрытие карты.\n" +
+                                                $"Ожидайте рассмотрения заявки в течение 72 часов.");
+
+                                CurrentCard.Status = 0;
+                                CurrentCard.Reason = $"Заявка - Закрыть карту";
+                            }
+                            else return;
 
                             break;
                         }
