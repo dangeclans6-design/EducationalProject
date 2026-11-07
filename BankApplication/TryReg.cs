@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Text.RegularExpressions;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace BankApplication
 {
@@ -172,27 +173,27 @@ namespace BankApplication
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("D", "Одобрено"):
-                                
+                                await DataBase.D_AcceptOpenCard(clientId, newCardNumber, answer, comment, dateAnswer, idRequest, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("D", "Отказано"):
-                                
+                                await DataBase.D_RefusalOpenCard(idRequest, answer, comment, dateAnswer, clientId, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("C", "Одобрено"):
-                                
+                                await DataBase.C_AcceptOpenCard(clientId, newCardNumber, answer, comment, dateAnswer, idRequest, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("C", "Отказано"):
-                                
+                                await DataBase.C_RefusalOpenCard(idRequest, answer, comment, dateAnswer, clientId, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("B", "Одобрено"):
-                                
+                                await DataBase.B_AcceptOpenCard(clientId, newCardNumber, answer, comment, dateAnswer, idRequest, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                             case ("B", "Отказано"):
-                                
+                                await DataBase.B_RefusalOpenCard(idRequest, answer, comment, dateAnswer, clientId, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
                                 break;
                         }
@@ -381,7 +382,7 @@ namespace BankApplication
         }
 
         //-------------------------[Генерация уникального номера карты (обычная)]----------------------------//
-        public static string GenerateCardNumber(int clientId, string cardTypePrefix = "4000")
+        public static string GenerateCardNumber(int clientId, string cardTypePrefix)
         {
             // Получаем 10-значный Timestamp (секунды с 1970 года)
             long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -393,6 +394,42 @@ namespace BankApplication
             string cardNumber = $"{cardTypePrefix}{timestamp}{formattedClientId}";
 
             return cardNumber;
+        }
+
+        //--------------------------[Открыть карту (запрос)]------------------------------//
+        public readonly struct OpenCardPreview(int clientId, string typeCard, string message, int countCard)
+        {
+            public readonly int ClientId = clientId;
+            public readonly string TypeCard = typeCard;
+            public readonly string Message = message;
+            public readonly int CountCard = countCard;
+        }
+        public static OpenCardPreview PrepareOpenCard(int clientId, string typeCard, string message, int countCard)
+        {
+            if (countCard == 3) throw new Exception("Максимальное количество открытых карт одного типа - три!");
+
+            return new OpenCardPreview(clientId, typeCard, message, countCard);
+        }
+        public static async Task RequestOpenCard(OpenCardPreview preview)
+        {
+            switch (preview.TypeCard)
+            {
+                case "U":
+                    await DataBase.U_RequestOpenCard(preview.ClientId, preview.TypeCard, preview.Message, preview.CountCard);
+                    break;
+                case "D":
+                    await DataBase.D_RequestOpenCard(preview.ClientId, preview.TypeCard, preview.Message, preview.CountCard);
+                    break;
+                case "C":
+                    await DataBase.C_RequestOpenCard(preview.ClientId, preview.TypeCard, preview.Message, preview.CountCard);
+                    break;
+                case "B":
+                    await DataBase.B_RequestOpenCard(preview.ClientId, preview.TypeCard, preview.Message, preview.CountCard);
+                    break;
+            }            
+
+            var find_request = await DataBase.SearchRequestClient(preview.ClientId);
+            Session.CurrentClient.OpenRequest = find_request.Request;
         }
     }
 }

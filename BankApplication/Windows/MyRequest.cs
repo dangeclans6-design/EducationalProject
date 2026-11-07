@@ -138,7 +138,23 @@ namespace BankApplication
         //--------------------[Кнопка "Номер карты"]---------------------//
         private void NumberCardButton_Click(object sender, EventArgs e)
         {
-            string numberCard = TryReg.GenerateCardNumber(currentMyRequest.ClientId);
+            string numberCard = "";
+
+            switch (currentMyRequest.TypeCard)
+            {
+                case "U":
+                    numberCard = TryReg.GenerateCardNumber(currentMyRequest.ClientId, "4000");
+                    break;
+                case "D":
+                    numberCard = TryReg.GenerateCardNumber(currentMyRequest.ClientId, "5000");
+                    break;
+                case "C":
+                    numberCard = TryReg.GenerateCardNumber(currentMyRequest.ClientId, "6000");
+                    break;
+                case "B":
+                    numberCard = TryReg.GenerateCardNumber(currentMyRequest.ClientId, "7000");
+                    break;
+            }
 
             Text7.Text = numberCard;
 

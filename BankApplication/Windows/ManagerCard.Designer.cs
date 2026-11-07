@@ -49,7 +49,6 @@
             ReplenishDepositSideButton = new ReaLTaiizor.Controls.CyberButton();
             ReplenishBalanceSideButton = new ReaLTaiizor.Controls.CyberButton();
             CloseCardSideButton = new ReaLTaiizor.Controls.CyberButton();
-            OpenCardSideButton = new ReaLTaiizor.Controls.CyberButton();
             TransferMoneySelfSideButton = new ReaLTaiizor.Controls.CyberButton();
             TransferMoneyOtherSideButton = new ReaLTaiizor.Controls.CyberButton();
             PayButton = new ReaLTaiizor.Controls.CyberButton();
@@ -106,7 +105,6 @@
             ChangeLimitDepositButton = new ReaLTaiizor.Controls.CyberButton();
             CloseAndOpenTxt = new ReaLTaiizor.Controls.BigLabel();
             CloseCardButton = new ReaLTaiizor.Controls.CyberButton();
-            OpenCardButton = new ReaLTaiizor.Controls.CyberButton();
             PanelUsuallyCard.SuspendLayout();
             PanelDebitCard.SuspendLayout();
             PanelCreditCard.SuspendLayout();
@@ -295,7 +293,7 @@
             MainMenuButton.Lighting = false;
             MainMenuButton.LinearGradient_Background = false;
             MainMenuButton.LinearGradientPen = false;
-            MainMenuButton.Location = new System.Drawing.Point(46, 27);
+            MainMenuButton.Location = new System.Drawing.Point(46, 50);
             MainMenuButton.Name = "MainMenuButton";
             MainMenuButton.PenWidth = 15;
             MainMenuButton.Rounding = true;
@@ -378,7 +376,7 @@
             PaySideButton.Lighting = false;
             PaySideButton.LinearGradient_Background = false;
             PaySideButton.LinearGradientPen = false;
-            PaySideButton.Location = new System.Drawing.Point(46, 116);
+            PaySideButton.Location = new System.Drawing.Point(46, 148);
             PaySideButton.Name = "PaySideButton";
             PaySideButton.PenWidth = 15;
             PaySideButton.Rounding = true;
@@ -419,7 +417,7 @@
             ChangeLimitDepositSideButton.Lighting = false;
             ChangeLimitDepositSideButton.LinearGradient_Background = false;
             ChangeLimitDepositSideButton.LinearGradientPen = false;
-            ChangeLimitDepositSideButton.Location = new System.Drawing.Point(46, 391);
+            ChangeLimitDepositSideButton.Location = new System.Drawing.Point(46, 444);
             ChangeLimitDepositSideButton.Name = "ChangeLimitDepositSideButton";
             ChangeLimitDepositSideButton.PenWidth = 15;
             ChangeLimitDepositSideButton.Rounding = true;
@@ -460,7 +458,7 @@
             ReplenishDepositSideButton.Lighting = false;
             ReplenishDepositSideButton.LinearGradient_Background = false;
             ReplenishDepositSideButton.LinearGradientPen = false;
-            ReplenishDepositSideButton.Location = new System.Drawing.Point(46, 298);
+            ReplenishDepositSideButton.Location = new System.Drawing.Point(46, 347);
             ReplenishDepositSideButton.Name = "ReplenishDepositSideButton";
             ReplenishDepositSideButton.PenWidth = 15;
             ReplenishDepositSideButton.Rounding = true;
@@ -501,7 +499,7 @@
             ReplenishBalanceSideButton.Lighting = false;
             ReplenishBalanceSideButton.LinearGradient_Background = false;
             ReplenishBalanceSideButton.LinearGradientPen = false;
-            ReplenishBalanceSideButton.Location = new System.Drawing.Point(46, 205);
+            ReplenishBalanceSideButton.Location = new System.Drawing.Point(46, 251);
             ReplenishBalanceSideButton.Name = "ReplenishBalanceSideButton";
             ReplenishBalanceSideButton.PenWidth = 15;
             ReplenishBalanceSideButton.Rounding = true;
@@ -542,7 +540,7 @@
             CloseCardSideButton.Lighting = false;
             CloseCardSideButton.LinearGradient_Background = false;
             CloseCardSideButton.LinearGradientPen = false;
-            CloseCardSideButton.Location = new System.Drawing.Point(46, 482);
+            CloseCardSideButton.Location = new System.Drawing.Point(46, 550);
             CloseCardSideButton.Name = "CloseCardSideButton";
             CloseCardSideButton.PenWidth = 15;
             CloseCardSideButton.Rounding = true;
@@ -556,47 +554,6 @@
             CloseCardSideButton.Timer_Effect_1 = 5;
             CloseCardSideButton.Timer_RGB = 300;
             CloseCardSideButton.Click += CloseCardSideButton_Click;
-            // 
-            // OpenCardSideButton
-            // 
-            OpenCardSideButton.Alpha = 20;
-            OpenCardSideButton.BackColor = System.Drawing.Color.Transparent;
-            OpenCardSideButton.Background = true;
-            OpenCardSideButton.Background_WidthPen = 4F;
-            OpenCardSideButton.BackgroundPen = true;
-            OpenCardSideButton.ColorBackground = System.Drawing.Color.Transparent;
-            OpenCardSideButton.ColorBackground_1 = System.Drawing.Color.White;
-            OpenCardSideButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            OpenCardSideButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            OpenCardSideButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            OpenCardSideButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            OpenCardSideButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            OpenCardSideButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            OpenCardSideButton.Effect_1 = true;
-            OpenCardSideButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            OpenCardSideButton.Effect_1_Transparency = 25;
-            OpenCardSideButton.Effect_2 = true;
-            OpenCardSideButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            OpenCardSideButton.Effect_2_Transparency = 20;
-            OpenCardSideButton.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            OpenCardSideButton.ForeColor = System.Drawing.Color.Tan;
-            OpenCardSideButton.Lighting = false;
-            OpenCardSideButton.LinearGradient_Background = false;
-            OpenCardSideButton.LinearGradientPen = false;
-            OpenCardSideButton.Location = new System.Drawing.Point(46, 576);
-            OpenCardSideButton.Name = "OpenCardSideButton";
-            OpenCardSideButton.PenWidth = 15;
-            OpenCardSideButton.Rounding = true;
-            OpenCardSideButton.RoundingInt = 20;
-            OpenCardSideButton.Size = new System.Drawing.Size(246, 71);
-            OpenCardSideButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            OpenCardSideButton.TabIndex = 48;
-            OpenCardSideButton.Tag = "Cyber";
-            OpenCardSideButton.TextButton = "Открыть карту (запрос)";
-            OpenCardSideButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            OpenCardSideButton.Timer_Effect_1 = 5;
-            OpenCardSideButton.Timer_RGB = 300;
-            OpenCardSideButton.Click += OpenCardSideButton_Click;
             // 
             // TransferMoneySelfSideButton
             // 
@@ -624,7 +581,7 @@
             TransferMoneySelfSideButton.Lighting = false;
             TransferMoneySelfSideButton.LinearGradient_Background = false;
             TransferMoneySelfSideButton.LinearGradientPen = false;
-            TransferMoneySelfSideButton.Location = new System.Drawing.Point(46, 672);
+            TransferMoneySelfSideButton.Location = new System.Drawing.Point(46, 656);
             TransferMoneySelfSideButton.Name = "TransferMoneySelfSideButton";
             TransferMoneySelfSideButton.PenWidth = 15;
             TransferMoneySelfSideButton.Rounding = true;
@@ -664,7 +621,7 @@
             TransferMoneyOtherSideButton.Lighting = false;
             TransferMoneyOtherSideButton.LinearGradient_Background = false;
             TransferMoneyOtherSideButton.LinearGradientPen = false;
-            TransferMoneyOtherSideButton.Location = new System.Drawing.Point(46, 763);
+            TransferMoneyOtherSideButton.Location = new System.Drawing.Point(46, 760);
             TransferMoneyOtherSideButton.Name = "TransferMoneyOtherSideButton";
             TransferMoneyOtherSideButton.PenWidth = 15;
             TransferMoneyOtherSideButton.Rounding = true;
@@ -1535,55 +1492,12 @@
             CloseCardButton.Visible = false;
             CloseCardButton.Click += CloseCardButton_Click;
             // 
-            // OpenCardButton
-            // 
-            OpenCardButton.Alpha = 20;
-            OpenCardButton.BackColor = System.Drawing.Color.Transparent;
-            OpenCardButton.Background = true;
-            OpenCardButton.Background_WidthPen = 4F;
-            OpenCardButton.BackgroundPen = true;
-            OpenCardButton.ColorBackground = System.Drawing.Color.Transparent;
-            OpenCardButton.ColorBackground_1 = System.Drawing.Color.White;
-            OpenCardButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            OpenCardButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            OpenCardButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            OpenCardButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            OpenCardButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            OpenCardButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            OpenCardButton.Effect_1 = true;
-            OpenCardButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            OpenCardButton.Effect_1_Transparency = 25;
-            OpenCardButton.Effect_2 = true;
-            OpenCardButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            OpenCardButton.Effect_2_Transparency = 20;
-            OpenCardButton.Font = new System.Drawing.Font("Segoe UI Semibold", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            OpenCardButton.ForeColor = System.Drawing.Color.Tan;
-            OpenCardButton.Lighting = false;
-            OpenCardButton.LinearGradient_Background = false;
-            OpenCardButton.LinearGradientPen = false;
-            OpenCardButton.Location = new System.Drawing.Point(1159, 877);
-            OpenCardButton.Name = "OpenCardButton";
-            OpenCardButton.PenWidth = 15;
-            OpenCardButton.Rounding = true;
-            OpenCardButton.RoundingInt = 20;
-            OpenCardButton.Size = new System.Drawing.Size(246, 71);
-            OpenCardButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            OpenCardButton.TabIndex = 104;
-            OpenCardButton.Tag = "Cyber";
-            OpenCardButton.TextButton = "Отправить";
-            OpenCardButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            OpenCardButton.Timer_Effect_1 = 5;
-            OpenCardButton.Timer_RGB = 300;
-            OpenCardButton.Visible = false;
-            OpenCardButton.Click += OpenCardButton_Click;
-            // 
             // ManagerCard
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
             ClientSize = new System.Drawing.Size(1420, 1312);
-            Controls.Add(OpenCardButton);
             Controls.Add(CloseCardButton);
             Controls.Add(CloseAndOpenTxt);
             Controls.Add(ChangeLimitDepositButton);
@@ -1605,7 +1519,6 @@
             Controls.Add(TransferMoneyOtherSideButton);
             Controls.Add(TransferMoneySelfSideButton);
             Controls.Add(spaceSeparatorVertical2);
-            Controls.Add(OpenCardSideButton);
             Controls.Add(CloseCardSideButton);
             Controls.Add(ReplenishBalanceSideButton);
             Controls.Add(ReplenishDepositSideButton);
@@ -1645,7 +1558,6 @@
         private ReaLTaiizor.Controls.CyberButton ReplenishDepositSideButton;
         private ReaLTaiizor.Controls.CyberButton ReplenishBalanceSideButton;
         private ReaLTaiizor.Controls.CyberButton CloseCardSideButton;
-        private ReaLTaiizor.Controls.CyberButton OpenCardSideButton;
         private ReaLTaiizor.Controls.CyberButton TransferMoneySelfSideButton;
         private ReaLTaiizor.Controls.CyberButton TransferMoneyOtherSideButton;
         private ReaLTaiizor.Controls.BigLabel U_numberCardTxt;
@@ -1712,6 +1624,5 @@
         private ReaLTaiizor.Controls.CyberButton ChangeLimitDepositButton;
         private ReaLTaiizor.Controls.BigLabel CloseAndOpenTxt;
         private ReaLTaiizor.Controls.CyberButton CloseCardButton;
-        private ReaLTaiizor.Controls.CyberButton OpenCardButton;
     }
 }

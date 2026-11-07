@@ -107,8 +107,9 @@ namespace BankApplication
             {
                 foreach (Control control in MyCardsPanel.Controls)
                 {
-                    if ((string)control.Tag == "Cyber") control.Visible = false;
+                    if ((string)control.Tag == "Cyber" || (string)control.Tag == "OpenCard") control.Visible = false;
                 }
+                CommentText.Visible = false;
 
                 TxtCard.Visible = false;
                 TxtCard1.Visible = false;
@@ -151,6 +152,12 @@ namespace BankApplication
 
                 #region Вкл\Выкл кнопок
 
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "OpenCard") control.Visible = false;
+                }
+                CommentText.Visible = false;
+
                 DebitCard1.Visible = false;
                 DebitCard2.Visible = false;
                 DebitCard3.Visible = false;
@@ -171,9 +178,9 @@ namespace BankApplication
 
                 // Отрисовка кнопок
                 for (int i = 0; i < count_usually; i++)
-                {                    
-                    message = $"Карта #{i + 1}: Номер карты: {CurrentClient.UsuallyCard[0].CardNumber}\n" +
-                              $"Баланс карты: {CurrentClient.UsuallyCard[0].Balance}";
+                {
+                    message = $"Карта #{i + 1}: Номер карты: {CurrentClient.UsuallyCard[i].CardNumber}\n" +
+                              $"Баланс карты: {CurrentClient.UsuallyCard[i].Balance}";
 
                     controlsUsuallyCard[i].TextButton = message;
                     controlsUsuallyCard[i].Visible = true;
@@ -198,6 +205,12 @@ namespace BankApplication
 
                 #region Вкл\Выкл кнопок
 
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "OpenCard") control.Visible = false;
+                }
+                CommentText.Visible = false;
+
                 UsuallyCard1.Visible = false;
                 UsuallyCard2.Visible = false;
                 UsuallyCard3.Visible = false;
@@ -219,8 +232,8 @@ namespace BankApplication
                 // Отрисовка кнопок
                 for (int i = 0; i < count_debit; i++)
                 {
-                    message = $"Карта #{i + 1}: Номер карты: {CurrentClient.DebitCard[0].CardNumber}\n" +
-                              $"Баланс карты: {CurrentClient.DebitCard[0].Balance}";
+                    message = $"Карта #{i + 1}: Номер карты: {CurrentClient.DebitCard[i].CardNumber}\n" +
+                              $"Баланс карты: {CurrentClient.DebitCard[i].Balance}";
 
                     controlsDebitCard[i].TextButton = message;
                     controlsDebitCard[i].Visible = true;
@@ -241,6 +254,12 @@ namespace BankApplication
                 string message = "";
 
                 #region Вкл\Выкл кнопок
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "OpenCard") control.Visible = false;
+                }
+                CommentText.Visible = false;
 
                 UsuallyCard1.Visible = false;
                 UsuallyCard2.Visible = false;
@@ -263,8 +282,8 @@ namespace BankApplication
                 // Отрисовка кнопок
                 for (int i = 0; i < count_credit; i++)
                 {
-                    message = $"Карта #{i + 1}: Номер карты: {CurrentClient.CreditCard[0].CardNumber}\n" +
-                              $"Баланс карты: {CurrentClient.CreditCard[0].Balance}";
+                    message = $"Карта #{i + 1}: Номер карты: {CurrentClient.CreditCard[i].CardNumber}\n" +
+                              $"Баланс карты: {CurrentClient.CreditCard[i].Balance}";
 
                     controlsCreditCard[i].TextButton = message;
                     controlsCreditCard[i].Visible = true;
@@ -285,6 +304,12 @@ namespace BankApplication
                 string message = "";
 
                 #region Вкл\Выкл кнопок
+
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if ((string)control.Tag == "OpenCard") control.Visible = false;
+                }
+                CommentText.Visible = false;
 
                 UsuallyCard1.Visible = false;
                 UsuallyCard2.Visible = false;
@@ -307,8 +332,8 @@ namespace BankApplication
                 // Отрисовка кнопок
                 for (int i = 0; i < count_bussines; i++)
                 {
-                    message = $"Карта #{i + 1}: Номер карты: {CurrentClient.BusinessCard[0].CardNumber}\n" +
-                              $"Баланс карты: {CurrentClient.BusinessCard[0].Balance}";
+                    message = $"Карта #{i + 1}: Номер карты: {CurrentClient.BusinessCard[i].CardNumber}\n" +
+                              $"Баланс карты: {CurrentClient.BusinessCard[i].Balance}";
 
                     controlsBussinesCard[i].TextButton = message;
                     controlsBussinesCard[i].Visible = true;
@@ -318,6 +343,25 @@ namespace BankApplication
             {
                 MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        //---------------------[Кнопка "Открыть карту (запрос)"]-----------------------//
+        private void OpenCardButton_Click(object sender, EventArgs e)
+        {
+            foreach (Control control in MyCardsPanel.Controls)
+            {
+                if ((string)control.Tag == "Cyber") control.Visible = false;
+            }
+
+            foreach (Control control in MyCardsPanel.Controls)
+            {
+                if ((string)control.Tag == "OpenCard") control.Visible = true;
+            }
+            CommentText.Visible = true;
+
+            TxtCard.Text = "Отправить заявку - Открыть карту";
+            TxtCard.Visible = true;
+            TxtCard1.Visible = false;
         }
 
         //---------------------[Кнопка "Обновить страницу"]-----------------------//
@@ -386,7 +430,7 @@ namespace BankApplication
 
                 if (PanelRequest.Visible == true) return;
                 else
-                {                    
+                {
                     #region Вкл\Выкл
 
                     PanelRequest.Controls.Clear();
@@ -395,11 +439,12 @@ namespace BankApplication
 
                     foreach (Control control in MyCardsPanel.Controls)
                     {
-                        if ((string)control.Tag == "Cyber") control.Visible = false;
+                        if ((string)control.Tag == "Cyber" || (string)control.Tag == "OpenCard") control.Visible = false;
                     }
+                    CommentText.Visible = false;
 
                     TxtCard.Visible = false;
-                    TxtCard1.Visible = false;                    
+                    TxtCard1.Visible = false;
 
                     MainMenuPanel.Visible = false;
 
@@ -483,13 +528,14 @@ namespace BankApplication
 
                     foreach (Control control in MyCardsPanel.Controls)
                     {
-                        if ((string)control.Tag == "Cyber") control.Visible = false;
+                        if ((string)control.Tag == "Cyber" || (string)control.Tag == "OpenCard") control.Visible = false;
                     }
+                    CommentText.Visible = false;
 
                     TxtCard.Visible = false;
                     TxtCard1.Visible = false;
 
-                    MainMenuPanel.Visible = false;                    
+                    MainMenuPanel.Visible = false;
 
                     PanelRequest.Visible = false;
 
@@ -544,7 +590,7 @@ namespace BankApplication
             }
         }
 
-        //--------------------[При нажатии на одно из уведомлений]---------------------//
+        #region Нажатие на уведомление
         private void NotificationsList_Click(object sender, EventArgs e)
         {
             // Распознаем, какая именно кнопка вызвала это событие
@@ -560,9 +606,10 @@ namespace BankApplication
 
             notification.ShowDialog();
         }
+        #endregion
 
-        //----------------------------------------------------------------------//
-        //---------------------[Кнопка "Обычная карта 1"]-----------------------//
+
+        #region Кнопка "Обычная карта 1"
         private void UsuallyCard1_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.UsuallyCard[0].Status == 0)
@@ -587,8 +634,9 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //---------------------[Кнопка "Обычная карта 2"]-----------------------//
+        #region Кнопка "Обычная карта 2"
         private void UsuallyCard2_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.UsuallyCard[1].Status == 0)
@@ -613,8 +661,9 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //---------------------[Кнопка "Обычная карта 3"]-----------------------//
+        #region Кнопка "Обычная карта 3"
         private void UsuallyCard3_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.UsuallyCard[2].Status == 0)
@@ -639,9 +688,10 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //----------------------------------------------------------------------//
-        //---------------------[Кнопка "Дебетовая карта 1"]-----------------------//
+
+        #region Кнопка "Дебетовая карта 1"
         private void DebitCard1_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.DebitCard[0].Status == 0)
@@ -666,8 +716,9 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //---------------------[Кнопка "Дебетовая карта 2"]-----------------------//
+        #region Кнопка "Дебетовая карта 2"
         private void DebitCard2_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.DebitCard[1].Status == 0)
@@ -692,8 +743,9 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //---------------------[Кнопка "Дебетовая карта 3"]-----------------------//
+        #region Кнопка "Дебетовая карта 3"
         private void DebitCard3_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.DebitCard[2].Status == 0)
@@ -718,9 +770,10 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //----------------------------------------------------------------------//
-        //---------------------[Кнопка "Кредитная карта 1"]-----------------------//
+
+        #region Кнопка "Кредитная карта 1"
         private void CreditCard1_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.CreditCard[0].Status == 0)
@@ -745,8 +798,9 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //---------------------[Кнопка "Кредитная карта 2"]-----------------------//
+        #region Кнопка "Кредитная карта 2"
         private void CreditCard2_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.CreditCard[1].Status == 0)
@@ -771,8 +825,9 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //---------------------[Кнопка "Кредитная карта 3"]-----------------------//
+        #region Кнопка "Кредитная карта 3"
         private void CreditCard3_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.CreditCard[2].Status == 0)
@@ -797,9 +852,10 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //----------------------------------------------------------------------//
-        //---------------------[Кнопка "Бизнес карта 1"]-----------------------//
+
+        #region Кнопка "Бизнес карта 1"
         private void BussinesCard1_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.BusinessCard[0].Status == 0)
@@ -824,8 +880,9 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //---------------------[Кнопка "Бизнес карта 2"]-----------------------//
+        #region Кнопка "Бизнес карта 2"
         private void BussinesCard2_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.BusinessCard[1].Status == 0)
@@ -850,8 +907,9 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
 
-        //---------------------[Кнопка "Бизнес карта 3"]-----------------------//
+        #region Кнопка "Бизнес карта 3"
         private void BussinesCard3_Click(object sender, EventArgs e)
         {
             if (Session.CurrentClient.BusinessCard[2].Status == 0)
@@ -876,5 +934,135 @@ namespace BankApplication
                 mc.ShowDialog();
             }
         }
+        #endregion
+
+
+        #region Кнопка "Отправить" (запрос - Открыть карту)
+        private async void GoOpenCardButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                bool IsChecked = false;
+
+                // Првоеряем, что выбран тип карты
+                foreach (Control control in MyCardsPanel.Controls)
+                {
+                    if (control is AloneRadioButton radioButton && radioButton.Checked)
+                    {
+                        IsChecked = true;
+                        break;
+                    }
+                }
+
+                if (!IsChecked) throw new Exception("Выберите тип карты!");
+                TryReg.TryString1000(CommentText.Text);
+
+                // Тип - Обычная карта
+                if (UsuallyCheck.Checked)
+                {
+                    int countUsually = CurrentClient.UsuallyCard.Count;
+
+                    var preview = TryReg.PrepareOpenCard(CurrentClient.Id, "U", CommentText.Text, countUsually);
+
+                    DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Открыть карту, тип: Обычная?" +
+                                                          $"Учтите, после подтверждения, отменить заявку будет нельзя!",
+                                                          "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        Enabled = false;
+                        Cursor = Cursors.WaitCursor;
+
+                        await TryReg.RequestOpenCard(preview);
+
+                        MessageBox.Show($"Вы успешно отправили запрос на открытие карты.\n" +
+                                        $"Ожидайте рассмотрения заявки в течение 72 часов.");
+                    }
+                    else return;
+                }
+
+                // Тип - Дебетовая карта
+                else if (DebitCheck.Checked)
+                {
+                    int countDebit = CurrentClient.DebitCard.Count;
+
+                    var preview = TryReg.PrepareOpenCard(CurrentClient.Id, "D", CommentText.Text, countDebit);
+
+                    DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Открыть карту, тип: Дебетовая?" +
+                                                          $"Учтите, после подтверждения, отменить заявку будет нельзя!",
+                                                          "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        Enabled = false;
+                        Cursor = Cursors.WaitCursor;
+
+                        await TryReg.RequestOpenCard(preview);
+
+                        MessageBox.Show($"Вы успешно отправили запрос на открытие карты.\n" +
+                                        $"Ожидайте рассмотрения заявки в течение 72 часов.");
+                    }
+                    else return;
+                }
+
+                // Тип - Кредитная карта
+                else if (CreditCheck.Checked)
+                {
+                    int countCredit = CurrentClient.CreditCard.Count;
+
+                    var preview = TryReg.PrepareOpenCard(CurrentClient.Id, "C", CommentText.Text, countCredit);
+
+                    DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Открыть карту, тип: Кредитная?" +
+                                                          $"Учтите, после подтверждения, отменить заявку будет нельзя!",
+                                                          "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        Enabled = false;
+                        Cursor = Cursors.WaitCursor;
+
+                        await TryReg.RequestOpenCard(preview);
+
+                        MessageBox.Show($"Вы успешно отправили запрос на открытие карты.\n" +
+                                        $"Ожидайте рассмотрения заявки в течение 72 часов.");
+                    }
+                    else return;
+                }
+
+                // Тип - Бизнес карта
+                else if (BussinesCheck.Checked)
+                {
+                    int countBussines = CurrentClient.BusinessCard.Count;
+
+                    var preview = TryReg.PrepareOpenCard(CurrentClient.Id, "B", CommentText.Text, countBussines);
+
+                    DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Открыть карту, тип: Бизнес?" +
+                                                          $"Учтите, после подтверждения, отменить заявку будет нельзя!",
+                                                          "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        Enabled = false;
+                        Cursor = Cursors.WaitCursor;
+
+                        await TryReg.RequestOpenCard(preview);
+
+                        MessageBox.Show($"Вы успешно отправили запрос на открытие карты.\n" +
+                                        $"Ожидайте рассмотрения заявки в течение 72 часов.");
+                    }
+                    else return;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            finally
+            {
+                Enabled = true;
+                Cursor = Cursors.Default;
+            }
+        }
+        #endregion
     }
 }

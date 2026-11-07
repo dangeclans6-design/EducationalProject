@@ -157,9 +157,6 @@ namespace BankApplication
             CloseAndOpenTxt.Location = ChangeLimitDepositTxt2.Location;
             CloseCardButton.Location = ChangeLimitDepositButton.Location;
 
-            // Координаты элементов "Открыть карту (запрос)" относительно панели
-            OpenCardButton.Location = ChangeLimitDepositButton.Location;
-
             #endregion
 
 
@@ -189,8 +186,6 @@ namespace BankApplication
 
                 CloseAndOpenTxt.Visible = false;
                 CloseCardButton.Visible = false;
-
-                OpenCardButton.Visible = false;
 
                 // Отображаем нужные поля
                 PayTxt.Visible = true;
@@ -508,8 +503,6 @@ namespace BankApplication
                 CloseAndOpenTxt.Visible = false;
                 CloseCardButton.Visible = false;
 
-                OpenCardButton.Visible = false;
-
                 // Отображаем нужные поля
                 ReplenishBalanceTxt.Visible = true;
                 Amount.Visible = true;
@@ -696,8 +689,6 @@ namespace BankApplication
 
                 CloseAndOpenTxt.Visible = false;
                 CloseCardButton.Visible = false;
-
-                OpenCardButton.Visible = false;
 
                 // Отображаем нужные поля
                 ReplenishBalanceTxt.Visible = true;
@@ -888,8 +879,6 @@ namespace BankApplication
                 CloseAndOpenTxt.Visible = false;
                 CloseCardButton.Visible = false;
 
-                OpenCardButton.Visible = false;
-
                 // Отображаем нужные поля
                 Amount.Visible = true;
                 ChangeLimitDepositTxt1.Visible = true;
@@ -1068,8 +1057,6 @@ namespace BankApplication
                 ChangeLimitDepositTxt2.Visible = false;
                 ChangeLimitDepositButton.Visible = false;
 
-                OpenCardButton.Visible = false;
-
                 // Отображаем нужные поля
                 Description.Visible = true;
                 CloseAndOpenTxt.Visible = true;
@@ -1236,47 +1223,9 @@ namespace BankApplication
             }
         }
 
-        //-------------------------[Кнопка "Открыть карту (запрос)" (боковое меню)]----------------------------//
-        private async void OpenCardSideButton_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // Скрываем ненужные поля
-                PayTxt.Visible = false;
-                PayButton.Visible = false;
-
-                ReplenishBalanceTxt.Visible = false;
-                ReplenishBalanceButton.Visible = false;
-
-                ReplenishDepositButton.Visible = false;
-
-                Amount.Visible = false;
-                ChangeLimitDepositTxt1.Visible = false;
-                ChangeLimitDepositTxt2.Visible = false;
-                ChangeLimitDepositButton.Visible = false;
-
-                CloseCardButton.Visible = false;
-
-                // Отображаем нужные поля
-                Description.Visible = true;
-                CloseAndOpenTxt.Visible = true;
-                OpenCardButton.Visible = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Отправляем сообщение об ошибке оплате в лог
-                await DataBase.AddLogs(Session.CurrentClient.Id, "ERROR", $"{ex}", $"Окно 'Открыть карту (запрос)'");
-            }
-        }
-
         //-------------------------[Кнопка "Отправить" (открыть карту)]----------------------------//
         private async void OpenCardButton_Click(object sender, EventArgs e)
         {
-            // Для лога (указывает для какого типа карт произошла ошибка)
-            string windowError = "";
-
             try
             {
                 switch (def)
@@ -1285,14 +1234,11 @@ namespace BankApplication
                     case "U1":
                     case "U2":
                         {
-                            windowError = "Обычная карта";
-
                             TryReg.TryString1000(Description.Text);
 
                             int countUsually = CurrentClient.UsuallyCard.Count;
-                            var CurrentCard = CurrentClient.UsuallyCard[id0];
 
-                            var preview = CurrentCard.PrepareOpenCard("U", Description.Text, countUsually);
+                            var preview = TryReg.PrepareOpenCard(CurrentClient.Id, "U", Description.Text, countUsually);
 
                             DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Открыть карту, тип: Обычная?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!",
@@ -1303,18 +1249,40 @@ namespace BankApplication
                                 Enabled = false;
                                 Cursor = Cursors.WaitCursor;
 
-                                await CurrentCard.RequestOpenCard(preview);
+                                await TryReg.RequestOpenCard(preview);
 
                                 MessageBox.Show($"Вы успешно отправили запрос на открытие карты.\n" +
                                                 $"Ожидайте рассмотрения заявки в течение 72 часов.");
                             }
                             else return;
+
                             break;
                         }
                     case "D0":
                     case "D1":
                     case "D2":
                         {
+                            TryReg.TryString1000(Description.Text);
+
+                            int countDebit = CurrentClient.DebitCard.Count;
+
+                            var preview = TryReg.PrepareOpenCard(CurrentClient.Id, "D", Description.Text, countDebit);
+
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Открыть карту, тип: Обычная?" +
+                                                                  $"Учтите, после подтверждения, отменить заявку будет нельзя!",
+                                                                  "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                Enabled = false;
+                                Cursor = Cursors.WaitCursor;
+
+                                await TryReg.RequestOpenCard(preview);
+
+                                MessageBox.Show($"Вы успешно отправили запрос на открытие карты.\n" +
+                                                $"Ожидайте рассмотрения заявки в течение 72 часов.");
+                            }
+                            else return;
 
                             break;
                         }
@@ -1322,6 +1290,27 @@ namespace BankApplication
                     case "C1":
                     case "C2":
                         {
+                            TryReg.TryString1000(Description.Text);
+
+                            int countDebit = CurrentClient.DebitCard.Count;
+
+                            var preview = TryReg.PrepareOpenCard(CurrentClient.Id, "C", Description.Text, countDebit);
+
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Открыть карту, тип: Обычная?" +
+                                                                  $"Учтите, после подтверждения, отменить заявку будет нельзя!",
+                                                                  "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                Enabled = false;
+                                Cursor = Cursors.WaitCursor;
+
+                                await TryReg.RequestOpenCard(preview);
+
+                                MessageBox.Show($"Вы успешно отправили запрос на открытие карты.\n" +
+                                                $"Ожидайте рассмотрения заявки в течение 72 часов.");
+                            }
+                            else return;
 
                             break;
                         }
@@ -1329,6 +1318,27 @@ namespace BankApplication
                     case "B1":
                     case "B2":
                         {
+                            TryReg.TryString1000(Description.Text);
+
+                            int countDebit = CurrentClient.DebitCard.Count;
+
+                            var preview = TryReg.PrepareOpenCard(CurrentClient.Id, "B", Description.Text, countDebit);
+
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Открыть карту, тип: Обычная?" +
+                                                                  $"Учтите, после подтверждения, отменить заявку будет нельзя!",
+                                                                  "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                Enabled = false;
+                                Cursor = Cursors.WaitCursor;
+
+                                await TryReg.RequestOpenCard(preview);
+
+                                MessageBox.Show($"Вы успешно отправили запрос на открытие карты.\n" +
+                                                $"Ожидайте рассмотрения заявки в течение 72 часов.");
+                            }
+                            else return;
 
                             break;
                         }
@@ -1337,9 +1347,6 @@ namespace BankApplication
             catch (Exception ex)
             {
                 MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Отправляем сообщение об ошибке оплате в лог
-                await DataBase.AddLogs(Session.CurrentClient.Id, "ERROR", $"{ex}", $"Окно изменения лимита депозита (запрос) ({windowError})");
             }
             finally
             {

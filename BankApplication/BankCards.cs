@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media.Animation;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace BankApplication
 {
@@ -155,27 +154,6 @@ namespace BankApplication
         public async Task RequestCloseCard(CloseCardPreview preview)
         {
             await DataBase.U_RequestCloseCard(ClientId, CardNumber, preview.TypeCard, Id, preview.Message, Balance, Deposit, LimitDeposit);
-
-            var find_request = await DataBase.SearchRequestClient(ClientId);
-            Session.CurrentClient.OpenRequest = find_request.Request;
-        }
-
-        //--------------------------[Открыть карту (запрос)]------------------------------//
-        public readonly struct OpenCardPreview(string typeCard, string message, int countUsually)
-        {
-            public readonly string TypeCard = typeCard;
-            public readonly string Message = message;
-            public readonly int CountUsually = countUsually;
-        }
-        public OpenCardPreview PrepareOpenCard(string typeCard, string message, int countUsually)
-        {
-            if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
-
-            return new OpenCardPreview(typeCard, message, countUsually);
-        }
-        public async Task RequestOpenCard(OpenCardPreview preview)
-        {
-            await DataBase.U_RequestOpenCard(ClientId, preview.TypeCard, preview.Message, preview.CountUsually);
 
             var find_request = await DataBase.SearchRequestClient(ClientId);
             Session.CurrentClient.OpenRequest = find_request.Request;
@@ -799,6 +777,6 @@ namespace BankApplication
         public string Message { get; } = message;
         public DateTime CreateAt { get; } = creaateat;
     }
-
+    
     #endregion
 }
