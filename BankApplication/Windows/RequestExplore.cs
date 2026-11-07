@@ -26,7 +26,7 @@ namespace BankApplication
 
             if (currentRequest.Type == 1)
             {
-                Text1.Text = $"Изменение депозита";
+                Text1.Text = $"Изменить депозит";
                 Text2.Text = $"{currentRequest.DefCard} (Тип карты: {currentRequest.TypeCard}. ID карты: {currentRequest.IdCard})";
                 Text3.Text = $"{currentRequest.NewDeposit}";
                 Text4.Text = $"{currentRequest.ClientId}";
@@ -36,7 +36,7 @@ namespace BankApplication
             if (currentRequest.Type == 2)
             {
                 Text1.Text = $"Закрыть карту";
-                Text2.Text = $"{currentRequest.DefCard} (Тип карты: {currentRequest.TypeCard}. ID карты: {currentRequest.IdCard}";
+                Text2.Text = $"{currentRequest.DefCard} (Тип карты: {currentRequest.TypeCard}. ID карты: {currentRequest.IdCard})";
                 Text3.Text = $"-";
                 Text4.Text = $"{currentRequest.ClientId}";
                 Text5.Text = $"{currentRequest.Message}";

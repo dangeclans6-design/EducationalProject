@@ -1289,10 +1289,12 @@ namespace BankApplication
 
                             TryReg.TryString1000(Description.Text);
 
+                            int countUsually = CurrentClient.UsuallyCard.Count;
                             var CurrentCard = CurrentClient.UsuallyCard[id0];
-                            var preview = CurrentCard.PrepareOpenCard(CurrentClient.Id, "U", Description.Text);
 
-                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку на открытие 'Обычной' карты?" +
+                            var preview = CurrentCard.PrepareOpenCard("U", Description.Text, countUsually);
+
+                            DialogResult result = MessageBox.Show($"Вы действительно хотите отправить заявку - Открыть карту, тип: Обычная?" +
                                                                   $"Учтите, после подтверждения, отменить заявку будет нельзя!",
                                                                   "Изменение лимита депозита", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 

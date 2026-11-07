@@ -161,23 +161,23 @@ namespace BankApplication
         }
 
         //--------------------------[Открыть карту (запрос)]------------------------------//
-        public readonly struct OpenCardPreview(int clientId, string typeCard, string message)
+        public readonly struct OpenCardPreview(string typeCard, string message, int countUsually)
         {
-            public readonly int ClientId = clientId;
             public readonly string TypeCard = typeCard;
             public readonly string Message = message;
+            public readonly int CountUsually = countUsually;
         }
-        public OpenCardPreview PrepareOpenCard(int clientId, string typeCard, string message)
+        public OpenCardPreview PrepareOpenCard(string typeCard, string message, int countUsually)
         {
             if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
 
-            return new OpenCardPreview(clientId, typeCard, message);
+            return new OpenCardPreview(typeCard, message, countUsually);
         }
         public async Task RequestOpenCard(OpenCardPreview preview)
         {
-            await DataBase.RequestOpenCard(preview.ClientId, preview.TypeCard, preview.Message);
+            await DataBase.U_RequestOpenCard(ClientId, preview.TypeCard, preview.Message, preview.CountUsually);
 
-            var find_request = await DataBase.SearchRequestClient(preview.ClientId);
+            var find_request = await DataBase.SearchRequestClient(ClientId);
             Session.CurrentClient.OpenRequest = find_request.Request;
         }
     }
