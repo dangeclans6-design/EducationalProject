@@ -36,11 +36,9 @@ namespace BankApplication
                         if (count == 0) { count = 1; }
                         else { count++; }
 
-                        // Поиск карт клиента (Запускаем поиск ВСЕХ карт одновременно)
-                        var find_usually_cards = DataBase.CheckUsuallyCardsClient(check.id);
+                        // Поиск карт клиента (Запускаем поиск всех карт одновременно)
                         var find_debit_cards = DataBase.CheckDebitCardsClient(check.id);
                         var find_credit_cards = DataBase.CheckCreditCardsClient(check.id);
-                        var find_business_cards = DataBase.CheckBusinessCardsClient(check.id);
                         var find_request = DataBase.SearchRequestClient(check.id);
 
                         // При авторизации не ищем уведомления (искать будем в самой форме)
@@ -48,9 +46,9 @@ namespace BankApplication
                         var isReadNotifications = new List<Notifications>();
 
                         // Ждем завершения всех запросов за ОДИН раз
-                        await Task.WhenAll(find_usually_cards, find_debit_cards, find_credit_cards, find_business_cards, find_request);
+                        await Task.WhenAll(find_debit_cards, find_credit_cards, find_request);
 
-                        // Создание нового экземпляра класса И Передача данных клиента в экземпляр (с ним и будем работать)
+                        // "Создание" клиента в памяти
                         Client currentClient = new(
                             check.id,
                             check.login,
@@ -61,10 +59,7 @@ namespace BankApplication
                             check.dateBirth,
                             check.numberPhone,
                             check.mail,
-                            (await find_usually_cards).UsuallyCards,
                             (await find_debit_cards).DebitCards,
-                            (await find_credit_cards).CreditCards,
-                            (await find_business_cards).BussinesCards,
                             (await find_request).Request,
                             notifications,
                             isReadNotifications

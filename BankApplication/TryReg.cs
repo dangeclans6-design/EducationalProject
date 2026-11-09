@@ -11,8 +11,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 namespace BankApplication
 {
     public class Client(int id, string login, string password, string name1, string name2, string name3, string dateBirth, string numberPhone, string mail,
-                        List<UsuallyCard> usuallyCard, List<DebitCard> debitCard, List<CreditCard> creditCard,
-                        List<BusinessCard> businessCard, List<Request> openrequest, List<Notifications> notifications, List<Notifications> isReadNotifications)
+                        List<BankCard> cards, List<Request> openrequest, List<Notifications> notifications, List<Notifications> isReadNotifications)
     {
         // АвтоСвойства (Auto-Properties)
         //----------------------[Данные Клиента]------------------------//
@@ -27,10 +26,7 @@ namespace BankApplication
         public string Mail { get; set; } = mail;
 
         //----------------------[Данные карт Клиента]------------------------//
-        public List<UsuallyCard> UsuallyCard { get; set; } = usuallyCard;
-        public List<DebitCard> DebitCard { get; set; } = debitCard;
-        public List<CreditCard> CreditCard { get; set; } = creditCard;
-        public List<BusinessCard> BusinessCard { get; set; } = businessCard;
+        public List<BankCard> Cards { get; set; } = cards;
         public List<Request> OpenRequest { get; set; } = openrequest;
         public List<Notifications> Notifications { get; set; } = notifications;
         public List<Notifications> IsReadNotifications { get; set; } = isReadNotifications;
