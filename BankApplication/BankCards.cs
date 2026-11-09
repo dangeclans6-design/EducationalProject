@@ -5,18 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Media.Animation;
-using static BankApplication.Enum;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace BankApplication
 {
     #region BankCard + Interface
 
     #region Скрытое описание
-    // Интерфейс декларирурет, что свойства должны быть
-    // Абстрактный класс подписывается на интерфейс и реализует эти свойства
-    // (выделяет под них память один раз для всех карт)
+    /*
+    Интерфейс декларирурет, что свойства должны быть. В нем мы объявляем методы (без тела).
+    Абстрактный класс подписывается на интерфейс и реализует эти свойства (выделяет под них память один раз для всех карт)
+    */
     #endregion
     public interface IBankCard
     {
@@ -29,20 +27,23 @@ namespace BankApplication
         public CardStatus Status { get; set; }          // Статус карту (смотреть CardStatus)
         public string Reason { get; set; }              // Причина статуса (если не Active)
 
-
+        PayStruct PreparePay(decimal amount);
+        Task PayCard(PayStruct preview);
     }
 
-    public abstract class BankCard(int id, string cardnumber, decimal balance, decimal deposit, decimal limitdeposit, int clientid, int status, string reason) : IBankCard
+    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, decimal deposit, decimal limitDeposit, int status, string reason) : IBankCard
     {
-        // АвтоСвойства
         public int Id { get; } = id;
         public int ClientId { get; } = clientid;
-        public string CardNumber { get; } = cardnumber;
+        public string CardNumber { get; } = cardNumber;
         public decimal Balance { get; set; } = balance;
         public decimal Deposit { get; set; } = deposit;
-        public decimal LimitDeposit { get; set; } = limitdeposit;
+        public decimal LimitDeposit { get; set; } = limitDeposit;
         public CardStatus Status { get; set; } = (CardStatus)status;
         public string Reason { get; set; } = reason;
+
+        public abstract PayStruct PreparePay(decimal amount);
+        public abstract Task PayCard(PayStruct preview);
     }
 
     #endregion
@@ -50,84 +51,68 @@ namespace BankApplication
 
     #region Debit Card
 
-    public class DebitCard : BankCard
+    public class DebitCard(int id, int clientid, string cardnumber, decimal balance, decimal deposit, decimal limitDeposit, int status, string reason, int isCashbackEnabled, decimal cashback) :
+        BankCard(id, clientid, cardnumber, balance, deposit, limitDeposit, status, reason), IBankCard
     {
-        // Поля
-        readonly decimal limitbalance = 6000000;
-        decimal cashback;
-        readonly decimal limitcashback = 400000;
+        public decimal LimitBalance { get; } = 6000000;
+        public bool IsCashbackEnabled { get; set; } = (isCashbackEnabled == 1);
+        decimal LimitCashback { get; } = 400000;
+        decimal Cashback { get; set; } = cashback;        
 
-        // Свойства
-        public decimal LimitBalance { get { return limitbalance; } }
-        public decimal Cashback { get { return cashback; } set { cashback = value;} }
-        public decimal LimitCashback { get { return limitcashback; } }
 
-        // Констурктор
-        public DebitCard(int id, string cardnumber, decimal balance, decimal deposit, decimal limitdeposit, int clientid, decimal cashback, int status, string reason) : 
-            base(id, cardnumber, balance, deposit, limitdeposit, clientid, status, reason)
-        {
-            Cashback = cashback;
-        }
+        #region Метод оплаты
 
-        // Методы
-        //--------------------------[Оплата]------------------------------//
-        public struct DebitPay(decimal amount, decimal cashback, decimal newCashback, decimal newBalance)
+        public override PayStruct PreparePay(decimal amount)
         {
-            public decimal Amount = amount;
-            public decimal Cashback = cashback;
-            public decimal NewCashback = newCashback;
-            public decimal NewBalance = newBalance;
-        }
-        public DebitPay PreparePay(decimal amount) // amount - сумма оплаты
-        {
-            if (amount <= 0 || amount > 1000000) throw new Exception("Сумма оплаты должна быть положительной и не более 1.000.000 рублей за 1 раз!");
             if (Balance < amount) throw new Exception($"Недостаточно средств!\n" + $"Ваш баланс: {Balance} рублей.");
-
-            decimal cashback, newCashback;
+            if (amount <= 0 || amount > 500000) throw new Exception("Сумма оплаты должна быть положительной и не более 500000 рублей за 1 раз!");            
 
             // Заранее вычисляем новый баланс
             decimal newBalance = Balance - amount;
+            CashBackStatus status;
 
-            if (amount >= 10000)
-            {
-                cashback = amount * 0.01m;
-                newCashback = Cashback + cashback;
-            }
-            else
-            {
-                cashback = 0;
-                newCashback = Cashback;
-            }
+            decimal cashback = 0;
+            decimal newCashback = 0;
 
-            return new DebitPay(amount, cashback, newCashback, newBalance);
+            if (IsCashbackEnabled)
+            {               
+                if (amount >= 10000)
+                {
+                    cashback = amount * 0.01m;
+                    newCashback = Cashback + cashback;
+                }
+                else
+                {
+                    cashback = 0;
+                    newCashback = Cashback;
+                }
+
+                status = newCashback > LimitCashback ? CashBackStatus.LimitExceede : CashBackStatus.NormalCashback;
+            }
+            else status = CashBackStatus.NoCashback;
+
+            return new PayStruct(amount, cashback, newCashback, newBalance, status);
         }
-        public async Task Pay(DebitPay preview, int id, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_cashback)
+
+        public override async Task PayCard(PayStruct preview)
         {
-            if (preview.NewCashback > LimitCashback)
+            decimal newCashback = preview.CashBackStatus switch
             {
-                // Отправляем данные на проверку (сходство). Если все хорошо - данные перезапишутся и вернется true, иначе - ничего не перезапишется и вернется false
-                bool IsDbUpdate = await DataBase.PayDebitCard(preview.NewBalance, LimitCashback, id, current_balance, current_deposit, current_limit, current_cashback);
+                CashBackStatus.LimitExceede => LimitDeposit,
+                CashBackStatus.NormalCashback => preview.NewCashback,
+                _ => Cashback
+            };
 
-                if (IsDbUpdate)
-                {
-                    Cashback = LimitCashback;
-                    Balance = preview.NewBalance;
-                }
-                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
-            }
-            else
+            bool IsDbUpdate = await DataBase.PayDebitCard(preview.NewBalance, newCashback, Id, Balance, Deposit, LimitDeposit, Cashback);
+
+            if (IsDbUpdate)
             {
-                // Отправляем данные на проверку (сходство). Если все хорошо - данные перезапишутся и вернется true, иначе - ничего не перезапишется и вернется false
-                bool IsDbUpdate = await DataBase.PayDebitCard(preview.NewBalance, LimitCashback, id, current_balance, current_deposit, current_limit, current_cashback);
-
-                if (IsDbUpdate)
-                {
-                    Cashback = preview.NewCashback;
-                    Balance = preview.NewBalance;
-                }
-                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+                Cashback = newCashback;
+                Balance = preview.NewBalance;
             }
+            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
+        #endregion
 
         //--------------------------[Пополнение баланса]------------------------------//
         public struct ReplenishBalancePreview(decimal amount, decimal new_balance)
@@ -445,7 +430,7 @@ namespace BankApplication
     #endregion
 
 
-    #region Bussines Card
+    #region Bussines Card (НУЖДАЕТСЯ В РЕФАКТОРИНГЕ)
 
     public class BusinessCard : BankCard
     {
@@ -612,19 +597,19 @@ namespace BankApplication
     #region Request
 
     // Класс для отображения данных запроса Клиента
-    public class Request(int id, TypeRequest type, string cardNumber, string typeCard, DateTime timestamp, decimal newDeposit)
+    public class Request(int id, int type, string cardNumber, int typeCard, DateTime timestamp, decimal newDeposit)
     {
         // АвтоСвойства (Auto-Properties)
         public int Id = id;
-        public TypeRequest Type = type;
+        public TypeRequest Type = (TypeRequest)type;
         public string CardNumber = cardNumber;
-        public string TypeCard = typeCard;
+        public TypeCard TypeCard = (TypeCard)typeCard;
         public DateTime Timestamp  = timestamp;
         public decimal NewDeposit = newDeposit;
     }
 
     // Класс для панели Администратора (запросы, которые необходимо рассмотреть)
-    public class RequestAdmin(int id, TypeRequest type, string cardNumber, string typeCard, DateTime timestamp, decimal newDeposit, int clientId,
+    public class RequestAdmin(int id, int type, string cardNumber, int typeCard, DateTime timestamp, decimal newDeposit, int clientId,
                         string message, int idCard) : Request(id, type, cardNumber, typeCard, timestamp, newDeposit)
     {
         // АвтоСвойства (Auto-Properties)

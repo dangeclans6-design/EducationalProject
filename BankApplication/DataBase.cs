@@ -48,7 +48,44 @@ namespace BankApplication
         readonly static string connectionString = @"Data Source=C:\Users\Gleb24\Desktop\my_database\myDB.db";
         //--------------------------------------------------//
 
-        // Методы
+        #region Refactor +
+
+        #region Оплата + обновление кешбека (D)
+        public async static Task<bool> PayDebitCard(decimal newBalance, decimal newCashback, int id, decimal currentBalance,
+                                                    decimal currentDeposit, decimal currentLimitDeposit, decimal currentCashback)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = @"
+                    UPDATE DebitCard
+                    SET Balance = @newBalance, CashBack = @newCashback
+                    WHERE Id = @id
+                    AND Balance = @currentBalance
+                    AND Deposit = @currentDeposit
+                    AND LimitDeposit = @currentLimitDeposit
+                    AND Status = 1
+                    AND Reason IS NULL
+                    AND IsCashbackEnabled = 1
+                    AND CashBack = @currentCashback";
+            command.Parameters.AddWithValue("newBalance", newBalance);
+            command.Parameters.AddWithValue("newCashback", newCashback);
+            command.Parameters.AddWithValue("id", id);
+            command.Parameters.AddWithValue("currentBalance", currentBalance);
+            command.Parameters.AddWithValue("currentDeposit", currentDeposit);
+            command.Parameters.AddWithValue("currentLimitDeposit", currentLimitDeposit);
+            command.Parameters.AddWithValue("currentCashback", currentCashback);
+
+            int rowsAffected = await command.ExecuteNonQueryAsync();
+
+            return rowsAffected > 0;
+        }
+        #endregion        
+
+        #endregion
 
         #region Аторизация/Регистрация
 
@@ -1117,37 +1154,7 @@ namespace BankApplication
         }
         #endregion
 
-        #region Оплата + обновление кешбека (D)
-        public async static Task<bool> PayDebitCard(decimal new_balance, decimal new_cashback, int id,
-                                              decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_cashback)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    UPDATE DebitCard
-                    SET Balance = @new_balance, CashBack = @new_cashback
-                    WHERE Id = @id
-                    AND Balance = @current_balance
-                    AND Deposit = @current_deposit
-                    AND LimitDeposit = @current_limit
-                    AND CashBack = @current_cashback";
-            command.Parameters.AddWithValue("new_balance", new_balance);
-            command.Parameters.AddWithValue("new_cashback", new_cashback);
-            command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("current_balance", current_balance);
-            command.Parameters.AddWithValue("current_deposit", current_deposit);
-            command.Parameters.AddWithValue("current_limit", current_limit);
-            command.Parameters.AddWithValue("current_cashback", current_cashback);
-
-            int rowsAffected = await command.ExecuteNonQueryAsync();
-
-            return rowsAffected > 0;
-        }
-        #endregion
+        
 
         #region Пополнить депозит (D)
         public async static Task<bool> ReplenishDepositDebitCard(int id, decimal new_deposit, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_cashback) 

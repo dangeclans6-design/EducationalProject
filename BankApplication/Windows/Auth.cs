@@ -36,12 +36,14 @@ namespace BankApplication
                         if (count == 0) { count = 1; }
                         else { count++; }
 
-                        // Поиск карт клиента (Запускаем поиск всех карт одновременно)
+                        // Поиск карт клиента
                         var find_debit_cards = DataBase.CheckDebitCardsClient(check.id);
                         var find_credit_cards = DataBase.CheckCreditCardsClient(check.id);
+
+                        // Запросы
                         var find_request = DataBase.SearchRequestClient(check.id);
 
-                        // При авторизации не ищем уведомления (искать будем в самой форме)
+                        // Уведомления
                         var notifications = new List<Notifications>();
                         var isReadNotifications = new List<Notifications>();
 

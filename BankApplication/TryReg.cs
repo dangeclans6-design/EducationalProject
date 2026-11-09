@@ -10,12 +10,11 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace BankApplication
 {
-    public class Client(int id, string login, string password, string name1, string name2, string name3, string dateBirth, string numberPhone, string mail,
-                        List<BankCard> cards, List<Request> openrequest, List<Notifications> notifications, List<Notifications> isReadNotifications)
+    public class Client(int id, int clientType, string login, string password, string name1, string name2, string name3, string dateBirth, string numberPhone, string mail,
+                        List<BankCard> cards, List<Request> openRequest, List<Notifications> notifications, List<Notifications> isReadNotifications)
     {
-        // АвтоСвойства (Auto-Properties)
-        //----------------------[Данные Клиента]------------------------//
         public int Id { get; set; } = id;
+        public ClientType ClientType { get; set; } = (ClientType)clientType;
         public string Login { get; set; } = login;
         public string Password { get; set; } = password;
         public string Name1 { get; set; } = name1;
@@ -25,9 +24,9 @@ namespace BankApplication
         public string NumberPhone { get; set; } = numberPhone;
         public string Mail { get; set; } = mail;
 
-        //----------------------[Данные карт Клиента]------------------------//
+
         public List<BankCard> Cards { get; set; } = cards;
-        public List<Request> OpenRequest { get; set; } = openrequest;
+        public List<Request> OpenRequest { get; set; } = openRequest;
         public List<Notifications> Notifications { get; set; } = notifications;
         public List<Notifications> IsReadNotifications { get; set; } = isReadNotifications;
     }
