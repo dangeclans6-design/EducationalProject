@@ -58,9 +58,14 @@ namespace BankApplication
 
             await using var connection = new MySqlConnection(builder.ConnectionString);
             await connection.OpenAsync();
+            
+            await using var transaction = await connection.BeginTransactionAsync();     // Открываем транзакцию
 
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
+            try
+            {
+                #region Действие 1: Списываем с source-карты
+                await using var cmdSurce = connection.CreateCommand();
+                cmdSurce.CommandText = @"
                     UPDATE DebitCard
                     SET Balance = @newBalance, CashBack = @newCashback
                     WHERE Id = @id
@@ -71,17 +76,48 @@ namespace BankApplication
                     AND Reason IS NULL
                     AND IsCashbackEnabled = 1
                     AND CashBack = @currentCashback";
-            command.Parameters.AddWithValue("newBalance", newBalance);
-            command.Parameters.AddWithValue("newCashback", newCashback);
-            command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("currentBalance", currentBalance);
-            command.Parameters.AddWithValue("currentDeposit", currentDeposit);
-            command.Parameters.AddWithValue("currentLimitDeposit", currentLimitDeposit);
-            command.Parameters.AddWithValue("currentCashback", currentCashback);
+                cmdSurce.Parameters.AddWithValue("newBalance", newBalance);
+                cmdSurce.Parameters.AddWithValue("newCashback", newCashback);
+                cmdSurce.Parameters.AddWithValue("id", id);
+                cmdSurce.Parameters.AddWithValue("currentBalance", currentBalance);
+                cmdSurce.Parameters.AddWithValue("currentDeposit", currentDeposit);
+                cmdSurce.Parameters.AddWithValue("currentLimitDeposit", currentLimitDeposit);
+                cmdSurce.Parameters.AddWithValue("currentCashback", currentCashback);
 
-            int rowsAffected = await command.ExecuteNonQueryAsync();
+                int sourceRows = await cmdSurce.ExecuteNonQueryAsync();
 
-            return rowsAffected > 0;
+                if (sourceRows == 0) return false;
+
+                #region Действие 2: Зачисляем на target-карту
+                await using var cmdSurce = connection.CreateCommand();
+                cmdSurce.CommandText = @"
+                    UPDATE DebitCard
+                    SET Balance = @newBalance, CashBack = @newCashback
+                    WHERE Id = @id
+                    AND Balance = @currentBalance
+                    AND Deposit = @currentDeposit
+                    AND LimitDeposit = @currentLimitDeposit
+                    AND Status = 1
+                    AND Reason IS NULL
+                    AND IsCashbackEnabled = 1
+                    AND CashBack = @currentCashback";
+                cmdSurce.Parameters.AddWithValue("newBalance", newBalance);
+                cmdSurce.Parameters.AddWithValue("newCashback", newCashback);
+                cmdSurce.Parameters.AddWithValue("id", id);
+                cmdSurce.Parameters.AddWithValue("currentBalance", currentBalance);
+                cmdSurce.Parameters.AddWithValue("currentDeposit", currentDeposit);
+                cmdSurce.Parameters.AddWithValue("currentLimitDeposit", currentLimitDeposit);
+                cmdSurce.Parameters.AddWithValue("currentCashback", currentCashback);
+
+                int sourceRows = await cmdSurce.ExecuteNonQueryAsync();
+
+                if (sourceRows == 0) return false;
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }            
         }
         #endregion        
 

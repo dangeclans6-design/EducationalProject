@@ -110,9 +110,7 @@ namespace BankApplication
             return true;
         }
 
-
         #region Оплата
-
         public override PayStruct PreparePay(decimal amount, ITarget target)
         {            
             bool withdraw = PossibleToWithdraw(amount);
@@ -148,10 +146,9 @@ namespace BankApplication
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
 
-
         public override async Task PayCard(PayStruct preview)
         {
-            if (preview.Target is BankCard targetCard)
+            if (preview.Target is BankCard target)
             {
                 decimal newCashback = preview.CashBackStatus switch
                 {
@@ -481,6 +478,45 @@ namespace BankApplication
     }
 
     #endregion
+
+
+    #region Расчетный счет
+    public class PaymentAccount(int id, int clientId, string bic, string corAccount, decimal balance, Currency currency, decimal frozenBalance, CardStatus status,
+                                DateTime openedAt, DateTime closeAt, string accountNumber) : ITarget, ISource
+    {
+        public int Id { get; } = id;                                                    // Уникальный идентификатор счета в БД
+        public int ClientId { get; } = clientId;                                        // ID владельца счета (физического или юридического лица)
+        public string NameTarget { get; } = $"Расчетный счет #{accountNumber}";         // Имя для target
+        public string NameSource { get; } = $"Расчетный счет #{accountNumber}";         // Имя для source
+        public string AccountNumber { get; } = accountNumber;                           // Номер расчетного счета (20 цифр)
+        public string Bic { get; } = bic;                                               // БИК (Банковский идентификационный код) банка, в котором открыт этот счет (9 цифр)
+        public string CorAccount { get; } = corAccount;                                 // Корреспондентский счет банка (20 цифр)
+        public decimal Balance { get; } = balance;                                      // Текущий доступный остаток реальных денег на счете
+        public Currency Currency { get; } = currency;                                   // Валюта счета
+        public decimal FrozenBalance { get; } = frozenBalance;                          // Заблокированный или «замороженный» баланс
+        public CardStatus Status { get; } = status;                                     // Состояние счета
+        public DateTime OpenedAt { get; } = openedAt;                                   // Дата открытия счета
+        public DateTime ClosedAt { get; } = closeAt;                                    // Дата закрытия счета        
+
+        public bool CanDeposit(decimal amount)              // Возможно ли сюда пополнить баланс (target)
+        {
+            if (amount < 0) return false;
+            if (Status == CardStatus.Closed || Status == CardStatus.Frozen) return false;
+            
+            return true;
+        }
+
+        public bool PossibleToWithdraw(decimal amount)      // Возможно от сюда что-либо оплатить (source)
+        {
+            if (amount < 0) return false;
+            if (Balance < amount) return false;            
+            if (Status == CardStatus.Closed || Status == CardStatus.Frozen) return false;
+
+            return true;
+        }
+    }
+    #endregion
+
 
 
     #region Bussines Card (НУЖДАЕТСЯ В РЕФАКТОРИНГЕ)
