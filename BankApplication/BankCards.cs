@@ -72,7 +72,7 @@ namespace BankApplication
         public abstract PayStruct PreparePay(decimal amount, ITarget target);
         public abstract Task PayCard(PayStruct preview);
         public abstract ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);
-        public abstract Task ReplenishBalance(decimal amount, ISource moneytransfer);
+        public abstract Task ReplenishBalance(ReplenishBalanceStruct preview);
 
         // ISource
         public string NameSource { get; } = $"Карта *{cardNumber}";
@@ -83,12 +83,10 @@ namespace BankApplication
         public abstract bool CanDeposit(decimal amount);
         
     }
-
     #endregion
 
 
     #region Debit Card
-
     public class DebitCard(int id, int clientid, string cardnumber, decimal balance, decimal deposit, decimal limitDeposit, int status, string reason, int isCashbackEnabled, decimal cashback) :
         BankCard(id, clientid, cardnumber, balance, deposit, limitDeposit, status, reason)
     {
@@ -109,9 +107,11 @@ namespace BankApplication
         public override bool CanDeposit(decimal amount)
         {
             if (Status == CardStatus.Frozen || Balance + amount > LimitBalance) return false;
+            if (amount <= 0) return false;
 
             return true;
         }
+
 
         #region Оплата
         public override PayStruct PreparePay(decimal amount, ITarget target)
@@ -176,7 +176,7 @@ namespace BankApplication
         #endregion        
 
         #region Пополннить баланс
-        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source)
+        public override ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source)
         {            
             CanDeposit(amount);                       // Возможно ли цель (target) пополнить
             source.PossibleToWithdraw(amount);        // Возможно ли с источника (source) списать деньги
@@ -185,15 +185,17 @@ namespace BankApplication
 
             return new ReplenishBalanceStruct(amount, newBalance, source);
         }
-        public async Task ReplenishBalance(ReplenishBalanceStruct preview)
+        public async override Task ReplenishBalance(ReplenishBalanceStruct preview)
         {
             // ВОТ ТУТ НАДО ДОПИСАТЬ МЕТОД ПОПОЛНЕНИЯ (ДОБАВИТЬ СНЯТИЕ С SOURCE-КАРТЫ)+
-            await DataBase.ReplenishBalanceDebitCard(id, preview.NewBalance, Balance, Deposit, LimitDeposit, Cashback);
+            await DataBase.ReplenishBalanceDebitCard(Id, preview.NewBalance, Balance, Deposit, LimitDeposit, Cashback);
 
             Balance = preview.NewBalance;
         }
         #endregion
 
+        /*
+        #region ТРЕБУЕТСЯ РЕФАКТОРИНГ
         //--------------------------[Пополнение депозита]------------------------------//
         public readonly struct ReplenishDepositPreview(decimal amount, decimal new_deposit)
         {
@@ -281,11 +283,12 @@ namespace BankApplication
                 Cashback -= amount;
             }
         }
+        #endregion */
     }
-
     #endregion
 
-    
+
+    /*
     #region Credit Card
 
     public class CreditCard : BankCard
@@ -308,7 +311,7 @@ namespace BankApplication
         }
         public decimal LimitDebt { get; } = 3000000;
 
-        // Конструктор
+
         public CreditCard(int id, string cardnumber, decimal balance, decimal deposit, decimal limitdeposit, int clientid, decimal debt, int status, string reason) :
             base(id, cardnumber, balance, deposit, limitdeposit, clientid, status, reason)
         {
@@ -360,6 +363,30 @@ namespace BankApplication
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
 
+        //--------------------------[Пополнение баланса]------------------------------//
+        public struct ReplenishBalancePreview(decimal amount, decimal new_balance)
+        {
+            public decimal Amount = amount;
+            public decimal NewBalance = new_balance;
+        }
+        public ReplenishBalancePreview PrepareReplenishBalance(decimal amount)
+        {
+            if (amount <= 0 || amount > 1000000) throw new Exception("Сумма пополнения баланса должна быть положительной и не более 1.000.000 рублей за 1 раз!");
+            if (Debt > 0) throw new Exception($"Невозможно пополнить баланс, так как у Вас не погашена задолженость! Ваш долг: {Debt} рублей.");
+            if (Balance + amount > LimitBalance) throw new Exception($"Невозможно пополнить баланс, так как Вы превышаете лимит для 'Дебитовой' карты! Ваш лимит: {LimitBalance} рублей.");
+
+            decimal new_balance = Balance + amount;
+
+            return new ReplenishBalancePreview(amount, new_balance);
+        }
+        public async Task ReplenishBalance(ReplenishBalancePreview preview, int id, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_debt)
+        {
+            bool IdDbUpdate = await DataBase.ReplenishBalanceCreditCard(id, preview.NewBalance, current_balance, current_deposit, current_limit, current_debt);
+
+            if (IdDbUpdate) Balance = preview.NewBalance;
+            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+        }
+
         //--------------------------[Пополнение депозита]------------------------------//
         public readonly struct ReplenishDepositPreview(decimal amount, decimal new_deposit)
         {
@@ -382,29 +409,6 @@ namespace BankApplication
             bool IsDbUpdate = await DataBase.ReplenishDepositCreditCard(id, preview.NewDeposit, current_balance, current_deposit, current_limit, current_debt);
 
             if (IsDbUpdate) Deposit = preview.NewDeposit;
-            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
-        }
-        //--------------------------[Пополнение баланса]------------------------------//
-        public struct ReplenishBalancePreview(decimal amount, decimal new_balance)
-        {
-            public decimal Amount = amount;
-            public decimal NewBalance = new_balance;
-        }
-        public ReplenishBalancePreview PrepareReplenishBalance(decimal amount)
-        {
-            if (amount <= 0 || amount > 1000000) throw new Exception("Сумма пополнения баланса должна быть положительной и не более 1.000.000 рублей за 1 раз!");
-            if (Debt > 0) throw new Exception($"Невозможно пополнить баланс, так как у Вас не погашена задолженость! Ваш долг: {Debt} рублей.");
-            if (Balance + amount > LimitBalance) throw new Exception($"Невозможно пополнить баланс, так как Вы превышаете лимит для 'Дебитовой' карты! Ваш лимит: {LimitBalance} рублей.");
-
-            decimal new_balance = Balance + amount;
-
-            return new ReplenishBalancePreview(amount, new_balance);
-        }
-        public async Task ReplenishBalance(ReplenishBalancePreview preview, int id, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_debt)
-        {
-            bool IdDbUpdate = await DataBase.ReplenishBalanceCreditCard(id, preview.NewBalance, current_balance, current_deposit, current_limit, current_debt);
-
-            if (IdDbUpdate) Balance = preview.NewBalance;
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
 
@@ -480,9 +484,7 @@ namespace BankApplication
             Balance -= preview.amount;
             Debt -= preview.amount;
         }
-    }
-
-    #endregion
+    }*/
 
 
     #region Расчетный счет
@@ -496,10 +498,10 @@ namespace BankApplication
         public string AccountNumber { get; } = accountNumber;                           // Номер расчетного счета (20 цифр)
         public string Bic { get; } = bic;                                               // БИК (Банковский идентификационный код) банка, в котором открыт этот счет (9 цифр)
         public string CorAccount { get; } = corAccount;                                 // Корреспондентский счет банка (20 цифр)
-        public decimal Balance { get; set; } = balance;                                      // Текущий доступный остаток реальных денег на счете
-        public Currency Currency { get; set; } = currency;                                   // Валюта счета
-        public decimal FrozenBalance { get; set; } = frozenBalance;                          // Заблокированный или «замороженный» баланс
-        public CardStatus Status { get; set; } = status;                                     // Состояние счета
+        public decimal Balance { get; set; } = balance;                                 // Текущий доступный остаток реальных денег на счете
+        public Currency Currency { get; set; } = currency;                              // Валюта счета
+        public decimal FrozenBalance { get; set; } = frozenBalance;                     // Заблокированный или «замороженный» баланс
+        public CardStatus Status { get; set; } = status;                                // Состояние счета
         public DateTime OpenedAt { get; } = openedAt;                                   // Дата открытия счета
         public DateTime ClosedAt { get; } = closeAt;                                    // Дата закрытия счета        
 
@@ -522,8 +524,7 @@ namespace BankApplication
     }
     #endregion
 
-
-
+    /*
     #region Bussines Card (НУЖДАЕТСЯ В РЕФАКТОРИНГЕ)
 
     public class BusinessCard : BankCard
@@ -685,7 +686,7 @@ namespace BankApplication
         }
     }
 
-    #endregion
+    #endregion */
 
 
     #region Request

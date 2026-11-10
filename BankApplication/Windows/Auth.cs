@@ -41,7 +41,6 @@ namespace BankApplication
 
                             // Поиск карт клиента
                             var find_debit_cards = DataBase.CheckDebitCardsClient(check.Id);
-                            //var find_credit_cards = DataBase.CheckCreditCardsClient(check.id);
 
                             // Запросы
                             var find_request = DataBase.SearchRequestClient(check.id);
