@@ -13,40 +13,49 @@ namespace BankApplication
     #region Скрытое описание
     /*
     Интерфейс декларирурет, что свойства должны быть. В нем мы объявляем методы (без тела).
-    Абстрактный класс подписывается на интерфейс и реализует эти свойства (выделяет под них память один раз для всех карт)
+    Данный интерфейс показывает что может делать каждая карта и какими свойствами она обладает обязательно    
     */
     #endregion
     public interface IBankCard
     {
         public int Id { get; }                          // ID карты в БД
         public int ClientId { get; }                    // ID влдельца (клиента) в БД
-        public string CardNumber { get; }               // Номер карты (20 цифр)
+        public string CardNumber { get; }               // Номер карты (16 цифр)
         public decimal Balance { get; set; }            // Баланс карты
         public decimal Deposit { get; set; }            // Баланс депозита
         public decimal LimitDeposit { get; set; }       // Лимит баланса депозита
         public CardStatus Status { get; set; }          // Статус карту (смотреть CardStatus)
         public string Reason { get; set; }              // Причина статуса (если не Active)
 
-        PayStruct PreparePay(decimal amount, ITransactionParticipant target);
-        Task PayCard(PayStruct preview);
+        PayStruct PreparePay(decimal amount, ITarget target);       // Проверка перед оплатой
+        Task PayCard(PayStruct preview);        // Оплата
     }
 
     #region Скрытое описание
     /*
-    Этот интерфейс (контракт) обязует любой источник проверить, можно ли с него снять деньги, и списать их.
-    NameMoneySource - Название для интерфейса (например, "Карта *4321" или "Bitcoin-кошелек")
-    PossibleToWithdraw - Проверить, хватает ли денег на источнике
+    Эти интерфейсы обязуют любой объект (который его наследует) проверить, можно ли с него снять деньги
+    или проверить можно ли на него зачислить деньги.
+
+    NameMoneySource - Название для интерфейса (например, "Карта *номер*" или "Bitcoin-кошелек")
+    PossibleToWithdraw - Проверить, если объект является источником (source) - можно ли списать деньги
+    CanDeposit - Проверка, если объект является целью (target) - можно ли пополнить деньги
     */
     #endregion
-    public interface ITransactionParticipant
+    public interface ISource
     {
-        string NameMoneySource { get; }
+        string NameSource { get; }
 
-        void PossibleToWithdraw(decimal amount);        // Проверка для source-карты (источника)
-        void CanDeposit(decimal amount);                // Проверка для target-карты (цели-получателя)
+        public bool PossibleToWithdraw(decimal amount);        // Проверка для source-объекта (источника)
     }
 
-    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, decimal deposit, decimal limitDeposit, int status, string reason) : IBankCard, ITransactionParticipant
+    public interface ITarget
+    {
+        string NameTarget { get; }
+
+        public bool CanDeposit(decimal amount);                // Проверка для target-объекта
+    }
+
+    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, decimal deposit, decimal limitDeposit, int status, string reason) : IBankCard, ISource, ITarget
     {
         // IBankCard
         public int Id { get; } = id;
@@ -58,16 +67,18 @@ namespace BankApplication
         public CardStatus Status { get; set; } = (CardStatus)status;
         public string Reason { get; set; } = reason;
 
-        // IMoneySource
-        public string NameMoneySource { get; } = $"Карта *{cardNumber}";
+        public abstract PayStruct PreparePay(decimal amount, ITarget target);
+        public abstract Task PayCard(PayStruct preview);
+        public abstract Task ReplenishBalance(decimal amount, ISource moneytransfer);
 
-        // Методы
-        public abstract PayStruct PreparePay(decimal amount, ITransactionParticipant target);
-        public abstract Task PayCard(PayStruct preview);        
+        // ISource
+        public string NameSource { get; } = $"Карта *{cardNumber}";
+        public abstract bool PossibleToWithdraw(decimal amount);
 
-        public abstract void PossibleToWithdraw(decimal amount);
-        public abstract void CanDeposit(decimal amount);
-        public abstract Task ReplenishBalance(decimal amount, ITransactionParticipant moneytransfer);
+        // ITarget
+        public string NameTarget { get; } = $"Карта *{cardNumber}";
+        public abstract bool CanDeposit(decimal amount);
+        
     }
 
     #endregion
@@ -83,51 +94,60 @@ namespace BankApplication
         decimal LimitCashback { get; } = 400000;
         decimal Cashback { get; set; } = cashback;
 
-        // ВОТ ТУТ ОСТАНОВИЛСЯ
-        public override void PossibleToWithdraw(decimal amount)     // Возможно ли с данной карты списать деньги
+
+        public override bool PossibleToWithdraw(decimal amount)
         {
-            if (Status == CardStatus.Frozen) throw new Exception($"Карта, с которой Вы хотите перевести, заморожена. Повторите попытку позже или обратитесь в поддержку.");
-            if (Balance < amount) throw new Exception($"Недостаточно средств!\n" + $"Ваш баланс: {Balance} рублей.");
-            if (amount <= 0 || amount > 500000) throw new Exception("Сумма оплаты должна быть положительной и не более 500000 рублей за 1 раз!");
+            if (Status == CardStatus.Frozen) return false;
+            if (Balance < amount) return false;
+            if (amount <= 0 || amount > 500000) return false;
+
+            return true;
         }
-        public override void CanDeposit(decimal amount)             // Возможно ли данную карту пополнить
+        public override bool CanDeposit(decimal amount)
         {
-            if (Status == CardStatus.Frozen || Balance + amount > LimitBalance) throw new Exception($"Невозможно произвести оплату по указаным реквизитам. Повторите попытку позже или обратитесь в поддержку.");
+            if (Status == CardStatus.Frozen || Balance + amount > LimitBalance) return false;
+
+            return true;
         }
+
 
         #region Оплата
 
-        public override PayStruct PreparePay(decimal amount, ITransactionParticipant target)
+        public override PayStruct PreparePay(decimal amount, ITarget target)
         {            
-            PossibleToWithdraw(amount);        // Возможно ли с данной карты (донора) списать деньги
-            target.CanDeposit(amount);         // Возможно ли карту-target (цель) пополнить
+            bool withdraw = PossibleToWithdraw(amount);
+            bool canDeposit = target.CanDeposit(amount);
 
-            // Заранее вычисляем новый баланс
-            decimal newBalance = Balance - amount;
-            CashBackStatus status;
+            if (withdraw && canDeposit)
+            {
+                decimal newBalance = Balance - amount;      // Заранее вычисляем новый баланс
+                CashBackStatus status;                      // Объявляем переменную - статус кешбека
 
-            decimal cashback = 0;
-            decimal newCashback = 0;
+                decimal cashback = 0;
+                decimal newCashback = 0;
 
-            if (IsCashbackEnabled)
-            {               
-                if (amount >= 10000)
+                if (IsCashbackEnabled)
                 {
-                    cashback = amount * 0.01m;
-                    newCashback = Cashback + cashback;
-                }
-                else
-                {
-                    cashback = 0;
-                    newCashback = Cashback;
-                }
+                    if (amount >= 10000)
+                    {
+                        cashback = amount * 0.01m;
+                        newCashback = Cashback + cashback;
+                    }
+                    else
+                    {
+                        cashback = 0;
+                        newCashback = Cashback;
+                    }
 
-                status = newCashback > LimitCashback ? CashBackStatus.LimitExceede : CashBackStatus.NormalCashback;
+                    status = newCashback > LimitCashback ? CashBackStatus.LimitExceede : CashBackStatus.NormalCashback;
+                }
+                else status = CashBackStatus.NoCashback;
+
+                return new PayStruct(amount, cashback, newCashback, newBalance, status, target);
             }
-            else status = CashBackStatus.NoCashback;
-
-            return new PayStruct(amount, cashback, newCashback, newBalance, status, target);
+            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
+
 
         public override async Task PayCard(PayStruct preview)
         {
@@ -154,23 +174,21 @@ namespace BankApplication
         #endregion        
 
         #region Пополннить баланс
-        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount)
-        {
-            if (amount <= 0 || amount > 1000000) throw new Exception("Сумма пополнения баланса должна быть положительной и не более 1.000.000 рублей за 1 раз!");
-            if (Balance + amount > LimitBalance) throw new Exception($"Невозможно пополнить баланс, так как Вы превышаете лимит для 'Дебитовой' карты! Ваш лимит: {LimitBalance} рублей.");
+        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ITransactionParticipant source)
+        {            
+            CanDeposit(amount);                       // Возможно ли цель (target) пополнить
+            source.PossibleToWithdraw(amount);        // Возможно ли с источника (source) списать деньги
 
-            decimal new_balance = Balance + amount;
+            decimal newBalance = Balance + amount;
 
-            return new ReplenishBalanceStruct(amount, new_balance);
+            return new ReplenishBalanceStruct(amount, newBalance, source);
         }
         public async Task ReplenishBalance(ReplenishBalanceStruct preview)
         {
-            bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCard(id, preview.NewBalance, current_balance, current_deposit, current_limit, current_cashback);
+            // ВОТ ТУТ НАДО ДОПИСАТЬ МЕТОД ПОПОЛНЕНИЯ (ДОБАВИТЬ СНЯТИЕ С SOURCE-КАРТЫ)+
+            await DataBase.ReplenishBalanceDebitCard(id, preview.NewBalance, Balance, Deposit, LimitDeposit, Cashback);
 
-            if (IsDbUpdate) Balance = preview.NewBalance;
-            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
-
-
+            Balance = preview.NewBalance;
         }
         #endregion
 

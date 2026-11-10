@@ -39,12 +39,12 @@ namespace BankApplication
     }
 
     // Struct-уры
-    public readonly struct PayStruct(decimal amount, decimal cashback, decimal newCashback, decimal newBalance, CashBackStatus cashbackStatus, ITransactionParticipant target)
+    public readonly struct PayStruct(decimal amount, decimal cashback, decimal newCashback, decimal newBalance, CashBackStatus cashbackStatus, ITarget target)
     {
         // Общие
         public decimal Amount { get; } = amount;                            // Сумма оплаты
         public decimal NewBalance { get; } = newBalance;                    // Заранее вычесленный новый баланс
-        public ITransactionParticipant Target { get; } = target;            // Цель (target). Куда "уходят" деньги
+        public ITarget Target { get; } = target;                            // Цель (target). Куда "уходят" деньги
 
         // Для Дебетовой карты
         public decimal Cashback { get; } = cashback;                        // Сумма кешбека
@@ -55,9 +55,10 @@ namespace BankApplication
 
     }
 
-    public struct ReplenishBalanceStruct(decimal amount, decimal new_balance)
+    public struct ReplenishBalanceStruct(decimal amount, decimal newBalance, ITransactionParticipant source)
     {
         public decimal Amount = amount;
-        public decimal NewBalance = new_balance;
+        public decimal NewBalance = newBalance;
+        public ITransactionParticipant Source = source;
     }
 }

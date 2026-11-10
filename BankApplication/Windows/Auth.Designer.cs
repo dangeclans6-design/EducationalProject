@@ -33,10 +33,10 @@
             bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
             back_auth = new ReaLTaiizor.Controls.CyberButton();
             go_auth = new ReaLTaiizor.Controls.CyberButton();
-            panel1 = new System.Windows.Forms.Panel();
             bigLabel3 = new ReaLTaiizor.Controls.BigLabel();
             login_auth = new ReaLTaiizor.Controls.DungeonRichTextBox();
             password_auth = new ReaLTaiizor.Controls.DungeonRichTextBox();
+            panel1 = new System.Windows.Forms.Panel();
             SuspendLayout();
             // 
             // LoginCloseButton
@@ -166,14 +166,6 @@
             go_auth.Timer_RGB = 300;
             go_auth.Click += GoAuthClick;
             // 
-            // panel1
-            // 
-            panel1.BackColor = System.Drawing.Color.Tan;
-            panel1.Location = new System.Drawing.Point(-19, -4);
-            panel1.Name = "panel1";
-            panel1.Size = new System.Drawing.Size(54, 413);
-            panel1.TabIndex = 10;
-            // 
             // bigLabel3
             // 
             bigLabel3.AutoSize = true;
@@ -218,6 +210,14 @@
             password_auth.TextBackColor = System.Drawing.Color.White;
             password_auth.WordWrap = true;
             // 
+            // panel1
+            // 
+            panel1.BackColor = System.Drawing.Color.Tan;
+            panel1.Location = new System.Drawing.Point(-19, -4);
+            panel1.Name = "panel1";
+            panel1.Size = new System.Drawing.Size(54, 413);
+            panel1.TabIndex = 10;
+            // 
             // Auth
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
@@ -252,9 +252,9 @@
         private ReaLTaiizor.Controls.BigLabel bigLabel2;
         private ReaLTaiizor.Controls.CyberButton back_auth;
         private ReaLTaiizor.Controls.CyberButton go_auth;
-        private System.Windows.Forms.Panel panel1;
         private ReaLTaiizor.Controls.BigLabel bigLabel3;
         private ReaLTaiizor.Controls.DungeonRichTextBox login_auth;
         private ReaLTaiizor.Controls.DungeonRichTextBox password_auth;
+        private System.Windows.Forms.Panel panel1;
     }
 }

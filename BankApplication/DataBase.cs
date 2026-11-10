@@ -39,8 +39,8 @@ namespace BankApplication
 
         //---------[Для подключения к БД MySql]--------// 
         readonly static string Server = "192.168.0.161";
-        readonly static string UserID = "bank_user";
-        readonly static string Password = "123456";
+        readonly static string UserID = "BankApplication";
+        readonly static string Password = "I7oYK7t(eVx@k9Hm";
         readonly static string Database = "myDB";
         //--------------------------------------------//
 
@@ -200,52 +200,49 @@ namespace BankApplication
         }
 
         //-------------------[Проверка пароля (Авторизация). Возвращает структуру с данными пользователя]-------------------//
-        public readonly struct StructCheckPassword(int id, string login, string password, string name1, string name2, string name3,
-                                          string dateBirth, string numberPhone, string mail, bool checkStatus)
+        public readonly struct StructCheckPassword(int id, int clientType, string login, string password, string name1, string name2, string name3,
+                                          string dateBirth, string numberPhone, string mail)
         {
-            public readonly int id = id;
-            public readonly string login = login;
-            public readonly string password = password;
-            public readonly string name1 = name1;
-            public readonly string name2 = name2;
-            public readonly string name3 = name3;
-            public readonly string dateBirth = dateBirth;
-            public readonly string numberPhone = numberPhone;
-            public readonly string mail = mail;
-            public readonly bool checkStatus = checkStatus;
+            public readonly int Id = id;
+            public readonly int ClientType = clientType;
+            public readonly string Login = login;
+            public readonly string Password = password;
+            public readonly string Name1 = name1;
+            public readonly string Name2 = name2;
+            public readonly string Name3 = name3;
+            public readonly string DateBirth = dateBirth;
+            public readonly string NumberPhone = numberPhone;
+            public readonly string Mail = mail;
         }
         public async static Task<StructCheckPassword> CheckPasswordAndOutDataClient(string login)
         {
-            // set these values correctly for your database server
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
 
-            // open a connection asynchronously
             await using var connection = new MySqlConnection(builder.ConnectionString);
             await connection.OpenAsync();
 
-            // create a DB command and set the SQL statement with parameters
             await using var command = connection.CreateCommand();
             command.CommandText = @"
-                    SELECT Id, Password, name1, name2, name3, DateBirth, NumberPhone, Mail
+                    SELECT Id, ClientType, Password, Name1, Name2, Name3, DateBirth, NumberPhone, Mail
                     FROM Client
                     WHERE Login = @login";
             command.Parameters.AddWithValue("login", login);
 
-            // execute the command and read the results
             await using var reader = await command.ExecuteReaderAsync();
 
             if (await reader.ReadAsync())
             {
                 int id = reader.GetInt32(0);
-                string password = reader.GetString(1);
-                string name1 = reader.GetString(2);
-                string name2 = reader.GetString(3);
-                string name3 = reader.GetString(4);
-                string datebirth = reader.GetString(5);
-                string numberPhone = reader.GetString(6);
-                string mail = reader.GetString(7);
+                int clientType = reader.GetInt32(1);
+                string password = reader.GetString(2);
+                string name1 = reader.GetString(3);
+                string name2 = reader.GetString(4);
+                string name3 = reader.GetString(5);
+                string datebirth = reader.GetString(6);
+                string numberPhone = reader.GetString(7);
+                string mail = reader.GetString(8);
 
-                return new StructCheckPassword(id, login, password, name1, name2, name3, datebirth, numberPhone, mail, true);
+                return new StructCheckPassword(id, clientType, login, password, name1, name2, name3, datebirth, numberPhone, mail);
             }
             else return new StructCheckPassword();
         }

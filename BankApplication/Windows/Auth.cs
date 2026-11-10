@@ -13,7 +13,7 @@ namespace BankApplication
 {
     public partial class Auth : MetroForm
     {
-        private int count = 0;
+        private int count = 0;      // Количество попыток
         public Auth()
         {
             InitializeComponent();
@@ -21,84 +21,89 @@ namespace BankApplication
         //--------------------[Кнопка "Войти" в меню авторизации]---------------------//
         private async void GoAuthClick(object sender, EventArgs e)
         {
-            string login = login_auth.Text.Trim();
-            string password = password_auth.Text.Trim();
+            string login = login_auth.Text.Trim();              // Введенный пользователем логин
+            string password = password_auth.Text.Trim();        // Введенный пользователем пароль
+
+            bool retry = true;          // Переменная для цикла
 
             try
             {
-                var check = await DataBase.CheckPasswordAndOutDataClient(login);
-
-                if (check.checkStatus) // Если нашел пользователя с Login == login
+                do
                 {
-                    if (check.password == password) // Если пароли совпадают
+                    var check = await DataBase.CheckPasswordAndOutDataClient(login);
+
+                    if (check.Login != null)                // Если нашел пользователя с Login == login
                     {
-                        // Количество попыток
-                        if (count == 0) { count = 1; }
-                        else { count++; }
+                        if (check.Password == password)     // Если пароли совпадают
+                        {                            
+                            if (count == 0) { count = 1; }
+                            else { count++; }
 
-                        // Поиск карт клиента
-                        var find_debit_cards = DataBase.CheckDebitCardsClient(check.id);
-                        var find_credit_cards = DataBase.CheckCreditCardsClient(check.id);
+                            // Поиск карт клиента
+                            var find_debit_cards = DataBase.CheckDebitCardsClient(check.Id);
+                            //var find_credit_cards = DataBase.CheckCreditCardsClient(check.id);
 
-                        // Запросы
-                        var find_request = DataBase.SearchRequestClient(check.id);
+                            // Запросы
+                            var find_request = DataBase.SearchRequestClient(check.id);
 
-                        // Уведомления
-                        var notifications = new List<Notifications>();
-                        var isReadNotifications = new List<Notifications>();
+                            // Уведомления
+                            var notifications = new List<Notifications>();
+                            var isReadNotifications = new List<Notifications>();
 
-                        // Ждем завершения всех запросов за ОДИН раз
-                        await Task.WhenAll(find_debit_cards, find_credit_cards, find_request);
+                            // Ждем завершения всех запросов за ОДИН раз
+                            await Task.WhenAll(find_debit_cards, find_credit_cards, find_request);
 
-                        // "Создание" клиента в памяти
-                        Client currentClient = new(
-                            check.id,
-                            check.login,
-                            check.password,
-                            check.name1,
-                            check.name2,
-                            check.name3,
-                            check.dateBirth,
-                            check.numberPhone,
-                            check.mail,
-                            (await find_debit_cards).DebitCards,
-                            (await find_request).Request,
-                            notifications,
-                            isReadNotifications
-                            );
+                            // "Создание" клиента в памяти
+                            Client currentClient = new(
+                                check.id,
+                                check.login,
+                                check.password,
+                                check.name1,
+                                check.name2,
+                                check.name3,
+                                check.dateBirth,
+                                check.numberPhone,
+                                check.mail,
+                                (await find_debit_cards).DebitCards,
+                                (await find_request).Request,
+                                notifications,
+                                isReadNotifications
+                                );
 
-                        // Передаем в "контейнер" нашего клиента (чтобы в других окнах не перекидывать в конструкторах CurrentClient)
-                        Session.CurrentClient = currentClient;
+                            // Передаем в "контейнер" нашего клиента (чтобы в других окнах не перекидывать в конструкторах CurrentClient)
+                            Session.CurrentClient = currentClient;
 
-                        // Создание окна "Меню Клиента"
-                        ClientMenu clientMenu1 = new();
+                            // Создание окна "Меню Клиента"
+                            ClientMenu clientMenu1 = new();
 
-                        // Скрывает текущее окно
-                        Hide();
+                            // Скрывает текущее окно
+                            Hide();
 
-                        // Выдаем сообщение об успешной авторизации
-                        MessageBox.Show($"Вы успешно авторизировались!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            // Выдаем сообщение об успешной авторизации
+                            MessageBox.Show($"Вы успешно авторизировались!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                        // Открывает меню (окно) клиента
-                        clientMenu1.Show();
+                            // Открывает меню (окно) клиента
+                            clientMenu1.Show();
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Вы ввели неверный пароль!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            count++;
+                            return;
+                        }
                     }
                     else
                     {
-                        MessageBox.Show($"Вы ввели неверный пароль!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show($"Вы ввели неверный логин!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         count++;
                         return;
                     }
-                }
-                else
-                {
-                    MessageBox.Show($"Вы ввели неверный логин!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    count++;
-                    return;
-                }
 
-                // Отправляем сообщение об авторизации в лог
-                string messegeForLog = $"Пользователь с ID: {Session.CurrentClient.Id} авторизировался. Попыток: {count}.";
-                await DataBase.AddLogs(Session.CurrentClient.Id, "INFO", messegeForLog, "Окно авторизации");
+                    // Отправляем сообщение об авторизации в лог
+                    string messegeForLog = $"Пользователь с ID: {Session.CurrentClient.Id} авторизировался. Попыток: {count}.";
+                    await DataBase.AddLogs(Session.CurrentClient.Id, "INFO", messegeForLog, "Окно авторизации");
+                }
+                while (retry);
             }
             catch (Exception ex)
             {
