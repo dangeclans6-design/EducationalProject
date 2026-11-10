@@ -27,8 +27,10 @@ namespace BankApplication
         public CardStatus Status { get; set; }          // Статус карту (смотреть CardStatus)
         public string Reason { get; set; }              // Причина статуса (если не Active)
 
-        PayStruct PreparePay(decimal amount, ITarget target);       // Проверка перед оплатой
-        Task PayCard(PayStruct preview);        // Оплата
+        public PayStruct PreparePay(decimal amount, ITarget target);                                // Проверка перед оплатой
+        public Task PayCard(PayStruct preview);                                                     // Оплата
+        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);      // Проверка паеред пополнением баланса
+        public abstract Task ReplenishBalance(decimal amount, ISource moneytransfer);               // Пополнить баланс карты
     }
 
     #region Скрытое описание
@@ -43,14 +45,14 @@ namespace BankApplication
     #endregion
     public interface ISource
     {
-        string NameSource { get; }
+        string NameSource { get; }                              // Имя source-объекта (источника)
 
         public bool PossibleToWithdraw(decimal amount);        // Проверка для source-объекта (источника)
     }
 
     public interface ITarget
     {
-        string NameTarget { get; }
+        string NameTarget { get; }                              // Имя target-объекта
 
         public bool CanDeposit(decimal amount);                // Проверка для target-объекта
     }
@@ -69,6 +71,7 @@ namespace BankApplication
 
         public abstract PayStruct PreparePay(decimal amount, ITarget target);
         public abstract Task PayCard(PayStruct preview);
+        public abstract ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);
         public abstract Task ReplenishBalance(decimal amount, ISource moneytransfer);
 
         // ISource
@@ -148,22 +151,24 @@ namespace BankApplication
 
         public override async Task PayCard(PayStruct preview)
         {
-            if (preview.Target is BankCard target)
+            if (preview.Target is PaymentAccount target)
             {
                 decimal newCashback = preview.CashBackStatus switch
                 {
-                    CashBackStatus.LimitExceede => LimitDeposit,
+                    CashBackStatus.LimitExceede => LimitCashback,
                     CashBackStatus.NormalCashback => preview.NewCashback,
                     _ => Cashback
                 };
 
-                // ВОТ ТУТ НАДО ДОПИСАТЬ МЕТОД ОПАЛТЫ (ДОБАВИТЬ ЗАЧИСЛЕНИЕ НА TARGET-КАРТУ)
-                bool IsDbUpdate = await DataBase.PayDebitCard(preview.NewBalance, newCashback, Id, Balance, Deposit, LimitDeposit, Cashback);
+                decimal newBalanceTarget = target.Balance + preview.Amount;
+
+                bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(preview.NewBalance, newCashback, Id, Balance, Deposit, LimitDeposit, Cashback, target.Id, newBalanceTarget, target.Balance);
 
                 if (IsDbUpdate)
                 {
                     Cashback = newCashback;
                     Balance = preview.NewBalance;
+                    target.Balance = newBalanceTarget;
                 }
                 else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
             }            
@@ -171,7 +176,7 @@ namespace BankApplication
         #endregion        
 
         #region Пополннить баланс
-        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ITransactionParticipant source)
+        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source)
         {            
             CanDeposit(amount);                       // Возможно ли цель (target) пополнить
             source.PossibleToWithdraw(amount);        // Возможно ли с источника (source) списать деньги
@@ -491,10 +496,10 @@ namespace BankApplication
         public string AccountNumber { get; } = accountNumber;                           // Номер расчетного счета (20 цифр)
         public string Bic { get; } = bic;                                               // БИК (Банковский идентификационный код) банка, в котором открыт этот счет (9 цифр)
         public string CorAccount { get; } = corAccount;                                 // Корреспондентский счет банка (20 цифр)
-        public decimal Balance { get; } = balance;                                      // Текущий доступный остаток реальных денег на счете
-        public Currency Currency { get; } = currency;                                   // Валюта счета
-        public decimal FrozenBalance { get; } = frozenBalance;                          // Заблокированный или «замороженный» баланс
-        public CardStatus Status { get; } = status;                                     // Состояние счета
+        public decimal Balance { get; set; } = balance;                                      // Текущий доступный остаток реальных денег на счете
+        public Currency Currency { get; set; } = currency;                                   // Валюта счета
+        public decimal FrozenBalance { get; set; } = frozenBalance;                          // Заблокированный или «замороженный» баланс
+        public CardStatus Status { get; set; } = status;                                     // Состояние счета
         public DateTime OpenedAt { get; } = openedAt;                                   // Дата открытия счета
         public DateTime ClosedAt { get; } = closeAt;                                    // Дата закрытия счета        
 

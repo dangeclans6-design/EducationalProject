@@ -50,9 +50,9 @@ namespace BankApplication
 
         #region Refactor +
 
-        #region Оплата + обновление кешбека (D)
-        public async static Task<bool> PayDebitCard(decimal newBalance, decimal newCashback, int id, decimal currentBalance,
-                                                    decimal currentDeposit, decimal currentLimitDeposit, decimal currentCashback)
+        #region Оплата на расчетный счет (D)
+        public async static Task<bool> PayDebitCardToPaymentAccount(decimal newBalanceSource, decimal newCashbackSource, int id, decimal currentBalanceSource,
+                                                    decimal currentDepositSource, decimal currentLimitDepositSource, decimal currentCashbackSource, int idPayment, decimal newBalanceTarget, decimal currentBalanceTarget)
         {
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
 
@@ -63,55 +63,53 @@ namespace BankApplication
 
             try
             {
-                #region Действие 1: Списываем с source-карты
-                await using var cmdSurce = connection.CreateCommand();
-                cmdSurce.CommandText = @"
+                #region Действие 1: Списываем с source
+                await using var cmdSource = connection.CreateCommand();
+
+                cmdSource.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdSource.CommandText = @"
                     UPDATE DebitCard
-                    SET Balance = @newBalance, CashBack = @newCashback
+                    SET Balance = @newBalanceSource, CashBack = @newCashbackSource
                     WHERE Id = @id
-                    AND Balance = @currentBalance
-                    AND Deposit = @currentDeposit
-                    AND LimitDeposit = @currentLimitDeposit
+                    AND Balance = @currentBalanceSource
+                    AND Deposit = @currentDepositSource
+                    AND LimitDeposit = @currentLimitDepositSource
                     AND Status = 1
                     AND Reason IS NULL
                     AND IsCashbackEnabled = 1
-                    AND CashBack = @currentCashback";
-                cmdSurce.Parameters.AddWithValue("newBalance", newBalance);
-                cmdSurce.Parameters.AddWithValue("newCashback", newCashback);
-                cmdSurce.Parameters.AddWithValue("id", id);
-                cmdSurce.Parameters.AddWithValue("currentBalance", currentBalance);
-                cmdSurce.Parameters.AddWithValue("currentDeposit", currentDeposit);
-                cmdSurce.Parameters.AddWithValue("currentLimitDeposit", currentLimitDeposit);
-                cmdSurce.Parameters.AddWithValue("currentCashback", currentCashback);
+                    AND CashBack = @currentCashbackSource";
+                cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
+                cmdSource.Parameters.AddWithValue("newCashback", newCashbackSource);
+                cmdSource.Parameters.AddWithValue("id", id);
+                cmdSource.Parameters.AddWithValue("currentBalance", currentBalanceSource);
+                cmdSource.Parameters.AddWithValue("currentDeposit", currentDepositSource);
+                cmdSource.Parameters.AddWithValue("currentLimitDeposit", currentLimitDepositSource);
+                cmdSource.Parameters.AddWithValue("currentCashback", currentCashbackSource);
 
-                int sourceRows = await cmdSurce.ExecuteNonQueryAsync();
-
-                if (sourceRows == 0) return false;
-
-                #region Действие 2: Зачисляем на target-карту
-                await using var cmdSurce = connection.CreateCommand();
-                cmdSurce.CommandText = @"
-                    UPDATE DebitCard
-                    SET Balance = @newBalance, CashBack = @newCashback
-                    WHERE Id = @id
-                    AND Balance = @currentBalance
-                    AND Deposit = @currentDeposit
-                    AND LimitDeposit = @currentLimitDeposit
-                    AND Status = 1
-                    AND Reason IS NULL
-                    AND IsCashbackEnabled = 1
-                    AND CashBack = @currentCashback";
-                cmdSurce.Parameters.AddWithValue("newBalance", newBalance);
-                cmdSurce.Parameters.AddWithValue("newCashback", newCashback);
-                cmdSurce.Parameters.AddWithValue("id", id);
-                cmdSurce.Parameters.AddWithValue("currentBalance", currentBalance);
-                cmdSurce.Parameters.AddWithValue("currentDeposit", currentDeposit);
-                cmdSurce.Parameters.AddWithValue("currentLimitDeposit", currentLimitDeposit);
-                cmdSurce.Parameters.AddWithValue("currentCashback", currentCashback);
-
-                int sourceRows = await cmdSurce.ExecuteNonQueryAsync();
+                int sourceRows = await cmdSource.ExecuteNonQueryAsync();
 
                 if (sourceRows == 0) return false;
+
+                #region Действие 2: Зачисляем на target
+                await using var cmdTarget = connection.CreateCommand();
+
+                cmdTarget.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdTarget.CommandText = @"
+                    UPDATE PaymentAccount
+                    SET Balance = @newBalanceTarget
+                    WHERE Id = @idPayment
+                    AND Balance = @currentBalanceTarget
+                    AND Status = 1";
+                cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("idPayment", idPayment);
+
+                int targetRows = await cmdTarget.ExecuteNonQueryAsync();
+
+                if (targetRows == 0) return false;
+
+                await transaction.CommitAsync();            // Если все хорошо: Сохраняем оба действия в БД разом
+                return true;
             }
             catch
             {
