@@ -150,7 +150,7 @@ namespace BankApplication
             PanelOpenRequest.Visible = false;
             PanelOpenRequest.Controls.Clear();
 
-            RequestExplore request = new(index, currentRequest);
+            RequestExplore request = new();
 
             request.ShowDialog();
         }

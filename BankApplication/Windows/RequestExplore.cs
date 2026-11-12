@@ -12,47 +12,10 @@ namespace BankApplication
 {
     public partial class RequestExplore : MetroForm
     {
-        readonly RequestAdmin currentRequest;
-        readonly int index;
-        public RequestExplore(int index, RequestAdmin currentRequest)
+        public RequestExplore()
         {
             InitializeComponent();
             DoubleBuffered = true;
-
-            this.currentRequest = currentRequest;
-            this.index = index;
-
-            LabelForm.Text = $"Запрос #{currentRequest.Id}";
-
-            if (currentRequest.Type == 1)
-            {
-                Text1.Text = $"Изменить депозит";
-                Text2.Text = $"{currentRequest.DefCard} (Тип карты: {currentRequest.TypeCard}. ID карты: {currentRequest.IdCard})";
-                Text3.Text = $"{currentRequest.NewDeposit}";
-                Text4.Text = $"{currentRequest.ClientId}";
-                Text5.Text = $"{currentRequest.Message}";
-                Text6.Text = $"{currentRequest.Timestamp}";
-            }
-            if (currentRequest.Type == 2)
-            {
-                Text1.Text = $"Закрыть карту";
-                Text2.Text = $"{currentRequest.DefCard} (Тип карты: {currentRequest.TypeCard}. ID карты: {currentRequest.IdCard})";
-                Text3.Text = $"-";
-                Text4.Text = $"{currentRequest.ClientId}";
-                Text5.Text = $"{currentRequest.Message}";
-                Text6.Text = $"{currentRequest.Timestamp}";
-            }
-            if (currentRequest.Type == 3)
-            {
-                Text1.Text = $"Открыть карту";
-                Text2.Text = $"{currentRequest.TypeCard}";
-                Text3.Text = $"-";
-                Text4.Text = $"{currentRequest.ClientId}";
-                Text5.Text = $"{currentRequest.Message}";
-                Text6.Text = $"{currentRequest.Timestamp}";
-            }
-
-
         }
 
         //--------------------[Кнопка "Закрыть"]---------------------//
@@ -66,30 +29,7 @@ namespace BankApplication
         {
             try
             {
-                DialogResult result = MessageBox.Show($"Вы действительно хотите принять запрос #{currentRequest.Id}?" +
-                                                  $"Учтите, что отменить это действие будет невозможно." +
-                                                  $"Если вы захотите отменить это дейстивие, обратитесь к старшему администратору.",
-                                                  "Приянть запрос в обработку", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                var CurrentAdmin = Session.CurrentAdmin;
-
-                if (result == DialogResult.Yes)
-                {
-                    Enabled = false;
-                    Cursor = Cursors.WaitCursor;
-
-                    await CurrentAdmin.ApplyRequest(currentRequest.Id, index);
-
-                    MessageBox.Show($"Вы успешно приняли запрос #{currentRequest.Id}.\n" +
-                                    $"Он появится в меню 'Мои запросы'.");
-
-                    // Отправляем лог
-                    await DataBase.AddLogsAdmin(Session.CurrentAdmin.Id, "INFO", $"Принял запрос #{currentRequest.Id} в обработку.", $"RequestExplore");
-
-                    // Закрываем форму
-                    Close();
-                }
-                else return;
+                
             }
             catch (Exception ex)
             {

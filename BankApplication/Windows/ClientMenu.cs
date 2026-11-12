@@ -17,19 +17,13 @@ namespace BankApplication
 {
     public partial class ClientMenu : MetroForm
     {
-        readonly Client CurrentClient;
+        private readonly Client currentClient;
         public ClientMenu()
         {
             InitializeComponent();
             DoubleBuffered = true;
 
-            CurrentClient = Session.CurrentClient;
-
-            // По умолчанию при открытии нового окна открывается главное меню с данными клиента
-            MainMenuPanel.Visible = true;
-            MyCardsPanel.Visible = false;
-            PanelRequest.Visible = false;
-            PanelNotifications.Visible = false;
+            currentClient = Session.CurrentClient;
         }
 
         //---------------------[Кнопка "Закрыть форму"]-----------------------//
@@ -78,48 +72,16 @@ namespace BankApplication
             }
         }
 
-        //---------------------[Кнопка "Открыть карту (запрос)"]-----------------------//
-        private void OpenCardButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
         //---------------------[Кнопка "Обновить страницу"]-----------------------//
         private async void UpdatePageClientMenu_Click(object sender, EventArgs e)
         {
             try
             {
-                
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"{ex}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        //---------------------[Кнопка "Открытые заявки"]-----------------------//
-        private async void OpenRequestButton_Click(object sender, EventArgs e)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        //---------------------[Кнопка "Уведомления"]-----------------------//
-        private void NotificationsButton_Click(object sender, EventArgs e)
-        {
-            try
-            {
-               
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -147,7 +109,7 @@ namespace BankApplication
         {
             try
             {
-               
+
             }
             catch (Exception ex)
             {
@@ -160,5 +122,13 @@ namespace BankApplication
             }
         }
         #endregion
+
+        //----------------------------[Кнопка "Контроль"]-------------------------------//
+        private void dataClient_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show($"{currentClient.Id}\n{currentClient.ClientType}\n{currentClient.Login}\n{currentClient.Password}\n{currentClient.Name1}\n" +
+                            $"{currentClient.Name2}\n{currentClient.Name3}\n{currentClient.DateBirth}\n{currentClient.NumberPhone}\n" +
+                            $"{currentClient.Mail}\n{currentClient.CreateAt}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 }

@@ -166,7 +166,7 @@ namespace BankApplication
 
                 decimal newBalanceTarget = target.Balance + preview.Amount;
 
-                bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(preview.NewBalance, newCashback, Id, Balance, Deposit, LimitDeposit, Cashback, target.Id, newBalanceTarget, target.Balance);
+                bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(preview.NewBalance, newCashback, Id, Balance, Cashback, target.Id, newBalanceTarget, target.Balance);
 
                 if (IsDbUpdate)
                 {

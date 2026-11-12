@@ -38,7 +38,7 @@ namespace BankApplication
         //--------------------------------------------//
 
         //---------[Для подключения к БД SqlBrowser]--------// 
-        readonly static string connectionString = @"Data Source=C:\Users\Gleb24\Desktop\my_database\myDB.db";
+        //readonly static string connectionString = @"Data Source=C:\Users\Gleb24\Desktop\my_database\myDB.db";
         //--------------------------------------------------//
 
         #region Оплата на расчетный счет (D)
@@ -262,22 +262,23 @@ namespace BankApplication
                     FROM DebitCard WHERE ClientId = @clientId";
                 cmdDebit.Parameters.AddWithValue("clientId", clientId);
 
-                await using var readerDebit = await cmdDebit.ExecuteReaderAsync();
-
-                while (await readerDebit.ReadAsync())
+                await using (var readerDebit = await cmdDebit.ExecuteReaderAsync())
                 {
-                    int idcard = readerDebit.GetInt32(0);
-                    string cardnumber = readerDebit.GetString(1);
-                    decimal balance = readerDebit.GetDecimal(2);
-                    decimal cashback = readerDebit.GetDecimal(3);
-                    int status = readerDebit.GetInt32(4);
-                    string reason = readerDebit.IsDBNull(5) ? "" : readerDebit.GetString(5);
-                    DateTime createAt = readerDebit.GetDateTime(6);
-                    DateTime closeAt = readerDebit.IsDBNull(7) ? default : readerDebit.GetDateTime(7);
-                    int isCashbackEnabled = readerDebit.GetInt32(8);
+                    while (await readerDebit.ReadAsync())
+                    {
+                        int idcard = readerDebit.GetInt32(0);
+                        string cardnumber = readerDebit.GetString(1);
+                        decimal balance = readerDebit.GetDecimal(2);
+                        decimal cashback = readerDebit.GetDecimal(3);
+                        int status = readerDebit.GetInt32(4);
+                        string reason = readerDebit.IsDBNull(5) ? "" : readerDebit.GetString(5);
+                        DateTime createAt = readerDebit.GetDateTime(6);
+                        DateTime closeAt = readerDebit.IsDBNull(7) ? default : readerDebit.GetDateTime(7);
+                        int isCashbackEnabled = readerDebit.GetInt32(8);
 
-                    cards.Add(new DebitCard(idcard, clientId, cardnumber, balance, cashback, status, reason, createAt, closeAt, isCashbackEnabled));
-                }
+                        cards.Add(new DebitCard(idcard, clientId, cardnumber, balance, cashback, status, reason, createAt, closeAt, isCashbackEnabled));
+                    }
+                }     
                 #endregion
 
                 #region Действие 2: Поиск кредитных карт клиента (ПОКА ЧТО ПУСТО)
@@ -293,23 +294,24 @@ namespace BankApplication
                     FROM PaymentAccount WHERE ClientId = @clientId";
                 cmdPaymentAccount.Parameters.AddWithValue("clientId", clientId);
 
-                await using var readerPayment = await cmdPaymentAccount.ExecuteReaderAsync();
-
-                while (await readerPayment.ReadAsync())
+                await using (var readerPayment = await cmdPaymentAccount.ExecuteReaderAsync())
                 {
-                    int idPayment = readerPayment.GetInt32(0);
-                    string accountNumber = readerPayment.GetString(1);
-                    string bic = readerPayment.GetString(2);
-                    string corAccount = readerPayment.GetString(3);
-                    decimal balance = readerPayment.GetDecimal(4);
-                    int currency = readerPayment.GetInt32(5);
-                    decimal frozenBalance = readerPayment.GetDecimal(6);
-                    int status = readerPayment.GetInt32(7);
-                    DateTime openedAt = readerPayment.GetDateTime(8);
-                    DateTime closedAt = readerPayment.IsDBNull(8) ? default : readerPayment.GetDateTime(8);
+                    while (await readerPayment.ReadAsync())
+                    {
+                        int idPayment = readerPayment.GetInt32(0);
+                        string accountNumber = readerPayment.GetString(1);
+                        string bic = readerPayment.GetString(2);
+                        string corAccount = readerPayment.GetString(3);
+                        decimal balance = readerPayment.GetDecimal(4);
+                        int currency = readerPayment.GetInt32(5);
+                        decimal frozenBalance = readerPayment.GetDecimal(6);
+                        int status = readerPayment.GetInt32(7);
+                        DateTime openedAt = readerPayment.GetDateTime(8);
+                        DateTime closedAt = readerPayment.IsDBNull(8) ? default : readerPayment.GetDateTime(8);
 
-                    paymentAccounts.Add(new PaymentAccount(idPayment, clientId, bic, corAccount, balance, currency, frozenBalance, status, openedAt, closedAt, accountNumber));
-                }
+                        paymentAccounts.Add(new PaymentAccount(idPayment, clientId, bic, corAccount, balance, currency, frozenBalance, status, openedAt, closedAt, accountNumber));
+                    }
+                }                    
                 #endregion
 
                 await transaction.CommitAsync();                                           // Если все хорошо: Сохраняем все действия в БД разом
@@ -325,7 +327,7 @@ namespace BankApplication
         #endregion
 
         #region Проверка пароля (Авторизация)
-        public readonly struct StructCheckPassword(int id, int clientType, string login, string password, string name1, string name2, string name3, string dateBirth, string numberPhone, string mail)
+        public readonly struct StructCheckPassword(int id, int clientType, string login, string password, string name1, string name2, string name3, string dateBirth, string numberPhone, string mail, DateTime createAt)
         {
             public readonly int Id = id;
             public readonly int ClientType = clientType;
@@ -337,6 +339,7 @@ namespace BankApplication
             public readonly string DateBirth = dateBirth;
             public readonly string NumberPhone = numberPhone;
             public readonly string Mail = mail;
+            public readonly DateTime CreateAt = createAt;
         }
         public async static Task<StructCheckPassword> CheckPasswordAndOutDataClient(string login)
         {
@@ -347,7 +350,7 @@ namespace BankApplication
 
             await using var command = connection.CreateCommand();
             command.CommandText = @"
-                    SELECT Id, ClientType, Password, Name1, Name2, Name3, DateBirth, NumberPhone, Mail
+                    SELECT Id, ClientType, Password, Name1, Name2, Name3, DateBirth, NumberPhone, Mail, CreateAt
                     FROM Client
                     WHERE Login = @login";
             command.Parameters.AddWithValue("login", login);
@@ -361,12 +364,13 @@ namespace BankApplication
                 string password = reader.GetString(2);
                 string name1 = reader.GetString(3);
                 string name2 = reader.GetString(4);
-                string name3 = reader.GetString(5);
+                string name3 = reader.IsDBNull(5) ? "" : reader.GetString(5);
                 string datebirth = reader.GetString(6);
                 string numberPhone = reader.GetString(7);
                 string mail = reader.GetString(8);
+                DateTime createAt = reader.GetDateTime(9);
 
-                return new StructCheckPassword(id, clientType, login, password, name1, name2, name3, datebirth, numberPhone, mail);
+                return new StructCheckPassword(id, clientType, login, password, name1, name2, name3, datebirth, numberPhone, mail, createAt);
             }
             else return new StructCheckPassword();
         }

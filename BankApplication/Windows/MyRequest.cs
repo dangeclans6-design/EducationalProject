@@ -13,55 +13,11 @@ namespace BankApplication
 {
     public partial class MyRequest : MetroForm
     {
-        readonly RequestAdmin currentMyRequest;
-        readonly int index;
 
         public MyRequest(int index, RequestAdmin currentMyRequest)
         {
             InitializeComponent();
             DoubleBuffered = true;
-
-            this.currentMyRequest = currentMyRequest;
-            this.index = index;
-
-            LabelForm.Text = $"Запрос #{currentMyRequest.Id}";
-
-            if (currentMyRequest.Type == 1)
-            {
-                Text1.Text = $"Изменение депозита (Тип: {currentMyRequest.TypeCard})";
-                Text2.Text = $"{currentMyRequest.DefCard} (ID карты: {currentMyRequest.IdCard})";
-                Text3.Text = $"{currentMyRequest.NewDeposit}";
-                Text4.Text = $"{currentMyRequest.ClientId}";
-                Text5.Text = $"{currentMyRequest.Message}";
-                Text6.Text = $"{currentMyRequest.Timestamp}";
-
-                GoRequestButton.Visible = true;
-                NumberCardButton.Visible = false;
-            }
-            if (currentMyRequest.Type == 2)
-            {
-                Text1.Text = $"Закрыть карту (Тип: {currentMyRequest.TypeCard})";
-                Text2.Text = $"{currentMyRequest.DefCard} (ID карты: {currentMyRequest.IdCard})";
-                Text3.Text = $"-";
-                Text4.Text = $"{currentMyRequest.ClientId}";
-                Text5.Text = $"{currentMyRequest.Message}";
-                Text6.Text = $"{currentMyRequest.Timestamp}";
-
-                GoRequestButton.Visible = true;
-                NumberCardButton.Visible = false;
-            }
-            if (currentMyRequest.Type == 3)
-            {
-                Text1.Text = $"Открыть карту (Тип: {currentMyRequest.TypeCard})";
-                Text2.Text = $"-";
-                Text3.Text = $"-";
-                Text4.Text = $"{currentMyRequest.ClientId}";
-                Text5.Text = $"{currentMyRequest.Message}";
-                Text6.Text = $"{currentMyRequest.Timestamp}";
-
-                GoRequestButton.Visible = false;
-                NumberCardButton.Visible = true;
-            }
         }
 
         //--------------------[Кнопка "Закрыть"]---------------------//
@@ -75,44 +31,11 @@ namespace BankApplication
         {
             try
             {
-                string comment = CommentText.Text.Trim();
-                var CurrentAdmin = Session.CurrentAdmin;
-                string answer = "";
-
-                if (FalseCheck.Checked || TrueCheck.Checked)
-                {
-                    if (TrueCheck.Checked) answer = "Одобрено";
-                    else answer = "Отказано";
-
-                    TryReg.TryString300(comment);
-
-                    DialogResult result = MessageBox.Show($"Вы действительно готовы дать окончательный ответ клиенту?" +
-                                                          $"Учтите, после подтверждения, отменить это действие нельзя." +
-                                                          $"Клиент получит уведомление и, в случае несогласия, подать жалобу на Вас.",
-                                                          "Отправить ответ на запрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                    if (result == DialogResult.Yes)
-                    {
-                        Enabled = false;
-                        Cursor = Cursors.WaitCursor;
-
-                        await CurrentAdmin.AnswerRequest(currentMyRequest.ClientId, currentMyRequest.Id, answer, comment, index,
-                            currentMyRequest.Type, currentMyRequest.NewDeposit, currentMyRequest.IdCard, currentMyRequest.TypeCard, Text7.Text, currentMyRequest.DefCard);
-
-                        Close();
-                        MessageBox.Show($"Вы успешно отправили ответ клиенту", "Ответ на запрос клиента", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        // Отправляем лог
-                        await DataBase.AddLogsAdmin(CurrentAdmin.Id, "INFO", $"Дал ответ на запрос #{currentMyRequest.Id}.", $"MyRequest");
-                    }
-                    else return;
-                }
-                else return;
+                
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await DataBase.AddLogsAdmin(Session.CurrentAdmin.Id, "INFO", $"{ex}", $"AuthAdmin");
             }
             finally
             {
@@ -138,27 +61,7 @@ namespace BankApplication
         //--------------------[Кнопка "Номер карты"]---------------------//
         private void NumberCardButton_Click(object sender, EventArgs e)
         {
-            string numberCard = "";
-
-            switch (currentMyRequest.TypeCard)
-            {
-                case "U":
-                    numberCard = TryReg.GenerateCardNumber(currentMyRequest.ClientId, "4000");
-                    break;
-                case "D":
-                    numberCard = TryReg.GenerateCardNumber(currentMyRequest.ClientId, "5000");
-                    break;
-                case "C":
-                    numberCard = TryReg.GenerateCardNumber(currentMyRequest.ClientId, "6000");
-                    break;
-                case "B":
-                    numberCard = TryReg.GenerateCardNumber(currentMyRequest.ClientId, "7000");
-                    break;
-            }
-
-            Text7.Text = numberCard;
-
-            GoRequestButton.Visible = true;
+            
         }
     }
 }

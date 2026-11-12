@@ -46,9 +46,10 @@ namespace BankApplication
                             clientData.DateBirth,
                             clientData.NumberPhone,
                             clientData.Mail,
+                            clientData.CreateAt,
                             findCardsClient.cards,
                             findCardsClient.paymentAccounts
-                            );                                          // Создание клиента в памяти
+                            );
 
                         Session.CurrentClient = currentClient;
 
@@ -75,7 +76,7 @@ namespace BankApplication
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message}", "Ошибка авторизации", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"{ex}", "Ошибка авторизации", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 count++;
             }
         }

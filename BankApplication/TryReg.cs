@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace BankApplication
 {
-    public class Client(int id, int clientType, string login, string password, string name1, string name2, string name3, string dateBirth, string numberPhone, string mail,
+    public class Client(int id, int clientType, string login, string password, string name1, string name2, string name3, string dateBirth, string numberPhone, string mail, DateTime createAt,
                         List<BankCard> cards, List<PaymentAccount> paymentAccount)
     {
         public int Id { get; set; } = id;
@@ -22,6 +22,7 @@ namespace BankApplication
         public string DateBirth { get; set; } = dateBirth;
         public string NumberPhone { get; set; } = numberPhone;
         public string Mail { get; set; } = mail;
+        public DateTime CreateAt { get; } = createAt;
 
         public List<BankCard> Cards { get; set; } = cards;
         public List<PaymentAccount> PaymentAccounts { get; set; } = paymentAccount;

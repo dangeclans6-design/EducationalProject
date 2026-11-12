@@ -128,7 +128,7 @@ namespace BankApplication
                 await TryReg.TryMailReg(mail);                              // Проверка почты
                 TryReg.TryDateBirthReg(year_str, mounth_str, day_str);      // Проверка даты рождения
                 
-                if (name3_reg.Enabled)              // Проверяем есть ли отчество
+                if (name3_switch.Switched)              // Проверяем отчество
                 {                    
                     TryReg.TryNameReg(name3);
 
@@ -167,13 +167,10 @@ namespace BankApplication
         {
             try
             {
-                // При выходе из списка запоминает выбранный год
                 year_str = BoxYear.SelectedItem.ToString();
 
-                // Включает выбор месяца только после того как выбрали год
                 BoxMounth.Enabled = !string.IsNullOrWhiteSpace(year_str);
 
-                // Если год переизбрали, лучше временно сбросить и заблокировать дни
                 BoxDay.Enabled = false;
                 BoxDay.DataSource = null;
             }
@@ -187,15 +184,15 @@ namespace BankApplication
         {
             try
             {
-                mounth_str = BoxMounth.SelectedItem.ToString();                     // При выходе из списка запоминает выбранное число
-                BoxDay.Enabled = !string.IsNullOrWhiteSpace(mounth_str);            // Включает выбор дня только после того как выбрали месяц
+                mounth_str = BoxMounth.SelectedItem.ToString();
+                BoxDay.Enabled = !string.IsNullOrWhiteSpace(mounth_str);
 
                 //--------------------[Выбор дня]---------------------//
                 int year = int.Parse(year_str);
                 
-                bool isLeapYear = (year % 4 == 0);              // Проверяем високосный ли год (True/False)
+                bool isLeapYear = (year % 4 == 0);
 
-                BoxDay.DataSource = mounth_str switch           // Настраиваем дни в зависимости от месяца
+                BoxDay.DataSource = mounth_str switch
                 {
                     "Февраль" => isLeapYear ? feb_day_vis : feb_day_nevis,
                     "Апрель" or "Июнь" or "Сентябрь" or "Ноябрь" => day30,
@@ -211,7 +208,7 @@ namespace BankApplication
         //--------------------[Выбор дня]---------------------//
         private void BoxDay_SelectedIndexChanged(object sender, EventArgs e)
         {
-            day_str = BoxDay.SelectedItem.ToString();           // При выходе из списка запоминает выбранное число
+            day_str = BoxDay.SelectedItem.ToString();
         }
 
         //--------------------[Переключатель Отчества]---------------------//

@@ -16,7 +16,7 @@ namespace BankApplication
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Auth()); // StartWindow // ClientMenu // AdminPanel // AuthAdmin // MyRequest // Auth
+            Application.Run(new StartWindow()); // StartWindow // ClientMenu // AdminPanel // AuthAdmin // MyRequest // Auth
         }
     }
 }

@@ -48,6 +48,7 @@
             PanelRequest = new ReaLTaiizor.Controls.Panel();
             PanelNotifications = new ReaLTaiizor.Controls.Panel();
             cyberButton2 = new ReaLTaiizor.Controls.CyberButton();
+            dataClient = new ReaLTaiizor.Controls.CyberButton();
             MyCardsPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -639,12 +640,55 @@
             cyberButton2.Timer_Effect_1 = 5;
             cyberButton2.Timer_RGB = 300;
             // 
+            // dataClient
+            // 
+            dataClient.Alpha = 20;
+            dataClient.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
+            dataClient.BackColor = System.Drawing.Color.Transparent;
+            dataClient.Background = true;
+            dataClient.Background_WidthPen = 4F;
+            dataClient.BackgroundPen = true;
+            dataClient.ColorBackground = System.Drawing.Color.Transparent;
+            dataClient.ColorBackground_1 = System.Drawing.Color.White;
+            dataClient.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            dataClient.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
+            dataClient.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
+            dataClient.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
+            dataClient.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            dataClient.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
+            dataClient.Effect_1 = true;
+            dataClient.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
+            dataClient.Effect_1_Transparency = 25;
+            dataClient.Effect_2 = true;
+            dataClient.Effect_2_ColorBackground = System.Drawing.Color.White;
+            dataClient.Effect_2_Transparency = 20;
+            dataClient.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            dataClient.ForeColor = System.Drawing.Color.Linen;
+            dataClient.Lighting = false;
+            dataClient.LinearGradient_Background = false;
+            dataClient.LinearGradientPen = false;
+            dataClient.Location = new System.Drawing.Point(1067, 10);
+            dataClient.Name = "dataClient";
+            dataClient.PenWidth = 15;
+            dataClient.Rounding = true;
+            dataClient.RoundingInt = 20;
+            dataClient.Size = new System.Drawing.Size(152, 54);
+            dataClient.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            dataClient.TabIndex = 42;
+            dataClient.Tag = "Cyber1";
+            dataClient.TextButton = "Контроль";
+            dataClient.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            dataClient.Timer_Effect_1 = 5;
+            dataClient.Timer_RGB = 300;
+            dataClient.Click += dataClient_Click;
+            // 
             // ClientMenu
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
             ClientSize = new System.Drawing.Size(1416, 741);
+            Controls.Add(dataClient);
             Controls.Add(cyberButton2);
             Controls.Add(MyCardsPanel);
             Controls.Add(PanelNotifications);
@@ -693,5 +737,6 @@
         private ReaLTaiizor.Controls.Panel PanelRequest;
         private ReaLTaiizor.Controls.Panel PanelNotifications;
         private ReaLTaiizor.Controls.CyberButton cyberButton2;
+        private ReaLTaiizor.Controls.CyberButton dataClient;
     }
 }
