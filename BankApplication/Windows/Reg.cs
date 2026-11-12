@@ -48,9 +48,9 @@ namespace BankApplication
         readonly List<int> feb_day_nevis = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]; // Февраль невисокосный
 
         //----------------------[Переменные дяля хранения года, месяца и дня рождения]-----------------------//
-        string year_str; // Переменная для запоминания выбранного года рождения
-        string mounth_str; // Переменная для запоминания выбранного месяца рождения
-        string day_str; // Переменная для запоминания выбранного дня рождения
+        string year_str;            // Переменная для выбранного года рождения
+        string mounth_str;          // Переменная для выбранного месяца рождения
+        string day_str;             // Переменная для выбранного дня рождения
         //-----------------------------------------------------------------//   
 
         // Конструктор
@@ -61,7 +61,6 @@ namespace BankApplication
             BoxMounth.Enabled = false;
             BoxDay.Enabled = false;
 
-            //
             name3_reg.Enabled = false;
         }
 
@@ -75,16 +74,14 @@ namespace BankApplication
         //--------------------[Кнопка "Назад"]---------------------//
         private void BackRegClick(object sender, EventArgs e)
         {
-            // Закрываем окно при нажатии на кнопку назад
             Hide();
 
-            // Открываем Window1 (возвращаемся назад)
             StartWindow window1 = new();
 
             window1.Show();
         }
 
-        private void Reg_FormClosed(object sender, FormClosedEventArgs e) // При закрытии формы приложение выключается
+        private void Reg_FormClosed(object sender, FormClosedEventArgs e)       // При закрытии формы приложение выключается
         {
             Application.Exit();
         }
@@ -123,46 +120,42 @@ namespace BankApplication
 
             try
             {
-                // Проверки введенных значений
-                await TryReg.TryLoginReg(login); // Проверка логина (асинхронная так как есть обращение к БД)
-                TryReg.TryPasswordReg(password); // Проверка пароля
-                TryReg.TryNameReg(name1); // Проверка Имени
-                TryReg.TryNameReg(name2); // Проверка Фамилии
-                TryReg.TryNumberReg(numberPhone); // Проверка номера телефона
-                await TryReg.TryMailReg(mail); // Проверка почты (асинхронная так как есть обращение к БД)
-                TryReg.TryDateBirthReg(year_str, mounth_str, day_str);
-
-                // Проверяем есть ли отчество
-                if (name3_reg.Enabled)
-                {
-                    // Проверка Отчества
+                await TryReg.TryLoginReg(login);                            // Проверка логина
+                TryReg.TryPasswordReg(password);                            // Проверка пароля
+                TryReg.TryNameReg(name1);                                   // Проверка Имени
+                TryReg.TryNameReg(name2);                                   // Проверка Фамилии
+                TryReg.TryNumberReg(numberPhone);                           // Проверка номера телефона
+                await TryReg.TryMailReg(mail);                              // Проверка почты
+                TryReg.TryDateBirthReg(year_str, mounth_str, day_str);      // Проверка даты рождения
+                
+                if (name3_reg.Enabled)              // Проверяем есть ли отчество
+                {                    
                     TryReg.TryNameReg(name3);
 
-                    // Если все хорошо - добавляет клиента в БД (с фамилией)
-                    await DataBase.AddClient(login, password, name1, name2, name3, $"{day_str}/{mounth_str}/{year_str}", numberPhone, mail);
+                    bool IsDbUpdate = await DataBase.AddClientPatronymic(login, password, name1, name2, name3, $"{day_str}/{mounth_str}/{year_str}", numberPhone, mail);
 
-                    Auth auth = new();
-
-                    Hide(); // Скрывает текущее окно
-                    MessageBox.Show("Вы успешно зарегестрирвоались\nСейчас вы попадете в меню авторизации!", "Регистрация"); // Сообщение об успешной регистрации
-                    auth.Show(); // Открывает окно авторизации
+                    if (IsDbUpdate)
+                    {
+                        Auth auth = new();
+                        Hide();
+                        MessageBox.Show("Вы успешно зарегестрирвоались\nСейчас вы попадете в меню авторизации!", "Регистрация");
+                        auth.Show();
+                    }
+                    else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
                 }
                 else
                 {
-                    // Добавляет клиента в БД без фамилии
-                    await DataBase.AddClient(login, password, name1, name2, "", $"{day_str}/{mounth_str}/{year_str}", numberPhone, mail);
+                    bool IsDbUpdate = await DataBase.AddClientNoPatronymic(login, password, name1, name2, $"{day_str}/{mounth_str}/{year_str}", numberPhone, mail);
 
-                    Auth auth = new();
-
-                    Hide(); // Скрывает текущее окно
-                    MessageBox.Show("Вы успешно зарегестрирвоались\nСейчас вы попадете в меню авторизации!", "Регистрация"); // Сообщение об успешной регистрации
-                    auth.Show(); // Открывает окно авторизации
+                    if (IsDbUpdate)
+                    {
+                        Auth auth = new();
+                        Hide();
+                        MessageBox.Show("Вы успешно зарегестрирвоались\nСейчас вы попадете в меню авторизации!", "Регистрация");
+                        auth.Show();
+                    }
+                    else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
                 }
-
-                // Отправляем сообщение о регистрации в лог
-                int id_client = await DataBase.CheckMaxId();
-                string messegeForLog = $"Пользователь с ID: {id_client} зарегистрировался.";
-                await DataBase.AddLogs(id_client, "INFO", messegeForLog, "Окно регистрации");
             }
             catch (Exception ex)
             {
@@ -194,34 +187,20 @@ namespace BankApplication
         {
             try
             {
-                // При выходе из списка запоминает выбранное число
-                mounth_str = BoxMounth.SelectedItem.ToString();
-
-                // Включает выбор дня только после того как выбрали месяц
-                BoxDay.Enabled = !string.IsNullOrWhiteSpace(mounth_str);
+                mounth_str = BoxMounth.SelectedItem.ToString();                     // При выходе из списка запоминает выбранное число
+                BoxDay.Enabled = !string.IsNullOrWhiteSpace(mounth_str);            // Включает выбор дня только после того как выбрали месяц
 
                 //--------------------[Выбор дня]---------------------//
                 int year = int.Parse(year_str);
+                
+                bool isLeapYear = (year % 4 == 0);              // Проверяем високосный ли год (True/False)
 
-                // Проверяем високосный ли год (True/False)
-                bool isLeapYear = (year % 4 == 0);
-
-                // Настраиваем дни в зависимости от месяца
-                switch (mounth_str)
+                BoxDay.DataSource = mounth_str switch           // Настраиваем дни в зависимости от месяца
                 {
-                    case "Февраль":
-                        BoxDay.DataSource = isLeapYear ? feb_day_vis : feb_day_nevis;
-                        break;
-                    case "Апрель":
-                    case "Июнь":
-                    case "Сентябрь":
-                    case "Ноябрь":
-                        BoxDay.DataSource = day30;
-                        break;
-                    default:
-                        BoxDay.DataSource = day31;
-                        break;
-                }
+                    "Февраль" => isLeapYear ? feb_day_vis : feb_day_nevis,
+                    "Апрель" or "Июнь" or "Сентябрь" or "Ноябрь" => day30,
+                    _ => day31,
+                };
             }
             catch (Exception ex)
             {
@@ -232,7 +211,7 @@ namespace BankApplication
         //--------------------[Выбор дня]---------------------//
         private void BoxDay_SelectedIndexChanged(object sender, EventArgs e)
         {
-            day_str = BoxDay.SelectedItem.ToString(); // При выходе из списка запоминает выбранное число
+            day_str = BoxDay.SelectedItem.ToString();           // При выходе из списка запоминает выбранное число
         }
 
         //--------------------[Переключатель Отчества]---------------------//

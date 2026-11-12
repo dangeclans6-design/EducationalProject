@@ -23,11 +23,10 @@ namespace BankApplication
         public int ClientId { get; }                    // ID влдельца (клиента) в БД
         public string CardNumber { get; }               // Номер карты (16 цифр)
         public decimal Balance { get; set; }            // Баланс карты
-        public decimal Deposit { get; set; }            // Баланс депозита
-        public decimal LimitDeposit { get; set; }       // Лимит баланса депозита
         public CardStatus Status { get; set; }          // Статус карту (смотреть CardStatus)
         public string Reason { get; set; }              // Причина статуса (если не Active)
         public DateTime CreateAt { get; }               // Дата открытия карты
+        public DateTime CloseAt { get; }               // Дата закрытия карты
 
         public PayStruct PreparePay(decimal amount, ITarget target);                                // Проверка перед оплатой
         public Task PayCard(PayStruct preview);                                                     // Оплата
@@ -62,18 +61,17 @@ namespace BankApplication
         public bool CanDeposit(decimal amount);                // Проверка для target-объекта
     }
 
-    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, decimal deposit, decimal limitDeposit, int status, string reason, DateTime createAt) : IBankCard, ISource, ITarget
+    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, int status, string reason, DateTime createAt, DateTime closeAt) : IBankCard, ISource, ITarget
     {
         // IBankCard
         public int Id { get; } = id;
         public int ClientId { get; } = clientid;
         public string CardNumber { get; } = cardNumber;
         public decimal Balance { get; set; } = balance;
-        public decimal Deposit { get; set; } = deposit;
-        public decimal LimitDeposit { get; set; } = limitDeposit;
         public CardStatus Status { get; set; } = (CardStatus)status;
         public string Reason { get; set; } = reason;
         public DateTime CreateAt { get; } = createAt;
+        public DateTime CloseAt { get; } = closeAt;
 
         public abstract PayStruct PreparePay(decimal amount, ITarget target);
         public abstract Task PayCard(PayStruct preview);
@@ -93,8 +91,8 @@ namespace BankApplication
 
 
     #region Debit Card
-    public class DebitCard(int id, int clientid, string cardnumber, decimal balance, decimal deposit, decimal limitDeposit, int status, string reason, int isCashbackEnabled, decimal cashback) :
-        BankCard(id, clientid, cardnumber, balance, deposit, limitDeposit, status, reason)
+    public class DebitCard(int id, int clientid, string cardnumber, decimal balance, decimal cashback, int status, string reason, DateTime createAt, DateTime closeAt, int isCashbackEnabled) :
+        BankCard(id, clientid, cardnumber, balance, status, reason, createAt, closeAt)
     {
         public decimal LimitBalance { get; } = 6000000;
         public bool IsCashbackEnabled { get; set; } = (isCashbackEnabled == 1);
@@ -104,7 +102,7 @@ namespace BankApplication
 
         public override bool PossibleToWithdraw(decimal amount)
         {
-            if (Status == CardStatus.Frozen) return false;
+            if (Status != CardStatus.Active) return false;
             if (Balance < amount) return false;
             if (amount <= 0 || amount > 500000) return false;
 
@@ -112,7 +110,7 @@ namespace BankApplication
         }
         public override bool CanDeposit(decimal amount)
         {
-            if (Status == CardStatus.Frozen || Balance + amount > LimitBalance) return false;
+            if (Status != CardStatus.Active || Balance + amount > LimitBalance) return false;
             if (amount <= 0) return false;
 
             return true;
@@ -214,8 +212,7 @@ namespace BankApplication
             {
                 decimal newBalanceSource = card.Balance - preview.Amount;       // Новый баланс карты-источника (source-карты)
 
-                bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCardFromDebitCard(Id, preview.NewBalance, Balance, Deposit, LimitDeposit, Cashback, card.Id, newBalanceSource, card.Balance,
-                                            card.Deposit, card.LimitDeposit, card.Cashback);
+                bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCardFromDebitCard(Id, preview.NewBalance, Balance, Cashback, card.Id, newBalanceSource, card.Balance, card.Cashback);
 
                 if (IsDbUpdate)
                 {
@@ -228,7 +225,7 @@ namespace BankApplication
             {
                 decimal newBalanceSource = paymentAccount.Balance - preview.Amount;       // Новый баланс счета-источника (source-карты)
 
-                bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCardFromPaymentAccountCard(Id, preview.NewBalance, Balance, Deposit, LimitDeposit, Cashback, paymentAccount.Id, newBalanceSource);
+                bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCardFromPaymentAccountCard(Id, preview.NewBalance, Balance, Cashback, paymentAccount.Id, newBalanceSource);
 
                 if (IsDbUpdate)
                 {
@@ -241,58 +238,6 @@ namespace BankApplication
         #endregion
 
         /*
-        #region ТРЕБУЕТСЯ РЕФАКТОРИНГ
-        //--------------------------[Пополнение депозита]------------------------------//
-        public readonly struct ReplenishDepositPreview(decimal amount, decimal new_deposit)
-        {
-            public readonly decimal Amount = amount;
-            public readonly decimal NewDeposit = new_deposit;
-        }
-
-        public ReplenishDepositPreview PrepareReplenishDeposit(decimal amount)
-        {
-            if (amount <= 0 || amount > 200000) throw new Exception("Сумма пополнения депозита должна быть положительной и не более 200.000 рублей за 1 раз!");
-            if (Deposit + amount > LimitDeposit) throw new Exception($"Вы превышаете лимит депозита! Ваш лимит: {LimitDeposit} рублей.");
-
-            decimal new_deposit = Deposit + amount;
-
-            return new ReplenishDepositPreview(amount, new_deposit);
-        }
-
-        public async Task ReplenishDeposit(ReplenishDepositPreview preview, int id, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_cashback)
-        {
-            bool IsDbUpdate = await DataBase.ReplenishDepositDebitCard(id, preview.NewDeposit, current_balance, current_deposit, current_limit, current_cashback);
-
-            if (IsDbUpdate) Deposit = preview.NewDeposit;
-            else throw new Exception($"Произошла непредвиденная ошибка! Пожалуйста, обновите страницу или повторите попытку позже.");
-        }
-
-        //--------------------------[Изменить лимит депозита (запрос)]------------------------------//
-        public readonly struct ChangeLimitDepositPreview(decimal newDeposit, string message)
-        {
-            public readonly decimal NewDeposit = newDeposit;
-            public readonly string Message = message;         
-        }
-        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal newDeposit, string message)
-        {
-            if (newDeposit <= 10000 || newDeposit > 400000) throw new Exception("Лимит депозита для 'Дебетовой': от 10 до 400 тысяч рублей!");
-            if (newDeposit == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит!");
-            if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
-
-            return new ChangeLimitDepositPreview(newDeposit, message);
-        }
-        public async Task RequestChangeLimitDeposit(ChangeLimitDepositPreview preview)
-        {
-            bool IsUpdate = await DataBase.D_RequestChangeLimitDeposit(ClientId, CardNumber, "D", Id, preview.Message, preview.NewDeposit);
-
-            if (IsUpdate)
-            {
-                var find_request = await DataBase.SearchRequestClient(ClientId);
-                Session.CurrentClient.OpenRequest = find_request.Request;
-            }            
-            else throw new Exception($"Произошла непредвиденная ошибка! Пожалуйста, обновите страницу или повторите попытку позже.");
-        }
-
         //--------------------------[Закрыть карту (запрос)]------------------------------//
         public readonly struct CloseCardPreview(string typeCard, string message)
         {
@@ -328,15 +273,12 @@ namespace BankApplication
                 Balance = new_balance;
                 Cashback -= amount;
             }
-        }
-        #endregion */
+        }*/         // РЕФАКТОРИНГ
     }
     #endregion
 
 
     /*
-    #region Credit Card
-
     public class CreditCard : BankCard
     {
         // Поля
@@ -433,58 +375,6 @@ namespace BankApplication
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
 
-        //--------------------------[Пополнение депозита]------------------------------//
-        public readonly struct ReplenishDepositPreview(decimal amount, decimal new_deposit)
-        {
-            public readonly decimal Amount = amount;
-            public readonly decimal NewDeposit = new_deposit;
-        }
-
-        public ReplenishDepositPreview PrepareReplenishDeposit(decimal amount)
-        {
-            if (amount <= 0 || amount > 200000) throw new Exception("Сумма пополнения депозита должна быть положительной и меньше 200.000 рублей за 1 раз!");
-            if (Debt > 0) throw new Exception($"Невозможно пополнить депозит, так как у Вас не погашена задолженость!\nВаш долг: {Debt} рублей.");
-            if (Deposit + amount > LimitDeposit) throw new Exception($"Вы превышаете лимит депозита!\nВаш лимит: {LimitDeposit} рублей.");
-
-            decimal new_deposit = Deposit + amount;
-
-            return new ReplenishDepositPreview(amount, new_deposit);
-        }
-        public async Task ReplenishDeposit(ReplenishDepositPreview preview, int id, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_debt)
-        {
-            bool IsDbUpdate = await DataBase.ReplenishDepositCreditCard(id, preview.NewDeposit, current_balance, current_deposit, current_limit, current_debt);
-
-            if (IsDbUpdate) Deposit = preview.NewDeposit;
-            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
-        }
-
-        //--------------------------[Изменить лимит депозита (запрос)]------------------------------//
-        public readonly struct ChangeLimitDepositPreview(decimal newDeposit, string message)
-        {
-            public readonly decimal NewDeposit = newDeposit;
-            public readonly string Message = message;
-        }
-        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal newDeposit, string message)
-        {
-            if (newDeposit <= 10000 || newDeposit > 1500000) throw new Exception("Лимит депозита для 'Кредитной' карты должен быть больше 10-ти тысяч и меньше 1.500.000 рублей!");
-            if (newDeposit == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит!");
-            if (Debt > 0) throw new Exception($"Невозможно изменить лимит депозита, так как у Вас непогашена задолженость! Ваш долг: {Debt} рублей.");
-            if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
-
-            return new ChangeLimitDepositPreview(newDeposit, message);
-        }
-        public async Task RequestChangeLimitDeposit(ChangeLimitDepositPreview preview)
-        {
-            bool IsUpdate = await DataBase.C_RequestChangeLimitDeposit(ClientId, CardNumber, "C", Id, preview.Message, preview.NewDeposit);
-
-            if (IsUpdate)
-            {
-                var find_request = await DataBase.SearchRequestClient(ClientId);
-                Session.CurrentClient.OpenRequest = find_request.Request;
-            }
-            else throw new Exception($"Произошла непредвиденная ошибка! Пожалуйста, обновите страницу или повторите попытку позже.");
-        }
-
         //--------------------------[Закрыть карту (запрос)]------------------------------//
         public readonly struct CloseCardPreview(string typeCard, string message)
         {
@@ -530,16 +420,17 @@ namespace BankApplication
             Balance -= preview.amount;
             Debt -= preview.amount;
         }
-    }*/
+    }*/             // РЕФАКТОРИНГ
+
+
+    #region Расчетный счет
 
     #region Скрытое описание
     /*
     В рамках данного проекта (приложения) расчетный счет (PaymentAccount) — это просто отдельный самостоятельный счет (не привязанный к картам, как в настоящих банках. Сделано для простоты.).
     */
     #endregion
-
-    #region Расчетный счет
-    public class PaymentAccount(int id, int clientId, string bic, string corAccount, decimal balance, Currency currency, decimal frozenBalance, CardStatus status,
+    public class PaymentAccount(int id, int clientId, string bic, string corAccount, decimal balance, int currency, decimal frozenBalance, int status,
                                 DateTime openedAt, DateTime closeAt, string accountNumber) : ITarget, ISource
     {
         public int Id { get; } = id;                                                    // Уникальный идентификатор счета в БД
@@ -550,9 +441,9 @@ namespace BankApplication
         public string Bic { get; } = bic;                                               // БИК (Банковский идентификационный код) банка, в котором открыт этот счет (9 цифр)
         public string CorAccount { get; } = corAccount;                                 // Корреспондентский счет банка (20 цифр)
         public decimal Balance { get; set; } = balance;                                 // Текущий доступный остаток реальных денег на счете
-        public Currency Currency { get; set; } = currency;                              // Валюта счета
+        public Currency Currency { get; set; } = (Currency)currency;                    // Валюта счета
         public decimal FrozenBalance { get; set; } = frozenBalance;                     // Заблокированный или «замороженный» баланс
-        public CardStatus Status { get; set; } = status;                                // Состояние счета
+        public CardStatus Status { get; set; } = (CardStatus)status;                    // Состояние счета
         public DateTime OpenedAt { get; } = openedAt;                                   // Дата открытия счета
         public DateTime ClosedAt { get; } = closeAt;                                    // Дата закрытия счета        
 
@@ -575,177 +466,12 @@ namespace BankApplication
     }
     #endregion
 
-    /*
-    #region Bussines Card (НУЖДАЕТСЯ В РЕФАКТОРИНГЕ)
-
-    public class BusinessCard : BankCard
-    {
-        // Поля
-        double percent;
-
-        // Свойства
-        public decimal LimitBalance { get; } = 35000000;
-        public double Percent
-        {
-            get { return percent; }
-            set
-            {
-                if (value < 2) throw new Exception("Процент не может быть ниже двух!");
-                if (value > 20) throw new Exception("Процент не может быть больше 20!");
-
-                percent = value;
-            }
-        }
-        // Конструктор
-        public BusinessCard(int id, string cardnumber, decimal balance, decimal deposit, decimal limitdeposit, int clientid, double percent, int status, string reason) :
-            base(id, cardnumber, balance, deposit, limitdeposit, clientid, status, reason)
-        {
-            this.percent = percent;
-        }
-
-        // Методы
-        //--------------------------[Оплата]------------------------------//
-        public readonly struct BusinessPay(decimal new_pay, decimal new_balance)
-        {
-            public readonly decimal NewPay = new_pay;
-            public readonly decimal NewBalance = new_balance;
-        }
-        public BusinessPay PreparePay(decimal amount) // amount - сумма оплаты
-        {
-            if (amount <= 0 || amount > 5000000) throw new Exception("Сумма оплаты должна быть положительной и меньше пяти миллионов за один раз!");
-
-            decimal new_pay = amount * (decimal)(1 + percent / 100.0);
-            decimal new_balance = Balance - new_pay;
-
-            if (Balance < new_pay) throw new Exception($"Недостаточно средств!\nС учетом комиссии {percent}% Вы должны заплатить {new_pay} рублей.\nВаш баланс: {Balance} рублей.");
-
-            return new BusinessPay(new_pay, new_balance);
-        }
-        public async Task Pay(BusinessPay preview, int id, decimal current_balance, decimal current_deposit, decimal current_limit, double current_percent)
-        {
-            bool IsDbUpdate = await DataBase.PayBusinessCard(id, preview.NewBalance, current_balance, current_deposit, current_limit, current_percent);
-
-            if (IsDbUpdate) Balance = preview.NewBalance;
-            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
-        }
-
-        //--------------------------[Пополнение баланса]------------------------------//
-        public struct ReplenishBalancePreview(decimal new_balance, decimal commission, decimal amount)
-        {
-            public decimal NewBalance = new_balance;
-            public decimal Commission = commission;
-            public decimal Amount = amount;
-        }
-        public ReplenishBalancePreview PrepareReplenishBalance(decimal amount) // amount - сумма пополнения
-        {
-            if (amount <= 0 || amount > 5000000) throw new Exception("Сумма пополнения баланса должна быть положительной и не более 5.000.000 рублей за 1 раз!");
-
-            decimal commision = amount * 0.02m; // Комиссия при пополнении баланса 2 процента
-            decimal new_balance = Balance + (amount - commision);
-
-            if (new_balance > LimitBalance) throw new Exception($"Невозможно пополнить баланс! Вы превышаете лимит: {LimitBalance} рублей.");
-
-            return new ReplenishBalancePreview(new_balance, commision, amount);
-        }
-        public async Task ReplenishBalance(ReplenishBalancePreview preview, int id, decimal current_balance, decimal current_deposit, decimal current_limit, double current_percent)
-        {
-            bool IsDbUpdate = await DataBase.ReplenishBalanceBusinessCard(id, preview.NewBalance, current_balance, current_deposit, current_limit, current_percent);
-
-            if (IsDbUpdate) Balance = preview.NewBalance;
-            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
-        }
-
-        //--------------------------[Пополнение депозита]------------------------------//
-        public struct ReplenishDepositPreview(decimal new_replenish, decimal commission, decimal new_deposit)
-        {
-            public decimal NewReplenish = new_replenish;
-            public decimal Commission = commission;
-            public decimal NewDeposit = new_deposit;
-        }
-        public ReplenishDepositPreview PrepareReplenishDeposit(decimal amount) // amount - сумма пополнения
-        {
-            if (amount <= 0 || amount > 1000000) throw new Exception("Сумма пополнения депозита должна быть положительной и меньше 1.000.000 рублей за 1 раз!");
-
-            decimal commission = amount * 0.03m; // Комиссия при пополнении депозита 3 процента
-            decimal new_replenish = amount - commission; // Сколько в итоге будет зачисленно на депозит
-
-            if (Deposit + new_replenish > LimitDeposit) throw new Exception($"Вы превышаете лимит депозита (с учетом вычета комиссии)!\nВаш лимит: {LimitDeposit} рублей.\nКомиссия: {commission} рублей.");
-
-            decimal new_deposit = Deposit + new_replenish;
-
-            return new ReplenishDepositPreview(new_replenish, commission, new_deposit);
-        }
-        public async Task ReplenishDeposit(ReplenishDepositPreview preview, int id, decimal current_balance, decimal current_deposit, decimal current_limit, double current_percent)
-        {
-            bool IsDbUpdate = await DataBase.ReplenishDepositBusinessCard(id, preview.NewDeposit, current_balance, current_deposit, current_limit, current_percent);
-
-            if (IsDbUpdate) Deposit = preview.NewReplenish;
-            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
-        }
-
-        //--------------------------[Изменить лимит депозита]------------------------------//
-        public readonly struct ChangeLimitDepositPreview(decimal newDeposit, string message)
-        {
-            public readonly decimal NewDeposit = newDeposit;
-            public readonly string Message = message;
-        }
-        public ChangeLimitDepositPreview PrepareChangeLimitDeposit(decimal newDeposit, string message)
-        {
-            if (newDeposit <= 10000 || newDeposit > 1500000) throw new Exception("Лимит депозита для 'Кредитной' карты должен быть больше 10-ти тысяч и меньше 1.500.000 рублей!");
-            if (newDeposit == LimitDeposit) throw new Exception("Вы ввели значение, которое уже установлено как лимит!");
-            if (Balance < 400000) throw new Exception($"Недостаточно средств! Для изменения лимита депозита для 'Бизнес' карты необходимо заплатить 400000 рублей. Ваш баланс: {Balance} рублей.");
-            if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
-
-            return new ChangeLimitDepositPreview(newDeposit, message);
-        }
-        public async Task RequestChangeLimitDeposit(ChangeLimitDepositPreview preview)
-        {
-            // Заранее вычисляем новый баланс
-            decimal newBalance = Balance - 400000;
-
-            bool IsUpdate = await DataBase.B_RequestChangeLimitDeposit(ClientId, CardNumber, "B", Id, preview.Message, preview.NewDeposit, newBalance, Balance);
-
-            if (IsUpdate)
-            {
-                Balance = newBalance;
-
-                var updateRequest = await DataBase.SearchRequestClient(ClientId);
-                Session.CurrentClient.OpenRequest = updateRequest.Request;
-            }            
-            else throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");           
-        }
-
-        //--------------------------[Закрыть карту (запрос)]------------------------------//
-        public readonly struct CloseCardPreview(string typeCard, string message)
-        {
-            public readonly string TypeCard = typeCard;
-            public readonly string Message = message;
-        }
-        public CloseCardPreview PrepareCloseCard(string typeCard, string message)
-        {
-            if (Balance > 0 || Deposit > 0) throw new Exception("Чтобы отправить запрос на закрытие карты основной баланс и баланс депозита должны быть нулевыми.");
-            if (Status == 0) throw new Exception("Ваша карта заморожена! Пожалуйста, обратитесь в поддержку!");
-
-            return new CloseCardPreview(typeCard, message);
-        }
-        public async Task RequestCloseCard(CloseCardPreview preview)
-        {
-            await DataBase.B_RequestCloseCard(ClientId, CardNumber, preview.TypeCard, Id, preview.Message, Balance, Deposit, LimitDeposit);
-
-            var find_request = await DataBase.SearchRequestClient(ClientId);
-            Session.CurrentClient.OpenRequest = find_request.Request;
-        }
-    }
-
-    #endregion */
-
 
     #region Request
 
     // Класс для отображения данных запроса Клиента
     public class Request(int id, int type, string cardNumber, int typeCard, DateTime timestamp, decimal newDeposit)
     {
-        // АвтоСвойства (Auto-Properties)
         public int Id = id;
         public TypeRequest Type = (TypeRequest)type;
         public string CardNumber = cardNumber;
@@ -758,14 +484,13 @@ namespace BankApplication
     public class RequestAdmin(int id, int type, string cardNumber, int typeCard, DateTime timestamp, decimal newDeposit, int clientId,
                         string message, int idCard) : Request(id, type, cardNumber, typeCard, timestamp, newDeposit)
     {
-        // АвтоСвойства (Auto-Properties)
         public int ClientId = clientId;
         public string Message = message;
         public int IdCard = idCard;
     }
 
     // Класс для панели Администратора (полные данные о запросе (если администратору необходимо првоерить кто дал ответ, когда и т.д.))
-    public class RequestAdminFull(int id, int type, string cardNumber, string typeCard, DateTime timestamp, decimal newDeposit, int clientId,
+    public class RequestAdminFull(int id, int type, string cardNumber, int typeCard, DateTime timestamp, decimal newDeposit, int clientId,
                         string message, int idCard, string answer, string comment, int adminAnswer, DateTime dateAnswer, int done) : Request(id, type, cardNumber, typeCard, timestamp, newDeposit)
     {
         // АвтоСвойства (Auto-Properties)

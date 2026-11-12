@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace BankApplication
 {
@@ -24,13 +23,8 @@ namespace BankApplication
         public string NumberPhone { get; set; } = numberPhone;
         public string Mail { get; set; } = mail;
 
-
         public List<BankCard> Cards { get; set; } = cards;
         public List<PaymentAccount> PaymentAccounts { get; set; } = paymentAccount;
-
-        //public List<Request> OpenRequest { get; set; } = openRequest;
-        //public List<Notifications> Notifications { get; set; } = notifications;
-        //public List<Notifications> IsReadNotifications { get; set; } = isReadNotifications;
     }
 
     public class Admin(int id, string login, string password, string secureCode, int status, List<RequestAdmin> myRequest, List<RequestAdmin> request, List<RequestAdminFull> requestFull)
@@ -50,148 +44,31 @@ namespace BankApplication
         //----------------------[Принять запрос]------------------------//
         public async Task ApplyRequest(int idRequest, int indexRequest)
         {
-            bool IsDbUpdate = await DataBase.ApplyRequest(idRequest, Id);
 
-            if (IsDbUpdate)
-            {
-                MyRequestAdmin.Add(RequestAdmin[indexRequest]);
-                RequestAdmin.RemoveAt(indexRequest);                
-            }
-            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
 
         //----------------------[Ответить на запрос]------------------------//
         public async Task AnswerRequest(int clientId, int idRequest, string answer, string comment, int indexMyRequest,
             int typeRequest, decimal newDeposit, int idCard, string typeCard, string newCardNumber, string cardNumber)
         {
-            switch (typeRequest)
-            {
-                case 1: // Измененить депозита
-                    {
-                        DateTime dateAnswer = DateTime.Now;
-                        string title = $"Ответ на запрос #{idRequest} (Измененить лимит депозита)";
-
-                        switch (typeCard, answer)
-                        {
-                            case ("D", "Одобрено"):
-                                await DataBase.D_ChangeLimitDepositAndAnswerRequest(newDeposit, idCard, answer, comment, dateAnswer, idRequest, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("D", "Отказано"):
-                                await DataBase.UDC_RefusalCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("C", "Одобрено"):
-                                await DataBase.C_ChangeLimitDepositAndAnswerRequest(newDeposit, idCard, answer, comment, dateAnswer, idRequest, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("C", "Отказано"):
-                                await DataBase.UDC_RefusalCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("B", "Одобрено"):
-                                await DataBase.B_ChangeLimitDepositAndAnswerRequest(newDeposit, idCard, answer, comment, dateAnswer, idRequest, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("B", "Отказано"):
-                                await DataBase.B_AnswerRequestAndNotificationCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment, idCard, 400000); // 400000 - стоимость изменения лимита депозита для бизнес карты
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                        }
-
-                        break;
-                    }
-                case 2: // Закрыть карту
-                    {
-                        DateTime dateAnswer = DateTime.Now;
-                        string title = $"Ответ на запрос #{idRequest} (Закрыть карту)";
-
-                        switch (typeCard, answer)
-                        {
-                            case ("D", "Одобрено"):
-                                await DataBase.D_CloseAccept(idCard, answer, comment, dateAnswer, idRequest, typeCard, cardNumber, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("D", "Отказано"):
-                                await DataBase.D_RefusalClose(idRequest, answer, comment, dateAnswer, clientId, title, idCard);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("C", "Одобрено"):
-                                await DataBase.C_CloseAccept(idCard, answer, comment, dateAnswer, idRequest, typeCard, cardNumber, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("C", "Отказано"):
-                                await DataBase.C_RefusalClose(idRequest, answer, comment, dateAnswer, clientId, title, idCard);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("B", "Одобрено"):
-                                await DataBase.B_CloseAccept(idCard, answer, comment, dateAnswer, idRequest, typeCard, cardNumber, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("B", "Отказано"):
-                                await DataBase.B_RefusalClose(idRequest, answer, comment, dateAnswer, clientId, title, idCard);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                        }
-
-                        break;
-                    }
-                case 3: // Открыть карту
-                    {
-                        DateTime dateAnswer = DateTime.Now;
-                        string title = $"Ответ на запрос #{idRequest} (Открыть карту)";
-
-                        switch (typeCard, answer)
-                        {
-                            case ("D", "Одобрено"):
-                                await DataBase.D_AcceptOpenCard(clientId, newCardNumber, answer, comment, dateAnswer, idRequest, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("D", "Отказано"):
-                                await DataBase.D_RefusalOpenCard(idRequest, answer, comment, dateAnswer, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("C", "Одобрено"):
-                                await DataBase.C_AcceptOpenCard(clientId, newCardNumber, answer, comment, dateAnswer, idRequest, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("C", "Отказано"):
-                                await DataBase.C_RefusalOpenCard(idRequest, answer, comment, dateAnswer, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("B", "Одобрено"):
-                                await DataBase.B_AcceptOpenCard(clientId, newCardNumber, answer, comment, dateAnswer, idRequest, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("B", "Отказано"):
-                                await DataBase.B_RefusalOpenCard(idRequest, answer, comment, dateAnswer, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                        }
-
-                        break;
-                    }
-            }
+            
         }
     }
 
     public static class Session
     {
-        // Здесь будет храниться ОДИН экземпляр вошедшего клиента
         public static Client CurrentClient { get; set; }
-
-        // Здесь будет храниться ОДИН экземпляр вошедшего администратора
         public static Admin CurrentAdmin { get; set; }
     }
 
-    //-------------------------[Класс проверки введенных данных]----------------------------//
+    #region Проверка введенных данных
     internal class TryReg
     {
         static void Main()
         {
             try
             {
-                TryNumberReg("890820256303");
+                
             }
             catch (Exception ex)
             {
@@ -200,7 +77,7 @@ namespace BankApplication
             }
         }
 
-        //-------------------------[Проверка логина при регистрации]----------------------------//
+        #region Логин (Login)
         public async static Task TryLoginReg(string login)
         {
             // Проверка на пустое поле
@@ -219,8 +96,9 @@ namespace BankApplication
             // Проверка есть ли пользователь с таким логином в БД
             if (await DataBase.CheckLoginForReg(login)) throw new Exception("Пользователь с таким логином уже существует!");
         }
+        #endregion
 
-        //-------------------------[Проверка пароля при регистрации]----------------------------//
+        #region Пароль (Password)
         public static void TryPasswordReg(string password)
         {
             // Проверка на пустое поле
@@ -236,8 +114,9 @@ namespace BankApplication
                 else throw new Exception("Недопустимые символы в поле пароля!");
             }
         }
+        #endregion
 
-        //-------------------------[Проверка Имени, Фамилии, Отчества при регистрации]----------------------------//
+        #region ФИО (Name1, Name2, Name3)
         public static void TryNameReg(string name1)
         {
             // Проверка на пустое поле
@@ -257,8 +136,9 @@ namespace BankApplication
             char[] char_name1 = name1.ToCharArray();
             if (char.IsLower(char_name1[0])) throw new Exception("Первая буква должна быть заглавной!");
         }
+        #endregion
 
-        //-------------------------[Проверка номера телефона при регистрации]----------------------------//
+        #region Номер телефона (NumberPhone)
         public static void TryNumberReg(string numberPhone)
         {
             // Проверка на пустое поле
@@ -279,8 +159,9 @@ namespace BankApplication
             if (char_name1[0] == '7' || char_name1[0] == '8') {  }
             else throw new Exception("Первая цифра должна быть 7 или 8!");
         }
+        #endregion
 
-        //-------------------------[Проверка почты при регистрации]----------------------------//
+        #region Почта (Mail)
         public async static Task TryMailReg(string mail)
         {
             // Проверка на пустое поле
@@ -296,8 +177,9 @@ namespace BankApplication
             // Проверка есть ли пользователь с таким логином в БД
             if (await DataBase.CheckMailForReg(mail)) throw new Exception("Пользователь с такой почтой уже существует!");
         }
+        #endregion
 
-        //-------------------------[Проверка даты рождения при регистрации]----------------------------//
+        #region Дата рождения (DateBirth)
         public static void TryDateBirthReg(string year, string mounth, string day)
         {
             // Проверка на пустое поле
@@ -305,8 +187,9 @@ namespace BankApplication
             if (string.IsNullOrWhiteSpace(mounth)) throw new Exception("Заполните поле 'Месяц'.");
             if (string.IsNullOrWhiteSpace(day)) throw new Exception("Заполните поле 'День'.");
         }
+        #endregion
 
-        //-------------------------[Проверка введенного числа]----------------------------//
+        #region Введенное число на тип Decimal
         public static decimal TryDecimal(string amount)
         {
             // Проверка на пустое поле
@@ -317,8 +200,9 @@ namespace BankApplication
 
             return result;
         }
+        #endregion
 
-        //-------------------------[Проверка введенного текста (для отправки запроса)]----------------------------//
+        #region Текст (1000 символов)
         public static void TryString1000(string message)
         {
             // Проверка на пустое поле
@@ -334,8 +218,9 @@ namespace BankApplication
             // Провенрка на длинну
             if (message.Length < 10 || message.Length > 1000) throw new Exception("Длина сообщения должна быть не менее 10 и не более 1000 символов!");
         }
+        #endregion
 
-        //-------------------------[Проверка введенного текста]----------------------------//
+        #region Текст (300 символов)
         public static void TryString300(string message)
         {
             // Проверка на пустое поле
@@ -351,8 +236,9 @@ namespace BankApplication
             // Провенрка на длинну
             if (message.Length < 6 || message.Length > 300) throw new Exception("Длина комментария должна быть не менее 6 и не более 300 символов!");
         }
+        #endregion
 
-        //-------------------------[Генерация уникального номера карты (обычная)]----------------------------//
+        #region Генерация номера карты
         public static string GenerateCardNumber(int clientId, string cardTypePrefix)
         {
             // Получаем 10-значный Timestamp (секунды с 1970 года)
@@ -366,41 +252,7 @@ namespace BankApplication
 
             return cardNumber;
         }
-
-        //--------------------------[Открыть карту (запрос)]------------------------------//
-        public readonly struct OpenCardPreview(int clientId, string typeCard, string message, int countCard)
-        {
-            public readonly int ClientId = clientId;
-            public readonly string TypeCard = typeCard;
-            public readonly string Message = message;
-            public readonly int CountCard = countCard;
-        }
-        public static OpenCardPreview PrepareOpenCard(int clientId, string typeCard, string message, int countCard)
-        {
-            if (countCard == 3) throw new Exception("Максимальное количество открытых карт одного типа - три!");
-
-            return new OpenCardPreview(clientId, typeCard, message, countCard);
-        }
-        public static async Task RequestOpenCard(OpenCardPreview preview)
-        {
-            switch (preview.TypeCard)
-            {
-                case "U":
-                    await DataBase.U_RequestOpenCard(preview.ClientId, preview.TypeCard, preview.Message, preview.CountCard);
-                    break;
-                case "D":
-                    await DataBase.D_RequestOpenCard(preview.ClientId, preview.TypeCard, preview.Message, preview.CountCard);
-                    break;
-                case "C":
-                    await DataBase.C_RequestOpenCard(preview.ClientId, preview.TypeCard, preview.Message, preview.CountCard);
-                    break;
-                case "B":
-                    await DataBase.B_RequestOpenCard(preview.ClientId, preview.TypeCard, preview.Message, preview.CountCard);
-                    break;
-            }            
-
-            var find_request = await DataBase.SearchRequestClient(preview.ClientId);
-            Session.CurrentClient.OpenRequest = find_request.Request;
-        }
+        #endregion
     }
+    #endregion
 }

@@ -33,41 +33,38 @@ namespace BankApplication
         {
             try
             {
-                #region Поиск данных
+                //// Списки запросов
+                //var check = await DataBase.CheckPasswordAndOutDataAdmin(CurrentAdmin.Login);
+                //var find_my_request = DataBase.SearchMyRequestAdmin(check.id);
+                //var find_request = DataBase.SearchRequestAdmin();
 
-                // Списки запросов
-                var check = await DataBase.CheckPasswordAndOutDataAdmin(CurrentAdmin.Login);
-                var find_my_request = DataBase.SearchMyRequestAdmin(check.id);
-                var find_request = DataBase.SearchRequestAdmin();
+                //await Task.WhenAll(find_request, find_my_request);
 
-                await Task.WhenAll(find_request, find_my_request);
+                //List<RequestAdminFull> request_full = [];
 
-                List<RequestAdminFull> request_full = [];
+                //Admin CurrentAdminUpdate = new(
+                //    check.id,
+                //    check.login,
+                //    check.password,
+                //    check.secureCode,
+                //    check.status,
+                //    (await find_my_request).MyRequest,
+                //    (await find_request).Request,
+                //    request_full);
 
-                Admin CurrentAdminUpdate = new(
-                    check.id,
-                    check.login,
-                    check.password,
-                    check.secureCode,
-                    check.status,
-                    (await find_my_request).MyRequest,
-                    (await find_request).Request,
-                    request_full);
 
-                #endregion
+                //// Передаем нашего обновленного админа
+                //Session.CurrentAdmin = CurrentAdminUpdate;
 
-                // Передаем нашего обновленного админа
-                Session.CurrentAdmin = CurrentAdminUpdate;
+                ////Enabled = false;
 
-                //Enabled = false;
+                //PanelOpenRequest.Controls.Clear();
+                //PanelOpenRequest.Visible = false;
 
-                PanelOpenRequest.Controls.Clear();
-                PanelOpenRequest.Visible = false;
-
-                Close();
-                AdminPanel adminPanel = new();
-                await Task.Delay(1000);
-                adminPanel.Show();
+                //Close();
+                //AdminPanel adminPanel = new();
+                //await Task.Delay(1000);
+                //adminPanel.Show();
             }
             catch (Exception ex)
             {
@@ -80,60 +77,60 @@ namespace BankApplication
         {
             try
             {
-                if (PanelOpenRequest.Visible == true) return;
-                else
-                {
-                    PanelMyRequest.Visible = false;
-                    PanelMyRequest.Controls.Clear();
+                //if (PanelOpenRequest.Visible == true) return;
+                //else
+                //{
+                //    PanelMyRequest.Visible = false;
+                //    PanelMyRequest.Controls.Clear();
 
-                    // Временно отключаем логику разметки панели, чтобы она не перерисовывалась при каждой кнопке
-                    PanelOpenRequest.SuspendLayout();
+                //    // Временно отключаем логику разметки панели, чтобы она не перерисовывалась при каждой кнопке
+                //    PanelOpenRequest.SuspendLayout();
 
-                    int x_point = 40;
-                    int y_point = 30;
-                    string message = "";
+                //    int x_point = 40;
+                //    int y_point = 30;
+                //    string message = "";
 
-                    var request = CurrentAdmin.RequestAdmin;                    
+                //    var request = CurrentAdmin.RequestAdmin;                    
 
-                    for (int i = 0; i < request.Count; i++)
-                    {
-                        if (request[i].Type == 1) message = $"ID запроса: {request[i].Id}\nТип запроса: Изменение депозита";
-                        if (request[i].Type == 2) message = $"ID запроса: {request[i].Id}\nТип запроса: Закрыть карту";
-                        if (request[i].Type == 3) message = $"ID запроса: {request[i].Id}\nТип запроса: Открытьк карту";
+                //    for (int i = 0; i < request.Count; i++)
+                //    {
+                //        if (request[i].Type == 1) message = $"ID запроса: {request[i].Id}\nТип запроса: Изменение депозита";
+                //        if (request[i].Type == 2) message = $"ID запроса: {request[i].Id}\nТип запроса: Закрыть карту";
+                //        if (request[i].Type == 3) message = $"ID запроса: {request[i].Id}\nТип запроса: Открытьк карту";
 
-                        var RequestList = new CyberButton
-                        {
-                            Width = 750,
-                            Height = 100,
-                            Location = new Point(x_point, y_point),
-                            RoundingInt = 20,
+                //        var RequestList = new CyberButton
+                //        {
+                //            Width = 750,
+                //            Height = 100,
+                //            Location = new Point(x_point, y_point),
+                //            RoundingInt = 20,
 
-                            Font = new Font("Segoe UI", 16.0f),
-                            TextButton = message,
+                //            Font = new Font("Segoe UI", 16.0f),
+                //            TextButton = message,
 
-                            // Важно: сохраняем все данные запроса (i-тый элемент в списке) в свойство Tag
-                            Tag = (i, request[i]),
+                //            // Важно: сохраняем все данные запроса (i-тый элемент в списке) в свойство Tag
+                //            Tag = (i, request[i]),
 
-                            Background_WidthPen = 2,
-                            ColorBackground_Pen = Color.LightSlateGray,
-                            ColorBackground = Color.DimGray,
-                            ForeColor = Color.Tan,
-                        };
+                //            Background_WidthPen = 2,
+                //            ColorBackground_Pen = Color.LightSlateGray,
+                //            ColorBackground = Color.DimGray,
+                //            ForeColor = Color.Tan,
+                //        };
 
-                        // Важно: подписываем кнопку на общее событие клика
-                        RequestList.Click += RequestList_Click;
+                //        // Важно: подписываем кнопку на общее событие клика
+                //        RequestList.Click += RequestList_Click;
 
-                        // Добавляем кнопку в панель
-                        PanelOpenRequest.Controls.Add(RequestList);                        
+                //        // Добавляем кнопку в панель
+                //        PanelOpenRequest.Controls.Add(RequestList);                        
 
-                        y_point += 120;
-                    }
+                //        y_point += 120;
+                //    }
 
-                    // Включаем разметку обратно и заставляем панель плавно отобразить всё разом
-                    PanelOpenRequest.ResumeLayout(true);
-                }
+                //    // Включаем разметку обратно и заставляем панель плавно отобразить всё разом
+                //    PanelOpenRequest.ResumeLayout(true);
+                //}
 
-                PanelOpenRequest.Visible = true;
+                //PanelOpenRequest.Visible = true;
             }
             catch (Exception ex)
             {
@@ -163,55 +160,55 @@ namespace BankApplication
         {
             try
             {
-                if (PanelMyRequest.Visible == true) return;
-                else
-                {
-                    PanelOpenRequest.Visible = false;
-                    PanelOpenRequest.Controls.Clear();
+                //if (PanelMyRequest.Visible == true) return;
+                //else
+                //{
+                //    PanelOpenRequest.Visible = false;
+                //    PanelOpenRequest.Controls.Clear();
 
-                    PanelMyRequest.SuspendLayout();
+                //    PanelMyRequest.SuspendLayout();
 
-                    int x_point = 85;
-                    int y_point = 30;
-                    string message = "";
+                //    int x_point = 85;
+                //    int y_point = 30;
+                //    string message = "";
 
-                    var myRequest = CurrentAdmin.MyRequestAdmin;                                       
+                //    var myRequest = CurrentAdmin.MyRequestAdmin;                                       
 
-                    for (int i = 0; i < myRequest.Count; i++)
-                    {
-                        if (myRequest[i].Type == 1) message = $"ID запроса: {myRequest[i].Id}\nТип запроса: Изменение депозита";
-                        if (myRequest[i].Type == 2) message = $"ID запроса: {myRequest[i].Id}\nТип запроса: Закрыть карту";
-                        if (myRequest[i].Type == 3) message = $"ID запроса: {myRequest[i].Id}\nТип запроса: Открытьк карту";
+                //    for (int i = 0; i < myRequest.Count; i++)
+                //    {
+                //        if (myRequest[i].Type == 1) message = $"ID запроса: {myRequest[i].Id}\nТип запроса: Изменение депозита";
+                //        if (myRequest[i].Type == 2) message = $"ID запроса: {myRequest[i].Id}\nТип запроса: Закрыть карту";
+                //        if (myRequest[i].Type == 3) message = $"ID запроса: {myRequest[i].Id}\nТип запроса: Открытьк карту";
 
-                        var MyRequestList = new CyberButton
-                        {
-                            Width = 650,
-                            Height = 100,
-                            Location = new Point(x_point, y_point),
-                            RoundingInt = 20,
+                //        var MyRequestList = new CyberButton
+                //        {
+                //            Width = 650,
+                //            Height = 100,
+                //            Location = new Point(x_point, y_point),
+                //            RoundingInt = 20,
 
-                            Font = new Font("Segoe UI", 16.0f),
-                            TextButton = message,
+                //            Font = new Font("Segoe UI", 16.0f),
+                //            TextButton = message,
 
-                            Tag = (i, myRequest[i]),
+                //            Tag = (i, myRequest[i]),
 
-                            Background_WidthPen = 2,
-                            ColorBackground_Pen = Color.LightSlateGray,
-                            ColorBackground = Color.DimGray,
-                            ForeColor = Color.Tan,
-                        };
+                //            Background_WidthPen = 2,
+                //            ColorBackground_Pen = Color.LightSlateGray,
+                //            ColorBackground = Color.DimGray,
+                //            ForeColor = Color.Tan,
+                //        };
 
-                        MyRequestList.Click += MyRequestList_Click;
+                //        MyRequestList.Click += MyRequestList_Click;
 
-                        PanelMyRequest.Controls.Add(MyRequestList);
+                //        PanelMyRequest.Controls.Add(MyRequestList);
 
-                        y_point += 120;
-                    }
+                //        y_point += 120;
+                //    }
 
-                    PanelMyRequest.ResumeLayout(true);
-                }
+                //    PanelMyRequest.ResumeLayout(true);
+                //}
 
-                PanelMyRequest.Visible = true;
+                //PanelMyRequest.Visible = true;
             }
             catch (Exception ex)
             {

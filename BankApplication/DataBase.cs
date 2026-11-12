@@ -13,13 +13,6 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Forms;
 using System.Xml.Linq;
-using Telegram.Bot.Requests.Abstractions;
-using Telegram.Bot.Types;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using static ReaLTaiizor.Drawing.Poison.PoisonPaint.ForeColor;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace BankApplication
 {
@@ -50,7 +43,7 @@ namespace BankApplication
 
         #region Оплата на расчетный счет (D)
         public async static Task<bool> PayDebitCardToPaymentAccount(decimal newBalanceSource, decimal newCashbackSource, int id, decimal currentBalanceSource,
-                                                    decimal currentDepositSource, decimal currentLimitDepositSource, decimal currentCashbackSource, int idPayment, decimal newBalanceTarget, decimal currentBalanceTarget)
+                                                    decimal currentCashbackSource, int idPayment, decimal newBalanceTarget, decimal currentBalanceTarget)
         {
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
 
@@ -70,8 +63,6 @@ namespace BankApplication
                     SET Balance = @newBalanceSource, CashBack = @newCashbackSource
                     WHERE Id = @id
                     AND Balance = @currentBalanceSource
-                    AND Deposit = @currentDepositSource
-                    AND LimitDeposit = @currentLimitDepositSource
                     AND Status = 1
                     AND Reason IS NULL
                     AND IsCashbackEnabled = 1
@@ -79,9 +70,7 @@ namespace BankApplication
                 cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
                 cmdSource.Parameters.AddWithValue("newCashback", newCashbackSource);
                 cmdSource.Parameters.AddWithValue("id", id);
-                cmdSource.Parameters.AddWithValue("currentBalance", currentBalanceSource);
-                cmdSource.Parameters.AddWithValue("currentDeposit", currentDepositSource);
-                cmdSource.Parameters.AddWithValue("currentLimitDeposit", currentLimitDepositSource);
+                cmdSource.Parameters.AddWithValue("currentBalance", currentBalanceSource);;
                 cmdSource.Parameters.AddWithValue("currentCashback", currentCashbackSource);
 
                 int sourceRows = await cmdSource.ExecuteNonQueryAsync();
@@ -120,9 +109,8 @@ namespace BankApplication
         #endregion
 
         #region Пополнить баланс с другой Debit карты (D)
-        public async static Task<bool> ReplenishBalanceDebitCardFromDebitCard(int idTarget, decimal newBalanceTarget, decimal currentBalanceTarget, decimal currentDepositTarget, decimal currentLimitDepositTarget,
-                        decimal currentCashbackTarget, int idSource, decimal newBalanceSource, decimal currentBalanceSource, decimal currentDepositSource, decimal currentLimitDepositSource,
-                        decimal currentCashbackSource)
+        public async static Task<bool> ReplenishBalanceDebitCardFromDebitCard(int idTarget, decimal newBalanceTarget, decimal currentBalanceTarget,
+                        decimal currentCashbackTarget, int idSource, decimal newBalanceSource, decimal currentBalanceSource, decimal currentCashbackSource)
         {
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
 
@@ -142,14 +130,10 @@ namespace BankApplication
                     SET Balance = @newBalanceTarget
                     WHERE Id = @idTarget
                     AND Balance = @currentBalanceTarget
-                    AND Deposit = @currentDepositTarget
-                    AND LimitDeposit = @currentLimitDepositTarget
                     AND CashBack = @currentCashbackTarget";
                 cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
                 cmdTarget.Parameters.AddWithValue("idTarget", idTarget);
                 cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
-                cmdTarget.Parameters.AddWithValue("currentDepositTarget", currentDepositTarget);
-                cmdTarget.Parameters.AddWithValue("currentLimitDepositTarget", currentLimitDepositTarget);
                 cmdTarget.Parameters.AddWithValue("currentCashbackTarget", currentCashbackTarget);
 
                 var readerTarget = await cmdTarget.ExecuteNonQueryAsync();
@@ -166,14 +150,10 @@ namespace BankApplication
                     SET Balance = @newBalanceSource
                     WHERE Id = @idSource
                     AND Balance = @currentBalanceSource
-                    AND Deposit = @currentDepositSource
-                    AND LimitDeposit = @currentLimitDepositSource
                     AND CashBack = @currentCashbackSource";
                 cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
                 cmdSource.Parameters.AddWithValue("idSource", idSource);
                 cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource);
-                cmdSource.Parameters.AddWithValue("currentDepositSource", currentDepositSource);
-                cmdSource.Parameters.AddWithValue("currentLimitDepositSource", currentLimitDepositSource);
                 cmdSource.Parameters.AddWithValue("currentCashbackSource", currentCashbackSource);
 
                 var readerSource = await cmdSource.ExecuteNonQueryAsync();
@@ -193,8 +173,7 @@ namespace BankApplication
         #endregion
 
         #region Пополнить баланс с другого счета (PaymentAccount) карты (D)
-        public async static Task<bool> ReplenishBalanceDebitCardFromPaymentAccountCard(int idTarget, decimal newBalanceTarget, decimal currentBalanceTarget, decimal currentDepositTarget, decimal currentLimitDepositTarget,
-                        decimal currentCashbackTarget, int idSource, decimal newBalanceSource)
+        public async static Task<bool> ReplenishBalanceDebitCardFromPaymentAccountCard(int idTarget, decimal newBalanceTarget, decimal currentBalanceTarget, decimal currentCashbackTarget, int idSource, decimal newBalanceSource)
         {
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
 
@@ -214,15 +193,11 @@ namespace BankApplication
                     SET Balance = @newBalanceTarget
                     WHERE Id = @idTarget
                     AND Balance = @currentBalanceTarget
-                    AND Deposit = @currentDepositTarget
-                    AND LimitDeposit = @currentLimitDepositTarget
                     AND CashBack = @currentCashbackTarget
                     AND Status = 1";
                 cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
                 cmdTarget.Parameters.AddWithValue("idTarget", idTarget);
                 cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
-                cmdTarget.Parameters.AddWithValue("currentDepositTarget", currentDepositTarget);
-                cmdTarget.Parameters.AddWithValue("currentLimitDepositTarget", currentLimitDepositTarget);
                 cmdTarget.Parameters.AddWithValue("currentCashbackTarget", currentCashbackTarget);
 
                 var readerTarget = await cmdTarget.ExecuteNonQueryAsync();
@@ -283,7 +258,7 @@ namespace BankApplication
 
                 cmdDebit.Transaction = transaction;             // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО
                 cmdDebit.CommandText = @"
-                    SELECT Id, CardNumber, Balance, Deposit, LimitDeposit, CashBack, Status, Reason, CreateAt, IsCashbackEnabled
+                    SELECT Id, CardNumber, Balance, CashBack, Status, Reason, CreateAt, CloseAt, IsCashbackEnabled
                     FROM DebitCard WHERE ClientId = @clientId";
                 cmdDebit.Parameters.AddWithValue("clientId", clientId);
 
@@ -294,15 +269,14 @@ namespace BankApplication
                     int idcard = readerDebit.GetInt32(0);
                     string cardnumber = readerDebit.GetString(1);
                     decimal balance = readerDebit.GetDecimal(2);
-                    decimal deposit = readerDebit.GetDecimal(3);
-                    decimal limitDeposit = readerDebit.GetDecimal(4);
-                    decimal cashback = readerDebit.GetDecimal(5);
-                    int status = readerDebit.GetInt32(6);
-                    string reason = readerDebit.IsDBNull(7) ? "" : readerDebit.GetString(7);
-                    DateTime createAt = readerDebit.GetDateTime(8);
-                    int isCashbackEnabled = readerDebit.GetInt32(9);
+                    decimal cashback = readerDebit.GetDecimal(3);
+                    int status = readerDebit.GetInt32(4);
+                    string reason = readerDebit.IsDBNull(5) ? "" : readerDebit.GetString(5);
+                    DateTime createAt = readerDebit.GetDateTime(6);
+                    DateTime closeAt = readerDebit.IsDBNull(7) ? default : readerDebit.GetDateTime(7);
+                    int isCashbackEnabled = readerDebit.GetInt32(8);
 
-                    cards.Add(new DebitCard(idcard, clientId, cardnumber, balance, deposit, limitDeposit, cashback, status, reason, createAt, isCashbackEnabled));
+                    cards.Add(new DebitCard(idcard, clientId, cardnumber, balance, cashback, status, reason, createAt, closeAt, isCashbackEnabled));
                 }
                 #endregion
 
@@ -398,6 +372,81 @@ namespace BankApplication
         }
         #endregion
 
+        #region Проверка логина (Регистрация)
+        public async static Task<bool> CheckLoginForReg(string login)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = @"
+                    SELECT COUNT(*)
+                    FROM Client 
+                    WHERE Login = @login";
+            command.Parameters.AddWithValue("login", login);
+
+            var result = await command.ExecuteScalarAsync();
+            int count = Convert.ToInt32(result);
+
+            return count > 0;
+        }
+        #endregion
+
+        #region Добавление клиента в БД без фамилии (Регистрация)
+        public async static Task<bool> AddClientNoPatronymic(string login, string password, string name1, string name2, string datebirth, string numberPhone, string mail)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = @"
+                    INSERT INTO Client (Login, Password, Name1, Name2, DateBirth, NumberPhone, Mail)
+                    VALUES (@login, @password, @name1, @name2, @datebirth, @numberphone, @mail)";
+            command.Parameters.AddWithValue("login", login);
+            command.Parameters.AddWithValue("password", password);
+            command.Parameters.AddWithValue("name1", name1);
+            command.Parameters.AddWithValue("name2", name2);
+            command.Parameters.AddWithValue("datebirth", datebirth);
+            command.Parameters.AddWithValue("numberphone", numberPhone);
+            command.Parameters.AddWithValue("mail", mail);
+
+            var reader = await command.ExecuteNonQueryAsync();
+
+            return reader > 0;
+        }
+        #endregion
+
+        #region Добавление клиента в БД с фамилией (Регистрация)
+        public async static Task<bool> AddClientPatronymic(string login, string password, string name1, string name2, string name3, string datebirth, string numberPhone, string mail)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = @"
+                    INSERT INTO Client (Login, Password, Name1, Name2, Name3, DateBirth, NumberPhone, Mail)
+                    VALUES (@login, @password, @name1, @name2, @name3, @datebirth, @numberphone, @mail)";
+            command.Parameters.AddWithValue("login", login);
+            command.Parameters.AddWithValue("password", password);
+            command.Parameters.AddWithValue("name1", name1);
+            command.Parameters.AddWithValue("name2", name2);
+            command.Parameters.AddWithValue("name3", name3);
+            command.Parameters.AddWithValue("datebirth", datebirth);
+            command.Parameters.AddWithValue("numberphone", numberPhone);
+            command.Parameters.AddWithValue("mail", mail);
+
+            var reader = await command.ExecuteNonQueryAsync();
+
+            return reader > 0;
+        }
+        #endregion
+
 
 
         #region Аторизация/Регистрация
@@ -441,31 +490,7 @@ namespace BankApplication
 
             await command.ExecuteNonQueryAsync();
         }
-
-        //-------------------[Проверки логина при регистрации (true - занят, false - свободен)]-------------------//
-        public async static Task<bool> CheckLoginForReg(string login)
-        {
-            // set these values correctly for your database server
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            // open a connection asynchronously
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // create a DB command and set the SQL statement with parameters
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    SELECT COUNT(*)
-                    FROM Client 
-                    WHERE Login = @login";
-            command.Parameters.AddWithValue("login", login);
-
-            // execute the command and read the results
-            var result = await command.ExecuteScalarAsync();
-            int count = Convert.ToInt32(result);
-
-            return count > 0;
-        }
+        
 
         //-------------------[Проверки почты при регистрации (true - занята, false - свободна)]-------------------//
         public async static Task<bool> CheckMailForReg(string mail)
@@ -487,30 +512,7 @@ namespace BankApplication
 
             return count > 0;
         }
-
-        //-------------------[Добавление клиента в БД (Регистрация)]-------------------//
-        public async static Task AddClient(string login, string password, string name1, string name2, string name3, string datebirth, string numberPhone, string mail)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    INSERT INTO Client (Login, Password, name1, name2, name3, DateBirth, NumberPhone, Mail)
-                    VALUES (@login, @password, @name1, @name2, @name3, @datebirth, @numberphone, @mail)";
-            command.Parameters.AddWithValue("login", login);
-            command.Parameters.AddWithValue("password", password);
-            command.Parameters.AddWithValue("name1", name1);
-            command.Parameters.AddWithValue("name2", name2);
-            command.Parameters.AddWithValue("name3", name3);
-            command.Parameters.AddWithValue("datebirth", datebirth);
-            command.Parameters.AddWithValue("numberphone", numberPhone);
-            command.Parameters.AddWithValue("mail", mail);
-
-            await command.ExecuteNonQueryAsync();
-        }        
+        
 
         //-------------------[Проверка пароля (Панель Администратора)]-------------------//
         public readonly struct StructCheckPasswordAdmin(int id, string login, string password, string secureCode, int status, bool checkStatus)
@@ -796,106 +798,7 @@ namespace BankApplication
         }
         #endregion
 
-        #region Закрыть карту + закрыть Request (B)
-        public async static Task B_CloseAccept(int idCard, string answer, string comment, DateTime dateAnswer,
-                    int idRequest, string typeCard, string cardNumber, int clientId, string title)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // Открываем транзакцию (действия зависят друг от друга)
-            await using var transaction = await connection.BeginTransactionAsync();
-
-            try
-            {
-                #region Действие 1: Удаляем карту из основного списка
-                await using var cmdDelete = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdDelete.Transaction = transaction;
-                cmdDelete.CommandText = @"
-                    DELETE FROM BusinessCard
-                    WHERE Id = @idCard
-                    AND Status = 0";
-                cmdDelete.Parameters.AddWithValue("idCard", idCard);
-
-                // ExecuteNonQueryAsync вернет количество вставленных строк
-                int deleteRows = await cmdDelete.ExecuteNonQueryAsync();
-
-                if (deleteRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалейства, повторите попытку позже.");
-                #endregion
-
-                #region Действие 2: Добавляем карту в архив
-                await using var cmdInsert = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdInsert.Transaction = transaction;
-                cmdInsert.CommandText = @"
-                    INSERT INTO ArchiveCard (TypeCard, CardNumber, ClientId, Reason)
-                    VALUES (@typeCard, @cardNumber, @clietnId, @reason)";
-                cmdInsert.Parameters.AddWithValue("typeCard", typeCard);
-                cmdInsert.Parameters.AddWithValue("cardNumber", cardNumber);
-                cmdInsert.Parameters.AddWithValue("clietnId", clientId);
-                cmdInsert.Parameters.AddWithValue("reason", $"Карта закрыта по заявке владельца (номер заявки: {idRequest})");
-
-                // ExecuteNonQueryAsync вернет количество вставленных строк
-                int insertRows = await cmdInsert.ExecuteNonQueryAsync();
-
-                if (insertRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалейства, повторите попытку позже.");
-                #endregion
-
-                #region Действие 3: Отправляем ответ на запрос
-                await using var cmdUpdateRequest = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdUpdateRequest.Transaction = transaction;
-                cmdUpdateRequest.CommandText = @"
-                    UPDATE Request
-                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
-                    WHERE Id = @idRequest
-                    AND Answer IS NULL
-                    AND Comment IS NULL
-                    AND DateAnswer IS NULL";
-                cmdUpdateRequest.Parameters.AddWithValue("answer", answer);
-                cmdUpdateRequest.Parameters.AddWithValue("comment", comment);
-                cmdUpdateRequest.Parameters.AddWithValue("dateAnswer", dateAnswer);
-                cmdUpdateRequest.Parameters.AddWithValue("idRequest", idRequest);
-
-                int updateRequestRows = await cmdUpdateRequest.ExecuteNonQueryAsync();
-
-                if (updateRequestRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                #region Действие 4: Отправляем уведомление клиенту
-                await using var notifications = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                notifications.Transaction = transaction;
-                notifications.CommandText = @"
-                    INSERT INTO Notifications (ClientId, Title, Message)
-                    VALUES (@clientId, @title, @message)";
-                notifications.Parameters.AddWithValue("clientId", clientId);
-                notifications.Parameters.AddWithValue("title", title);
-                notifications.Parameters.AddWithValue("message", comment);
-
-                var addNoti = await notifications.ExecuteNonQueryAsync();
-
-                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                // Если все хорошо: Сохраняем оба действия в БД разом
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                // В случае любой непредвиденной ошибки отменяем все изменения
-                if (transaction != null) await transaction.RollbackAsync();
-                throw;
-            }
-        }
-        #endregion
+        
 
 
 
@@ -1065,88 +968,7 @@ namespace BankApplication
         }
         #endregion
 
-        #region Открыть карту + закрыть Request (B)
-        public async static Task B_AcceptOpenCard(int clientId, string newCardNumber, string answer, string comment, DateTime dateAnswer, int idRequest, string title)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // Открываем транзакцию (действия зависят друг от друга)
-            await using var transaction = await connection.BeginTransactionAsync();
-
-            try
-            {
-                #region Действие 1: Создаем карту
-                await using var cmdOpenCard = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdOpenCard.Transaction = transaction;
-                cmdOpenCard.CommandText = @"
-                    INSERT INTO BusinessCard (ClientId, CardNumber)
-                    VALUES (@clientid, @cardnumber)";
-                cmdOpenCard.Parameters.AddWithValue("clientid", clientId);
-                cmdOpenCard.Parameters.AddWithValue("cardnumber", newCardNumber);
-
-                // ExecuteNonQueryAsync вернет количество вставленных строк
-                int openCardRows = await cmdOpenCard.ExecuteNonQueryAsync();
-
-                if (openCardRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалейства, повторите попытку позже.");
-                #endregion
-
-                #region Действие 2: Отправляем ответ на запрос
-                await using var cmdUpdateRequest = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdUpdateRequest.Transaction = transaction;
-                cmdUpdateRequest.CommandText = @"
-                    UPDATE Request
-                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
-                    WHERE Id = @idRequest
-                    AND Answer IS NULL
-                    AND Comment IS NULL
-                    AND DateAnswer IS NULL";
-                cmdUpdateRequest.Parameters.AddWithValue("answer", answer);
-                cmdUpdateRequest.Parameters.AddWithValue("comment", comment);
-                cmdUpdateRequest.Parameters.AddWithValue("dateAnswer", dateAnswer);
-                cmdUpdateRequest.Parameters.AddWithValue("idRequest", idRequest);
-
-                // ExecuteNonQueryAsync вернет количество вставленных строк
-                int updateRequestRows = await cmdUpdateRequest.ExecuteNonQueryAsync();
-
-                if (updateRequestRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                #region Действие 3: Отправляем уведомление клиенту
-                await using var notifications = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                notifications.Transaction = transaction;
-                notifications.CommandText = @"
-                    INSERT INTO Notifications (ClientId, Title, Message)
-                    VALUES (@clientId, @title, @message)";
-                notifications.Parameters.AddWithValue("clientId", clientId);
-                notifications.Parameters.AddWithValue("title", title);
-                notifications.Parameters.AddWithValue("message", comment);
-
-                // ExecuteNonQueryAsync вернет количество вставленных строк
-                var addNoti = await notifications.ExecuteNonQueryAsync();
-
-                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                // Если все хорошо: Сохраняем оба действия в БД разом
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                // В случае любой непредвиденной ошибки отменяем все изменения
-                if (transaction != null) await transaction.RollbackAsync();
-                throw;
-            }
-        }
-        #endregion
+        
 
 
 
@@ -1278,379 +1100,7 @@ namespace BankApplication
         }
         #endregion
 
-        #region Отказано (Ответить на запрос - Открыть карту (B))
-        public async static Task B_RefusalOpenCard(int idRequest, string answer, string comment, DateTime dateAnswer,
-            int clientId, string title)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // Открываем транзакцию (оба действия зависят друг от друга)
-            await using var transaction = await connection.BeginTransactionAsync();
-
-            try
-            {
-                #region Действие 1: Обновляем запрос (даем ответ)
-                await using var udpade = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                udpade.Transaction = transaction;
-                udpade.CommandText = @"
-                    UPDATE Request
-                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
-                    WHERE Id = @idRequest
-                    AND Answer IS NULL
-                    AND Comment IS NULL
-                    AND DateAnswer IS NULL";
-                udpade.Parameters.AddWithValue("answer", answer);
-                udpade.Parameters.AddWithValue("comment", comment);
-                udpade.Parameters.AddWithValue("dateAnswer", dateAnswer);
-                udpade.Parameters.AddWithValue("idRequest", idRequest);
-
-                var update = await udpade.ExecuteNonQueryAsync();
-
-                if (update == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                #region Действие 2: Отправляем уведомление клиенту
-                await using var notifications = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                notifications.Transaction = transaction;
-                notifications.CommandText = @"
-                    INSERT INTO Notifications (ClientId, Title, Message)
-                    VALUES (@clientId, @title, @message)";
-                notifications.Parameters.AddWithValue("clientId", clientId);
-                notifications.Parameters.AddWithValue("title", title);
-                notifications.Parameters.AddWithValue("message", comment);
-
-                var addNoti = await notifications.ExecuteNonQueryAsync();
-
-                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                // Сохраняем оба действия в БД разом (если все хорошо)
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                if (transaction != null) await transaction.RollbackAsync();
-                throw;
-            }
-        }
-        #endregion
-
-
-        #region Работа с Debit картами                
-
-        #region Пополнить депозит (D)
-        public async static Task<bool> ReplenishDepositDebitCard(int id, decimal new_deposit, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_cashback) 
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    UPDATE DebitCard
-                    SET Deposit = @new_deposit
-                    WHERE Id = @id
-                    AND Balance = @current_balance
-                    AND Deposit = @current_deposit
-                    AND LimitDeposit = @current_limitDeposit
-                    AND CashBack = @current_cashback";
-            command.Parameters.AddWithValue("new_deposit", new_deposit);
-            command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("current_balance", current_balance);
-            command.Parameters.AddWithValue("current_deposit", current_deposit);
-            command.Parameters.AddWithValue("current_limitDeposit", current_limit);
-            command.Parameters.AddWithValue("current_cashback", current_cashback);
-
-            var reader = Convert.ToInt32(await command.ExecuteNonQueryAsync());
-
-            return reader > 0;
-        }
-        #endregion
-
-        #endregion
-
-
-        #region Работа с Credit картами
-
-        #region Поиск карт клиента по ID (C)
-        public struct StructCheckCreditCardsClient(List<CreditCard> credit_cards)
-        {
-            public List<CreditCard> CreditCards = credit_cards;
-        }
-        public async static Task<StructCheckCreditCardsClient> CheckCreditCardsClient(int clientid)
-        {
-            List<CreditCard> credit_cards = new List<CreditCard>();
-
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    SELECT Id, CardNumber, Balance, Deposit, LimitDeposit, Debt, Status, Reason
-                    FROM CreditCard WHERE ClientId = @clientid";
-            command.Parameters.AddWithValue("clientid", clientid);
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                int idcard = reader.GetInt32(0);
-                string cardnumber = reader.GetString(1);
-                decimal balance = reader.GetDecimal(2);
-                decimal deposit = reader.GetDecimal(3);
-                decimal limitdeposit = reader.GetDecimal(4);
-                decimal debt = reader.GetDecimal(5);
-                int status = reader.GetInt32(6);
-                string reason = reader.IsDBNull(7) ? "" : reader.GetString(7);
-
-                credit_cards.Add(new CreditCard(idcard, cardnumber, balance, deposit, limitdeposit, clientid, debt, status, reason));
-            }
-
-            // Отдаем структуре полученный список из кредитных карт
-            return new StructCheckCreditCardsClient(credit_cards);
-        }
-        #endregion
-
-        #region Пополнить баланс (C)
-        public async static Task<bool> ReplenishBalanceCreditCard(int id, decimal new_balance, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_debt)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    UPDATE CreditCard
-                    SET Balance = @new_balance
-                    WHERE Id = @id
-                    AND Balance = @current_balance
-                    AND Deposit = @current_deposit
-                    AND LimitDeposit = @current_limitDeposit
-                    AND Debt = @current_debt";
-            command.Parameters.AddWithValue("new_balance", new_balance);
-            command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("current_balance", current_balance);
-            command.Parameters.AddWithValue("current_deposit", current_deposit);
-            command.Parameters.AddWithValue("current_limitDeposit", current_limit);
-            command.Parameters.AddWithValue("current_debt", current_debt);
-
-            var reader = Convert.ToInt32(await command.ExecuteNonQueryAsync());
-
-            return reader > 0;
-        }
-        #endregion
-
-        #region Оплата + обновление задолженности (C)
-        public async static Task<bool> PayCreditCard(decimal new_balance, decimal new_debt, int id, decimal current_balance,
-                                               decimal current_deposit, decimal current_limitDeposit, decimal current_debt)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    UPDATE CreditCard
-                    SET Balance = @new_balance, Debt = @new_debt
-                    WHERE Id = @id
-                    AND Balance = @current_balance
-                    AND Deposit = @current_deposit
-                    AND LimitDeposit = @current_limitDeposit
-                    AND Debt = @current_debt";
-            command.Parameters.AddWithValue("new_balance", new_balance);
-            command.Parameters.AddWithValue("new_debt", new_debt);
-            command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("current_balance", current_balance);
-            command.Parameters.AddWithValue("current_deposit", current_deposit);
-            command.Parameters.AddWithValue("current_limitDeposit", current_limitDeposit);
-            command.Parameters.AddWithValue("current_debt", current_debt);
-
-            int rowsAffected = await command.ExecuteNonQueryAsync();
-
-            return rowsAffected > 0;
-        }
-        #endregion        
-
-        #region Пополнить депозит (C)
-        public async static Task<bool> ReplenishDepositCreditCard(int id, decimal new_deposit, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_debt)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    UPDATE CreditCard
-                    SET Deposit = @new_deposit
-                    WHERE Id = @id
-                    AND Balance = @current_balance
-                    AND Deposit = @current_deposit
-                    AND LimitDeposit = @current_limitDeposit
-                    AND Debt = @current_debt";
-            command.Parameters.AddWithValue("new_deposit", new_deposit);
-            command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("current_balance", current_balance);
-            command.Parameters.AddWithValue("current_deposit", current_deposit);
-            command.Parameters.AddWithValue("current_limitDeposit", current_limit);
-            command.Parameters.AddWithValue("current_debt", current_debt);
-
-            var reader = Convert.ToInt32(await command.ExecuteNonQueryAsync());
-
-            return reader > 0;
-        }
-        #endregion
-
-        #endregion
-
-
-        #region Работа с Bussines картами
-
-        #region Поиск карт клиента по ID (B)
-        public struct StructCheckBusinessCardsClient(List<BusinessCard> business_cards)
-        {
-            public List<BusinessCard> BussinesCards = business_cards;
-        }
-        public async static Task<StructCheckBusinessCardsClient> CheckBusinessCardsClient(int clientid)
-        {
-            List<BusinessCard> business_cards = new List<BusinessCard>();
-
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    SELECT Id, CardNumber, Balance, Deposit, LimitDeposit, Percent, Status, Reason
-                    FROM BusinessCard WHERE ClientId = @clientid";
-            command.Parameters.AddWithValue("clientid", clientid);
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                int idcard = reader.GetInt32(0);
-                string cardnumber = reader.GetString(1);
-                decimal balance = reader.GetDecimal(2);
-                decimal deposit = reader.GetDecimal(3);
-                decimal limitdeposit = reader.GetDecimal(4);
-                double percent = reader.GetDouble(5);
-                int status = reader.GetInt32(6);
-                string reason = reader.IsDBNull(7) ? "" : reader.GetString(7);
-
-                business_cards.Add(new BusinessCard(idcard, cardnumber, balance, deposit, limitdeposit, clientid, percent, status, reason));
-            }
-
-            return new StructCheckBusinessCardsClient(business_cards); // Отдаем СТРУКТУРЕ полученный список из БИЗНЕС карт
-        }
-        #endregion
-
-        #region Пополнить баланс (B)
-        public async static Task<bool> ReplenishBalanceBusinessCard(int id, decimal new_balance, decimal current_balance, decimal current_deposit, decimal current_limit, double current_percent)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    UPDATE BusinessCard
-                    SET Balance = @new_balance
-                    WHERE Id = @id
-                    AND Balance = @current_balance
-                    AND Deposit = @current_deposit
-                    AND LimitDeposit = @current_limitDeposit
-                    AND Percent = @current_percent";
-            command.Parameters.AddWithValue("new_balance", new_balance);
-            command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("current_balance", current_balance);
-            command.Parameters.AddWithValue("current_deposit", current_deposit);
-            command.Parameters.AddWithValue("current_limitDeposit", current_limit);
-            command.Parameters.AddWithValue("current_percent", current_percent);
-
-            var reader = Convert.ToInt32(await command.ExecuteNonQueryAsync());
-
-            return reader > 0;
-        }
-        #endregion
-
-        #region Оплата (B)
-        public async static Task<bool> PayBusinessCard(int id, decimal new_balance, decimal current_balance,
-                                               decimal current_deposit, decimal current_limitDeposit, double current_percent)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    UPDATE BusinessCard
-                    SET Balance = @new_balance
-                    WHERE Id = @id
-                    AND Balance = @current_balance
-                    AND Deposit = @current_deposit
-                    AND LimitDeposit = @current_limitDeposit
-                    AND Percent = @current_percent";
-            command.Parameters.AddWithValue("@new_balance", new_balance);
-            command.Parameters.AddWithValue("@id", id);
-            command.Parameters.AddWithValue("@current_balance", current_balance);
-            command.Parameters.AddWithValue("@current_deposit", current_deposit);
-            command.Parameters.AddWithValue("@current_limitDeposit", current_limitDeposit);
-            command.Parameters.AddWithValue("@current_percent", current_percent);
-
-            int rowsAffected = await command.ExecuteNonQueryAsync();
-
-            return rowsAffected > 0;
-        }
-        #endregion
-
-        #region Пополнить депозит (B)
-        public async static Task<bool> ReplenishDepositBusinessCard(int id, decimal new_deposit, decimal current_balance,
-                                               decimal current_deposit, decimal current_limitDeposit, double current_percent)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    UPDATE BusinessCard
-                    SET Deposit = @new_deposit
-                    WHERE Id = @id
-                    AND Balance = @current_balance
-                    AND Deposit = @current_deposit
-                    AND LimitDeposit = @current_limitDeposit
-                    AND Percent = @current_percent";
-            command.Parameters.AddWithValue("@new_deposit", new_deposit);
-            command.Parameters.AddWithValue("@id", id);
-            command.Parameters.AddWithValue("@current_balance", current_balance);
-            command.Parameters.AddWithValue("@current_deposit", current_deposit);
-            command.Parameters.AddWithValue("@current_limitDeposit", current_limitDeposit);
-            command.Parameters.AddWithValue("@current_percent", current_percent);
-
-            int rowsAffected = await command.ExecuteNonQueryAsync();
-
-            return rowsAffected > 0;
-        }
-        #endregion
-
-        #endregion
+        
 
 
         #region Запросы
@@ -1809,82 +1259,7 @@ namespace BankApplication
         }
         #endregion
 
-        #region Запрос - Измененить лимита депозита (B)
-        public async static Task<bool> B_RequestChangeLimitDeposit(int clientId, string defcard, string typeCard, int idCard,
-                    string message, decimal newdeposit, decimal newBalance, decimal currentBalance)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // Открываем транзакцию (оба действия зависят друг от друга)
-            await using var transaction = await connection.BeginTransactionAsync();
-
-            try
-            {
-                // Действие 1: Списываем деньги + првоеряем
-                await using var cmdUpdateBalance = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdUpdateBalance.Transaction = transaction;
-                cmdUpdateBalance.CommandText = @"
-                    UPDATE BusinessCard
-                    SET Balance = @newBalance
-                    WHERE Id = @idCard
-                    AND Balance = @currentBalance
-                    AND Status = 1";
-                cmdUpdateBalance.Parameters.AddWithValue("newBalance", newBalance);
-                cmdUpdateBalance.Parameters.AddWithValue("idCard", idCard);
-                cmdUpdateBalance.Parameters.AddWithValue("currentBalance", currentBalance);
-
-                // ExecuteNonQueryAsync вернет количество найденных строк (должна быть одна строка)
-                var updateBalance = await cmdUpdateBalance.ExecuteNonQueryAsync();
-
-                if (updateBalance == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
-
-                // Действие 2: Отправляем запрос в БД
-                await using var cmdUpdate = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdUpdate.Transaction = transaction;
-                cmdUpdate.CommandText = @"
-                    INSERT INTO Request (ClientId, Type, DefCard, TypeCard, IdCard, Message, Done, NewDeposit)
-                    SELECT @clientId, @type, @defcard, @typeCard, @idCard, @message, @done, @newdeposit
-                    FROM DUAL
-                    WHERE NOT EXISTS (
-                        SELECT 1 
-                        FROM Request 
-                        WHERE ClientId = @clientId 
-                        AND Type = @type 
-                        AND Done = 0);";
-                cmdUpdate.Parameters.AddWithValue("clientId", clientId); // ID клиента (отправивший запрос)
-                cmdUpdate.Parameters.AddWithValue("type", 1); // 1 - лимит депозита, 2 - удалить карту, 3 - открыть карту
-                cmdUpdate.Parameters.AddWithValue("defcard", defcard); // Номер карты
-                cmdUpdate.Parameters.AddWithValue("typeCard", typeCard); // Тип карты (U, D, C, B)
-                cmdUpdate.Parameters.AddWithValue("idCard", idCard); // ID карты в БД
-                cmdUpdate.Parameters.AddWithValue("message", message); // Описание
-                cmdUpdate.Parameters.AddWithValue("done", 0); // 0 - на рассмотрении, 1 - рассмотренно
-                cmdUpdate.Parameters.AddWithValue("newdeposit", newdeposit); // новый депозит (если type 1, иначе NULL)
-
-                int update = await cmdUpdate.ExecuteNonQueryAsync();
-
-                // Если запрос не записался - отменяем
-                if (update == 0) throw new Exception("Вы уже отправляли заявку такого типа (Изменение депозита). Пожалуйста, дождитесь ее рассмотрения.");
-
-                // Сохраняем оба действия в БД разом (если все хорошо)
-                await transaction.CommitAsync();
-
-                return true;
-            }
-            catch
-            {
-                // В случае любой непредвиденной ошибки отменяем все изменения
-                if (transaction != null) await transaction.RollbackAsync();
-                throw;
-            }
-        }
-        #endregion
+        
 
 
 
@@ -2060,93 +1435,7 @@ namespace BankApplication
         }
         #endregion
 
-        #region Одобрено (Изменить лимит депозита) + закрыть Request (B)
-        public async static Task B_ChangeLimitDepositAndAnswerRequest(decimal newLimit, int idCard, string answer, string comment, DateTime dateAnswer, int idRequest,
-            int clientId, string title)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // Открываем транзакцию (оба действия зависят друг от друга)
-            await using var transaction = await connection.BeginTransactionAsync();
-
-            try
-            {
-                #region Действие 1: Меняем лимит депозита
-                await using var cmdUpdateDeposit = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdUpdateDeposit.Transaction = transaction;
-                cmdUpdateDeposit.CommandText = @"
-                    UPDATE BusinessCard
-                    SET LimitDeposit = @newLimit
-                    WHERE Id = @idCard
-                    AND Status = 1";
-                cmdUpdateDeposit.Parameters.AddWithValue("newLimit", newLimit);
-                cmdUpdateDeposit.Parameters.AddWithValue("idCard", idCard);
-
-                // ExecuteNonQueryAsync вернет количество вставленных строк
-                int updateDepositRows = await cmdUpdateDeposit.ExecuteNonQueryAsync();
-
-                // Если депозит не сменился (по какой-то причине)
-                if (updateDepositRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                #region Действие 2: Отправляем ответ на запрос
-                await using var cmdUpdateRequest = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdUpdateRequest.Transaction = transaction;
-                cmdUpdateRequest.CommandText = @"
-                    UPDATE Request
-                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
-                    WHERE Id = @idRequest
-                    AND Answer IS NULL
-                    AND Comment IS NULL
-                    AND DateAnswer IS NULL";
-                cmdUpdateRequest.Parameters.AddWithValue("answer", answer);
-                cmdUpdateRequest.Parameters.AddWithValue("comment", comment);
-                cmdUpdateRequest.Parameters.AddWithValue("dateAnswer", dateAnswer);
-                cmdUpdateRequest.Parameters.AddWithValue("idRequest", idRequest);
-
-                // ExecuteNonQueryAsync вернет количество вставленных строк
-                int updateRequestRows = await cmdUpdateRequest.ExecuteNonQueryAsync();
-
-                // Если ответ не записался в БД (по какой-то причине)
-                if (updateRequestRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                #region Действие 3: Отправляем уведомление клиенту
-                await using var notifications = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                notifications.Transaction = transaction;
-                notifications.CommandText = @"
-                    INSERT INTO Notifications (ClientId, Title, Message)
-                    VALUES (@clientId, @title, @message)";
-                notifications.Parameters.AddWithValue("clientId", clientId);
-                notifications.Parameters.AddWithValue("title", title);
-                notifications.Parameters.AddWithValue("message", comment);
-
-                // ExecuteNonQueryAsync вернет количество вставленных строк
-                var addNoti = await notifications.ExecuteNonQueryAsync();
-
-                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                // Если все хорошо: Сохраняем оба действия в БД разом
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                // В случае любой непредвиденной ошибки отменяем все изменения
-                if (transaction != null) await transaction.RollbackAsync();
-                throw;
-            }
-        }
-        #endregion
+        
 
 
 
@@ -2612,339 +1901,45 @@ namespace BankApplication
 
 
         #region Поиск открытых запросов (клиент)
-        public readonly struct StructRequestClient(List<Request> request)
-        {
-            public readonly List<Request> Request = request;
-        }
-        public async static Task<StructRequestClient> SearchRequestClient(int clientid)
-        {
-            // Создаем пустой список (в него будем "складывать" все найденные открытые запросы)
-            List<Request> request = [];
-
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    SELECT Id, Type, DefCard, TypeCard, Timestamp, NewDeposit
-                    FROM Request
-                    WHERE ClientId = @clientid
-                    AND Done = 0";
-            command.Parameters.AddWithValue("clientid", clientid);
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                int id = reader.GetInt32(0);
-                int type = reader.GetInt32(1);
-                string defcard = reader.IsDBNull(2) ? "" : reader.GetString(2);
-                string typeCard = reader.GetString(3);
-                DateTime timestamp = reader.GetDateTime(4);
-                decimal new_deposit = reader.IsDBNull(5) ? 0m : reader.GetDecimal(5);
-
-                request.Add(new Request(id, type, defcard, typeCard, timestamp, new_deposit));
-            }
-
-            // Отдаем структуре полученный список из открытых запросов клиента
-            return new StructRequestClient(request);
-        }
-        #endregion
-
-
-        #region Поиск открытых запросов (админ панель)
-        public readonly struct StructRequestAdmin(List<RequestAdmin> request)
-        {
-            public readonly List<RequestAdmin> Request = request;
-        }
-        public async static Task<StructRequestAdmin> SearchRequestAdmin()
-        {
-            List<RequestAdmin> request = [];
-
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // Сортируем по дате (по возрастанию) и берем первые 10 открытых
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    SELECT Id, ClientId, Type, DefCard, TypeCard, IdCard, Message, Timestamp, NewDeposit
-                    FROM Request
-                    WHERE Done = 0
-                    AND AdminAnswer IS NULL
-                    ORDER BY Timestamp ASC
-                    LIMIT 10";
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                int id = reader.GetInt32(0);
-                int clientId = reader.GetInt32(1);
-                int type = reader.GetInt32(2);
-                string defcard = reader.IsDBNull(3) ? "" : reader.GetString(3);
-                string typeCard = reader.GetString(4);
-                int idCard = reader.IsDBNull(5) ? -1 : reader.GetInt32(5);                
-                string message = reader.GetString(6);
-                DateTime timestamp = reader.GetDateTime(7);
-                decimal new_deposit = reader.IsDBNull(8) ? 0m : reader.GetDecimal(8);
-
-                request.Add(new RequestAdmin(id, type, defcard, typeCard, timestamp, new_deposit, clientId, message, idCard));
-            }
-
-            return new StructRequestAdmin(request);
-        }
-        #endregion
-
-        #region Поиск принятых запросов запросов (админ панель)
-        public readonly struct StructMyRequestAdmin(List<RequestAdmin> request)
-        {
-            public readonly List<RequestAdmin> MyRequest = request;
-        }
-        public async static Task<StructMyRequestAdmin> SearchMyRequestAdmin(int adminAnswer)
-        {
-            List<RequestAdmin> request = [];
-
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // Сортируем по дате (по возрастанию) и берем первые 10 открытых
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    SELECT Id, ClientId, Type, DefCard, TypeCard, IdCard, Message, Timestamp, NewDeposit
-                    FROM Request
-                    WHERE Done = 0
-                    AND AdminAnswer = @adminAnswer";
-            command.Parameters.AddWithValue("adminAnswer", adminAnswer);
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                int id = reader.GetInt32(0);
-                int clientId = reader.GetInt32(1);
-                int type = reader.GetInt32(2);
-                string defcard = reader.IsDBNull(3) ? "-1" : reader.GetString(3);
-                string typeCard = reader.GetString(4);
-                int idCard = reader.IsDBNull(5) ? -1 : reader.GetInt32(5);
-                string message = reader.GetString(6);
-                DateTime timestamp = reader.GetDateTime(7);
-                decimal new_deposit = reader.IsDBNull(8) ? 0m : reader.GetDecimal(8);
-
-                request.Add(new RequestAdmin(id, type, defcard, typeCard, timestamp, new_deposit, clientId, message, idCard));
-            }
-
-            return new StructMyRequestAdmin(request);
-        }
-        #endregion
-
-        #region [Принять запрос (админ панель)
-        public async static Task<bool> ApplyRequest(int idRequest, int adminAnswer)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    UPDATE Request
-                    SET AdminAnswer = @adminAnswer
-                    WHERE Id = @idRequest
-                    AND Done = 0
-                    AND Answer IS NULL
-                    AND Comment IS NULL
-                    AND AdminAnswer IS NULL
-                    AND DateAnswer IS NULL";
-            command.Parameters.AddWithValue("adminAnswer", adminAnswer);
-            command.Parameters.AddWithValue("idRequest", idRequest);
-
-            var reader = Convert.ToInt32(await command.ExecuteNonQueryAsync());
-
-            return reader > 0;
-        }
-        #endregion
-
-
-        #region Отказано (Ответить на запрос - Изменить депозит (D, C))
-        public async static Task UDC_RefusalCLD(int idRequest, string answer, string comment, DateTime dateAnswer,
-            int clientId, string title, string message)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // Открываем транзакцию (оба действия зависят друг от друга)
-            await using var transaction = await connection.BeginTransactionAsync();
-
-            try
-            {
-                // Действие 1: Обновляем запрос (даем ответ)
-                await using var udpade = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                udpade.Transaction = transaction;
-                udpade.CommandText = @"
-                    UPDATE Request
-                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
-                    WHERE Id = @idRequest
-                    AND Answer IS NULL
-                    AND Comment IS NULL
-                    AND DateAnswer IS NULL";
-                udpade.Parameters.AddWithValue("answer", answer);
-                udpade.Parameters.AddWithValue("comment", comment);
-                udpade.Parameters.AddWithValue("dateAnswer", dateAnswer);
-                udpade.Parameters.AddWithValue("idRequest", idRequest);
-
-                var update = await udpade.ExecuteNonQueryAsync();
-
-                if (update == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-
-                // Действие 2: Отправляем уведомление клиенту
-                await using var notifications = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                notifications.Transaction = transaction;
-                notifications.CommandText = @"
-                    INSERT INTO Notifications (ClientId, Title, Message)
-                    VALUES (@clientId, @title, @message)";
-                notifications.Parameters.AddWithValue("clientId", clientId);
-                notifications.Parameters.AddWithValue("title", title);
-                notifications.Parameters.AddWithValue("message", message);
-
-                var addNoti = await notifications.ExecuteNonQueryAsync();
-
-                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-
-                // Сохраняем оба действия в БД разом (если все хорошо)
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                if (transaction != null) await transaction.RollbackAsync();
-                throw;
-            }           
-        }
-        #endregion
-
-        #region Отказано (Ответить на запрос - Изменить депозит (B))
-        public async static Task B_AnswerRequestAndNotificationCLD(int idRequest, string answer, string comment, DateTime dateAnswer,
-            int clientId, string title, string message, int idCard, decimal delta)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // Открываем транзакцию (оба действия зависят друг от друга)
-            await using var transaction = await connection.BeginTransactionAsync();
-
-            try
-            {
-                #region Действие 1: Обновляем запрос (даем ответ)
-                await using var udpade = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                udpade.Transaction = transaction;
-                udpade.CommandText = @"
-                    UPDATE Request
-                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
-                    WHERE Id = @idRequest
-                    AND Answer IS NULL
-                    AND Comment IS NULL
-                    AND DateAnswer IS NULL";
-                udpade.Parameters.AddWithValue("answer", answer);
-                udpade.Parameters.AddWithValue("comment", comment);
-                udpade.Parameters.AddWithValue("dateAnswer", dateAnswer);
-                udpade.Parameters.AddWithValue("idRequest", idRequest);
-
-                var update = await udpade.ExecuteNonQueryAsync();
-
-                if (update == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                #region Действие 2: Отправляем уведомление клиенту
-                await using var notifications = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                notifications.Transaction = transaction;
-                notifications.CommandText = @"
-                    INSERT INTO Notifications (ClientId, Title, Message)
-                    VALUES (@clientId, @title, @message)";
-                notifications.Parameters.AddWithValue("clientId", clientId);
-                notifications.Parameters.AddWithValue("title", title);
-                notifications.Parameters.AddWithValue("message", message);
-
-                var addNoti = await notifications.ExecuteNonQueryAsync();
-
-                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                #region Действие 3: Узнаем баланс карты
-                await using var cmdSelect = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdSelect.Transaction = transaction;
-                cmdSelect.CommandText = @"
-                    SELECT Balance
-                    FROM BusinessCard
-                    WHERE ClientId = @clientid
-                    AND Id = @idCard";
-                cmdSelect.Parameters.AddWithValue("clientid", clientId);
-                cmdSelect.Parameters.AddWithValue("idCard", idCard);
-
-                decimal currentBalance = -1;
-
-                await using (var reader = await cmdSelect.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        currentBalance = reader.GetDecimal(0);
-                    }
-                }
-
-                // Если не нашел карту — отменяем
-                if (currentBalance == -1) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
-
-                // Еслив все хорошо считаем новый баланс
-                decimal newBalance = currentBalance + delta;
-                #endregion
-
-                #region Действие 4: Меняем баланс (+ проверяем)
-                await using var cmdUpdate = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                cmdUpdate.Transaction = transaction;
-                cmdUpdate.CommandText = @"
-                    UPDATE BusinessCard
-                    SET Balance = @newBalance
-                    WHERE Id = @idCard
-                    AND Balance = @currentBalance";
-                cmdUpdate.Parameters.AddWithValue("newBalance", newBalance);
-                cmdUpdate.Parameters.AddWithValue("idCard", idCard);
-                cmdUpdate.Parameters.AddWithValue("currentBalance", currentBalance);
-
-                var updateRows = await cmdUpdate.ExecuteNonQueryAsync();
-
-                // Если ответ не записался в БД (по какой-то причине)
-                if (updateRows == 0) throw new Exception("Произошла непредвиденная ошибка! Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                // Сохраняем оба действия в БД разом (если все хорошо)
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                if (transaction != null) await transaction.RollbackAsync();
-                throw;
-            }
-        }
+        //public readonly struct StructRequestClient(List<Request> request)
+        //{
+        //    public readonly List<Request> Request = request;
+        //}
+        //public async static Task<StructRequestClient> SearchRequestClient(int clientid)
+        //{
+        //    // Создаем пустой список (в него будем "складывать" все найденные открытые запросы)
+        //    List<Request> request = [];
+
+        //    var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+        //    await using var connection = new MySqlConnection(builder.ConnectionString);
+        //    await connection.OpenAsync();
+
+        //    await using var command = connection.CreateCommand();
+        //    command.CommandText = @"
+        //            SELECT Id, Type, DefCard, TypeCard, Timestamp, NewDeposit
+        //            FROM Request
+        //            WHERE ClientId = @clientid
+        //            AND Done = 0";
+        //    command.Parameters.AddWithValue("clientid", clientid);
+
+        //    await using var reader = await command.ExecuteReaderAsync();
+
+        //    while (await reader.ReadAsync())
+        //    {
+        //        int id = reader.GetInt32(0);
+        //        int type = reader.GetInt32(1);
+        //        string defcard = reader.IsDBNull(2) ? "" : reader.GetString(2);
+        //        string typeCard = reader.GetString(3);
+        //        DateTime timestamp = reader.GetDateTime(4);
+        //        decimal new_deposit = reader.IsDBNull(5) ? 0m : reader.GetDecimal(5);
+
+        //        request.Add(new Request(id, type, defcard, typeCard, timestamp, new_deposit));
+        //    }
+
+        //    // Отдаем структуре полученный список из открытых запросов клиента
+        //    return new StructRequestClient(request);
+        //}
         #endregion
 
 
@@ -3109,85 +2104,6 @@ namespace BankApplication
         }
         #endregion
 
-        #region Отказано (Ответить на запрос - Закрыть карту (B))
-        public async static Task B_RefusalClose(int idRequest, string answer, string comment, DateTime dateAnswer,
-            int clientId, string title, int idCard)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            // Открываем транзакцию (оба действия зависят друг от друга)
-            await using var transaction = await connection.BeginTransactionAsync();
-
-            try
-            {
-                #region Действие 1: Обновляем запрос (даем ответ)
-                await using var udpade = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                udpade.Transaction = transaction;
-                udpade.CommandText = @"
-                    UPDATE Request
-                    SET Done = 1, Answer = @answer, Comment = @comment, DateAnswer = @dateAnswer
-                    WHERE Id = @idRequest
-                    AND Answer IS NULL
-                    AND Comment IS NULL
-                    AND DateAnswer IS NULL";
-                udpade.Parameters.AddWithValue("answer", answer);
-                udpade.Parameters.AddWithValue("comment", comment);
-                udpade.Parameters.AddWithValue("dateAnswer", dateAnswer);
-                udpade.Parameters.AddWithValue("idRequest", idRequest);
-
-                var update = await udpade.ExecuteNonQueryAsync();
-
-                if (update == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                #region Действие 2: Разблокируем карту
-                await using var unlock = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                unlock.Transaction = transaction;
-                unlock.CommandText = @"
-                    UPDATE BusinessCard
-                    SET Status = 1, Reason = NULL
-                    WHERE Id = @idCard";
-                unlock.Parameters.AddWithValue("idCard", idCard);
-
-                var unlockRows = await unlock.ExecuteNonQueryAsync();
-
-                if (unlockRows == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                #region Действие 3: Отправляем уведомление клиенту
-                await using var notifications = connection.CreateCommand();
-
-                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
-                notifications.Transaction = transaction;
-                notifications.CommandText = @"
-                    INSERT INTO Notifications (ClientId, Title, Message)
-                    VALUES (@clientId, @title, @message)";
-                notifications.Parameters.AddWithValue("clientId", clientId);
-                notifications.Parameters.AddWithValue("title", title);
-                notifications.Parameters.AddWithValue("message", comment);
-
-                var addNoti = await notifications.ExecuteNonQueryAsync();
-
-                if (addNoti == 0) throw new Exception("Произошла непредвиденная ошибка. Пожалуйста, повторите попытку позже.");
-                #endregion
-
-                // Сохраняем оба действия в БД разом (если все хорошо)
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                if (transaction != null) await transaction.RollbackAsync();
-                throw;
-            }
-        }
-        #endregion
 
 
         #region Уведомление (simple)

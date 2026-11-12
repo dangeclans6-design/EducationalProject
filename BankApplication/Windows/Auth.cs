@@ -19,7 +19,7 @@ namespace BankApplication
             InitializeComponent();
             DoubleBuffered = true;
         }
-        //--------------------[Кнопка "Войти" в меню авторизации]---------------------//
+        //--------------------[Кнопка "Войти"]---------------------//
         private async void GoAuthClick(object sender, EventArgs e)
         {
             string login = login_auth.Text.Trim();              // Введенный пользователем логин
@@ -29,9 +29,9 @@ namespace BankApplication
             {
                 var clientData = await DataBase.CheckPasswordAndOutDataClient(login);
 
-                if (clientData.Login != null)                // Если нашел пользователя с Login == login
+                if (clientData.Login != null)                   // Если нашел пользователя с Login == login
                 {
-                    if (clientData.Password == password)     // Если пароли совпадают
+                    if (clientData.Password == password)        // Если пароли совпадают
                     {                        
                         var findCardsClient = await DataBase.FindCardsClient(clientData.Id);
                         
@@ -52,12 +52,12 @@ namespace BankApplication
 
                         Session.CurrentClient = currentClient;
 
-                        ClientMenu clientMenu1 = new();
+                        ClientMenu clientMenu = new();
                         Hide();
 
                         MessageBox.Show($"Вы успешно авторизировались!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                        clientMenu1.Show();
+                        clientMenu.Show();
                     }
                     else
                     {

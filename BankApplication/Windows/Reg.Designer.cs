@@ -307,7 +307,7 @@
             bigLabel15.AutoSize = true;
             bigLabel15.BackColor = System.Drawing.Color.Transparent;
             bigLabel15.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel15.ForeColor = System.Drawing.Color.LightCoral;
+            bigLabel15.ForeColor = System.Drawing.Color.Tan;
             bigLabel15.Location = new System.Drawing.Point(139, 107);
             bigLabel15.Name = "bigLabel15";
             bigLabel15.Size = new System.Drawing.Size(98, 17);

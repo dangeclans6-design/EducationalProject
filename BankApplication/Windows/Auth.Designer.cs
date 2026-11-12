@@ -240,8 +240,6 @@
             Style = ReaLTaiizor.Enum.Metro.Style.Dark;
             TextColor = System.Drawing.Color.White;
             ThemeName = "MetroDark";
-            FormClosed += AuthFormClosed;
-            Resize += ResizeAuth;
             ResumeLayout(false);
             PerformLayout();
         }

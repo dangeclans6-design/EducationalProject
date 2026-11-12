@@ -45,14 +45,10 @@
             LabelUsuallyCard = new ReaLTaiizor.Controls.BigLabel();
             CloseButton = new ReaLTaiizor.Controls.DungeonButtonLeft();
             PaySideButton = new ReaLTaiizor.Controls.CyberButton();
-            ChangeLimitDepositSideButton = new ReaLTaiizor.Controls.CyberButton();
-            ReplenishDepositSideButton = new ReaLTaiizor.Controls.CyberButton();
             ReplenishBalanceSideButton = new ReaLTaiizor.Controls.CyberButton();
             CloseCardSideButton = new ReaLTaiizor.Controls.CyberButton();
             TransferMoneySelfSideButton = new ReaLTaiizor.Controls.CyberButton();
             TransferMoneyOtherSideButton = new ReaLTaiizor.Controls.CyberButton();
-            PayButton = new ReaLTaiizor.Controls.CyberButton();
-            Amount = new ReaLTaiizor.Controls.DungeonTextBox();
             PanelDebitCard = new ReaLTaiizor.Controls.Panel();
             D_cashbackBalanceLabel = new ReaLTaiizor.Controls.BigLabel();
             D_cashbackBalanceTxt = new ReaLTaiizor.Controls.BigLabel();
@@ -79,9 +75,6 @@
             C_balanceDepositTxt = new ReaLTaiizor.Controls.BigLabel();
             C_numberCardTxt = new ReaLTaiizor.Controls.BigLabel();
             C_balanceTxt = new ReaLTaiizor.Controls.BigLabel();
-            LabelDebitCard = new ReaLTaiizor.Controls.BigLabel();
-            LabelCreditCard = new ReaLTaiizor.Controls.BigLabel();
-            LabelBussinesCard = new ReaLTaiizor.Controls.BigLabel();
             PanelBussinesCard = new ReaLTaiizor.Controls.Panel();
             B_percentLabel = new ReaLTaiizor.Controls.BigLabel();
             B_percentTxt = new ReaLTaiizor.Controls.BigLabel();
@@ -95,16 +88,6 @@
             B_balanceDepositTxt = new ReaLTaiizor.Controls.BigLabel();
             B_numberCardTxt = new ReaLTaiizor.Controls.BigLabel();
             B_balanceTxt = new ReaLTaiizor.Controls.BigLabel();
-            ReplenishBalanceButton = new ReaLTaiizor.Controls.CyberButton();
-            ReplenishBalanceTxt = new ReaLTaiizor.Controls.BigLabel();
-            ReplenishDepositButton = new ReaLTaiizor.Controls.CyberButton();
-            PayTxt = new ReaLTaiizor.Controls.BigLabel();
-            ChangeLimitDepositTxt1 = new ReaLTaiizor.Controls.BigLabel();
-            Description = new ReaLTaiizor.Controls.DungeonTextBox();
-            ChangeLimitDepositTxt2 = new ReaLTaiizor.Controls.BigLabel();
-            ChangeLimitDepositButton = new ReaLTaiizor.Controls.CyberButton();
-            CloseAndOpenTxt = new ReaLTaiizor.Controls.BigLabel();
-            CloseCardButton = new ReaLTaiizor.Controls.CyberButton();
             PanelUsuallyCard.SuspendLayout();
             PanelDebitCard.SuspendLayout();
             PanelCreditCard.SuspendLayout();
@@ -391,88 +374,6 @@
             PaySideButton.Timer_RGB = 300;
             PaySideButton.Click += PaySideButton_Click;
             // 
-            // ChangeLimitDepositSideButton
-            // 
-            ChangeLimitDepositSideButton.Alpha = 20;
-            ChangeLimitDepositSideButton.BackColor = System.Drawing.Color.Transparent;
-            ChangeLimitDepositSideButton.Background = true;
-            ChangeLimitDepositSideButton.Background_WidthPen = 4F;
-            ChangeLimitDepositSideButton.BackgroundPen = true;
-            ChangeLimitDepositSideButton.ColorBackground = System.Drawing.Color.Transparent;
-            ChangeLimitDepositSideButton.ColorBackground_1 = System.Drawing.Color.White;
-            ChangeLimitDepositSideButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ChangeLimitDepositSideButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            ChangeLimitDepositSideButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            ChangeLimitDepositSideButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            ChangeLimitDepositSideButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ChangeLimitDepositSideButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            ChangeLimitDepositSideButton.Effect_1 = true;
-            ChangeLimitDepositSideButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            ChangeLimitDepositSideButton.Effect_1_Transparency = 25;
-            ChangeLimitDepositSideButton.Effect_2 = true;
-            ChangeLimitDepositSideButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            ChangeLimitDepositSideButton.Effect_2_Transparency = 20;
-            ChangeLimitDepositSideButton.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ChangeLimitDepositSideButton.ForeColor = System.Drawing.Color.Tan;
-            ChangeLimitDepositSideButton.Lighting = false;
-            ChangeLimitDepositSideButton.LinearGradient_Background = false;
-            ChangeLimitDepositSideButton.LinearGradientPen = false;
-            ChangeLimitDepositSideButton.Location = new System.Drawing.Point(46, 444);
-            ChangeLimitDepositSideButton.Name = "ChangeLimitDepositSideButton";
-            ChangeLimitDepositSideButton.PenWidth = 15;
-            ChangeLimitDepositSideButton.Rounding = true;
-            ChangeLimitDepositSideButton.RoundingInt = 20;
-            ChangeLimitDepositSideButton.Size = new System.Drawing.Size(246, 71);
-            ChangeLimitDepositSideButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            ChangeLimitDepositSideButton.TabIndex = 44;
-            ChangeLimitDepositSideButton.Tag = "Cyber";
-            ChangeLimitDepositSideButton.TextButton = "Изменить лимит депозита (запрос)";
-            ChangeLimitDepositSideButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            ChangeLimitDepositSideButton.Timer_Effect_1 = 5;
-            ChangeLimitDepositSideButton.Timer_RGB = 300;
-            ChangeLimitDepositSideButton.Click += ChangeLimitDepositSideButton_Click;
-            // 
-            // ReplenishDepositSideButton
-            // 
-            ReplenishDepositSideButton.Alpha = 20;
-            ReplenishDepositSideButton.BackColor = System.Drawing.Color.Transparent;
-            ReplenishDepositSideButton.Background = true;
-            ReplenishDepositSideButton.Background_WidthPen = 4F;
-            ReplenishDepositSideButton.BackgroundPen = true;
-            ReplenishDepositSideButton.ColorBackground = System.Drawing.Color.Transparent;
-            ReplenishDepositSideButton.ColorBackground_1 = System.Drawing.Color.White;
-            ReplenishDepositSideButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ReplenishDepositSideButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            ReplenishDepositSideButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            ReplenishDepositSideButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            ReplenishDepositSideButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ReplenishDepositSideButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            ReplenishDepositSideButton.Effect_1 = true;
-            ReplenishDepositSideButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            ReplenishDepositSideButton.Effect_1_Transparency = 25;
-            ReplenishDepositSideButton.Effect_2 = true;
-            ReplenishDepositSideButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            ReplenishDepositSideButton.Effect_2_Transparency = 20;
-            ReplenishDepositSideButton.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ReplenishDepositSideButton.ForeColor = System.Drawing.Color.Tan;
-            ReplenishDepositSideButton.Lighting = false;
-            ReplenishDepositSideButton.LinearGradient_Background = false;
-            ReplenishDepositSideButton.LinearGradientPen = false;
-            ReplenishDepositSideButton.Location = new System.Drawing.Point(46, 347);
-            ReplenishDepositSideButton.Name = "ReplenishDepositSideButton";
-            ReplenishDepositSideButton.PenWidth = 15;
-            ReplenishDepositSideButton.Rounding = true;
-            ReplenishDepositSideButton.RoundingInt = 20;
-            ReplenishDepositSideButton.Size = new System.Drawing.Size(246, 71);
-            ReplenishDepositSideButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            ReplenishDepositSideButton.TabIndex = 45;
-            ReplenishDepositSideButton.Tag = "Cyber";
-            ReplenishDepositSideButton.TextButton = "Пополнить депозит";
-            ReplenishDepositSideButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            ReplenishDepositSideButton.Timer_Effect_1 = 5;
-            ReplenishDepositSideButton.Timer_RGB = 300;
-            ReplenishDepositSideButton.Click += ReplenishDepositSideButton_Click;
-            // 
             // ReplenishBalanceSideButton
             // 
             ReplenishBalanceSideButton.Alpha = 20;
@@ -590,7 +491,7 @@
             TransferMoneySelfSideButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             TransferMoneySelfSideButton.TabIndex = 49;
             TransferMoneySelfSideButton.Tag = "Cyber";
-            TransferMoneySelfSideButton.TextButton = "Перевести себе на другую карту";
+            TransferMoneySelfSideButton.TextButton = "Перевести";
             TransferMoneySelfSideButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             TransferMoneySelfSideButton.Timer_Effect_1 = 5;
             TransferMoneySelfSideButton.Timer_RGB = 300;
@@ -634,66 +535,6 @@
             TransferMoneyOtherSideButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             TransferMoneyOtherSideButton.Timer_Effect_1 = 5;
             TransferMoneyOtherSideButton.Timer_RGB = 300;
-            // 
-            // PayButton
-            // 
-            PayButton.Alpha = 20;
-            PayButton.BackColor = System.Drawing.Color.Transparent;
-            PayButton.Background = true;
-            PayButton.Background_WidthPen = 4F;
-            PayButton.BackgroundPen = true;
-            PayButton.ColorBackground = System.Drawing.Color.Transparent;
-            PayButton.ColorBackground_1 = System.Drawing.Color.White;
-            PayButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            PayButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            PayButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            PayButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            PayButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            PayButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            PayButton.Effect_1 = true;
-            PayButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            PayButton.Effect_1_Transparency = 25;
-            PayButton.Effect_2 = true;
-            PayButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            PayButton.Effect_2_Transparency = 20;
-            PayButton.Font = new System.Drawing.Font("Segoe UI Semibold", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            PayButton.ForeColor = System.Drawing.Color.Tan;
-            PayButton.Lighting = false;
-            PayButton.LinearGradient_Background = false;
-            PayButton.LinearGradientPen = false;
-            PayButton.Location = new System.Drawing.Point(496, 904);
-            PayButton.Name = "PayButton";
-            PayButton.PenWidth = 15;
-            PayButton.Rounding = true;
-            PayButton.RoundingInt = 20;
-            PayButton.Size = new System.Drawing.Size(246, 71);
-            PayButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            PayButton.TabIndex = 86;
-            PayButton.Tag = "Cyber";
-            PayButton.TextButton = "Оплатить";
-            PayButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            PayButton.Timer_Effect_1 = 5;
-            PayButton.Timer_RGB = 300;
-            PayButton.Visible = false;
-            PayButton.Click += PayButton_Click;
-            // 
-            // Amount
-            // 
-            Amount.BackColor = System.Drawing.Color.Transparent;
-            Amount.BorderColor = System.Drawing.Color.FromArgb(180, 180, 180);
-            Amount.EdgeColor = System.Drawing.Color.White;
-            Amount.Font = new System.Drawing.Font("Tahoma", 11F);
-            Amount.ForeColor = System.Drawing.Color.DimGray;
-            Amount.Location = new System.Drawing.Point(346, 506);
-            Amount.MaxLength = 32767;
-            Amount.Multiline = false;
-            Amount.Name = "Amount";
-            Amount.ReadOnly = false;
-            Amount.Size = new System.Drawing.Size(788, 28);
-            Amount.TabIndex = 87;
-            Amount.TextAlignment = System.Windows.Forms.HorizontalAlignment.Left;
-            Amount.UseSystemPasswordChar = false;
-            Amount.Visible = false;
             // 
             // PanelDebitCard
             // 
@@ -1033,45 +874,6 @@
             C_balanceTxt.TabIndex = 51;
             C_balanceTxt.Text = "Баланс:";
             // 
-            // LabelDebitCard
-            // 
-            LabelDebitCard.AutoSize = true;
-            LabelDebitCard.BackColor = System.Drawing.Color.Transparent;
-            LabelDebitCard.Font = new System.Drawing.Font("Segoe UI", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            LabelDebitCard.ForeColor = System.Drawing.Color.Azure;
-            LabelDebitCard.Location = new System.Drawing.Point(481, 8);
-            LabelDebitCard.Name = "LabelDebitCard";
-            LabelDebitCard.Size = new System.Drawing.Size(746, 65);
-            LabelDebitCard.TabIndex = 88;
-            LabelDebitCard.Text = "Управление дебетовой картой";
-            LabelDebitCard.Visible = false;
-            // 
-            // LabelCreditCard
-            // 
-            LabelCreditCard.AutoSize = true;
-            LabelCreditCard.BackColor = System.Drawing.Color.Transparent;
-            LabelCreditCard.Font = new System.Drawing.Font("Segoe UI", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            LabelCreditCard.ForeColor = System.Drawing.Color.Azure;
-            LabelCreditCard.Location = new System.Drawing.Point(481, 8);
-            LabelCreditCard.Name = "LabelCreditCard";
-            LabelCreditCard.Size = new System.Drawing.Size(751, 65);
-            LabelCreditCard.TabIndex = 89;
-            LabelCreditCard.Text = "Управление кредитной картой";
-            LabelCreditCard.Visible = false;
-            // 
-            // LabelBussinesCard
-            // 
-            LabelBussinesCard.AutoSize = true;
-            LabelBussinesCard.BackColor = System.Drawing.Color.Transparent;
-            LabelBussinesCard.Font = new System.Drawing.Font("Segoe UI", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            LabelBussinesCard.ForeColor = System.Drawing.Color.Azure;
-            LabelBussinesCard.Location = new System.Drawing.Point(476, 8);
-            LabelBussinesCard.Name = "LabelBussinesCard";
-            LabelBussinesCard.Size = new System.Drawing.Size(658, 65);
-            LabelBussinesCard.TabIndex = 90;
-            LabelBussinesCard.Text = "Управление бизнес картой";
-            LabelBussinesCard.Visible = false;
-            // 
             // PanelBussinesCard
             // 
             PanelBussinesCard.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
@@ -1241,288 +1043,20 @@
             B_balanceTxt.TabIndex = 51;
             B_balanceTxt.Text = "Баланс:";
             // 
-            // ReplenishBalanceButton
-            // 
-            ReplenishBalanceButton.Alpha = 20;
-            ReplenishBalanceButton.BackColor = System.Drawing.Color.Transparent;
-            ReplenishBalanceButton.Background = true;
-            ReplenishBalanceButton.Background_WidthPen = 4F;
-            ReplenishBalanceButton.BackgroundPen = true;
-            ReplenishBalanceButton.ColorBackground = System.Drawing.Color.Transparent;
-            ReplenishBalanceButton.ColorBackground_1 = System.Drawing.Color.White;
-            ReplenishBalanceButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ReplenishBalanceButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            ReplenishBalanceButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            ReplenishBalanceButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            ReplenishBalanceButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ReplenishBalanceButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            ReplenishBalanceButton.Effect_1 = true;
-            ReplenishBalanceButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            ReplenishBalanceButton.Effect_1_Transparency = 25;
-            ReplenishBalanceButton.Effect_2 = true;
-            ReplenishBalanceButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            ReplenishBalanceButton.Effect_2_Transparency = 20;
-            ReplenishBalanceButton.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ReplenishBalanceButton.ForeColor = System.Drawing.Color.Tan;
-            ReplenishBalanceButton.Lighting = false;
-            ReplenishBalanceButton.LinearGradient_Background = false;
-            ReplenishBalanceButton.LinearGradientPen = false;
-            ReplenishBalanceButton.Location = new System.Drawing.Point(760, 1000);
-            ReplenishBalanceButton.Name = "ReplenishBalanceButton";
-            ReplenishBalanceButton.PenWidth = 15;
-            ReplenishBalanceButton.Rounding = true;
-            ReplenishBalanceButton.RoundingInt = 20;
-            ReplenishBalanceButton.Size = new System.Drawing.Size(246, 71);
-            ReplenishBalanceButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            ReplenishBalanceButton.TabIndex = 92;
-            ReplenishBalanceButton.Tag = "Cyber";
-            ReplenishBalanceButton.TextButton = "Пополнить баланс";
-            ReplenishBalanceButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            ReplenishBalanceButton.Timer_Effect_1 = 5;
-            ReplenishBalanceButton.Timer_RGB = 300;
-            ReplenishBalanceButton.Visible = false;
-            ReplenishBalanceButton.Click += ReplenishBalanceButton_Click;
-            // 
-            // ReplenishBalanceTxt
-            // 
-            ReplenishBalanceTxt.AutoSize = true;
-            ReplenishBalanceTxt.BackColor = System.Drawing.Color.Transparent;
-            ReplenishBalanceTxt.Font = new System.Drawing.Font("Segoe UI Semibold", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ReplenishBalanceTxt.ForeColor = System.Drawing.Color.Azure;
-            ReplenishBalanceTxt.Location = new System.Drawing.Point(63, 989);
-            ReplenishBalanceTxt.Name = "ReplenishBalanceTxt";
-            ReplenishBalanceTxt.Size = new System.Drawing.Size(384, 40);
-            ReplenishBalanceTxt.TabIndex = 91;
-            ReplenishBalanceTxt.Text = "Введите сумму пополения:";
-            ReplenishBalanceTxt.Visible = false;
-            // 
-            // ReplenishDepositButton
-            // 
-            ReplenishDepositButton.Alpha = 20;
-            ReplenishDepositButton.BackColor = System.Drawing.Color.Transparent;
-            ReplenishDepositButton.Background = true;
-            ReplenishDepositButton.Background_WidthPen = 4F;
-            ReplenishDepositButton.BackgroundPen = true;
-            ReplenishDepositButton.ColorBackground = System.Drawing.Color.Transparent;
-            ReplenishDepositButton.ColorBackground_1 = System.Drawing.Color.White;
-            ReplenishDepositButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ReplenishDepositButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            ReplenishDepositButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            ReplenishDepositButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            ReplenishDepositButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ReplenishDepositButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            ReplenishDepositButton.Effect_1 = true;
-            ReplenishDepositButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            ReplenishDepositButton.Effect_1_Transparency = 25;
-            ReplenishDepositButton.Effect_2 = true;
-            ReplenishDepositButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            ReplenishDepositButton.Effect_2_Transparency = 20;
-            ReplenishDepositButton.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ReplenishDepositButton.ForeColor = System.Drawing.Color.Tan;
-            ReplenishDepositButton.Lighting = false;
-            ReplenishDepositButton.LinearGradient_Background = false;
-            ReplenishDepositButton.LinearGradientPen = false;
-            ReplenishDepositButton.Location = new System.Drawing.Point(496, 1000);
-            ReplenishDepositButton.Name = "ReplenishDepositButton";
-            ReplenishDepositButton.PenWidth = 15;
-            ReplenishDepositButton.Rounding = true;
-            ReplenishDepositButton.RoundingInt = 20;
-            ReplenishDepositButton.Size = new System.Drawing.Size(246, 71);
-            ReplenishDepositButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            ReplenishDepositButton.TabIndex = 94;
-            ReplenishDepositButton.Tag = "Cyber";
-            ReplenishDepositButton.TextButton = "Пополнить депозит";
-            ReplenishDepositButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            ReplenishDepositButton.Timer_Effect_1 = 5;
-            ReplenishDepositButton.Timer_RGB = 300;
-            ReplenishDepositButton.Visible = false;
-            ReplenishDepositButton.Click += ReplenishDepositButton_Click;
-            // 
-            // PayTxt
-            // 
-            PayTxt.AutoSize = true;
-            PayTxt.BackColor = System.Drawing.Color.Transparent;
-            PayTxt.Font = new System.Drawing.Font("Segoe UI Semibold", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            PayTxt.ForeColor = System.Drawing.Color.Azure;
-            PayTxt.Location = new System.Drawing.Point(63, 935);
-            PayTxt.Name = "PayTxt";
-            PayTxt.Size = new System.Drawing.Size(335, 40);
-            PayTxt.TabIndex = 61;
-            PayTxt.Text = "Введите сумму оплаты:";
-            PayTxt.Visible = false;
-            // 
-            // ChangeLimitDepositTxt1
-            // 
-            ChangeLimitDepositTxt1.AutoSize = true;
-            ChangeLimitDepositTxt1.BackColor = System.Drawing.Color.Transparent;
-            ChangeLimitDepositTxt1.Font = new System.Drawing.Font("Segoe UI Semibold", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ChangeLimitDepositTxt1.ForeColor = System.Drawing.Color.Azure;
-            ChangeLimitDepositTxt1.Location = new System.Drawing.Point(338, 452);
-            ChangeLimitDepositTxt1.Name = "ChangeLimitDepositTxt1";
-            ChangeLimitDepositTxt1.Size = new System.Drawing.Size(507, 40);
-            ChangeLimitDepositTxt1.TabIndex = 95;
-            ChangeLimitDepositTxt1.Text = "Введите желаемый лимит депозита:";
-            ChangeLimitDepositTxt1.Visible = false;
-            // 
-            // Description
-            // 
-            Description.BackColor = System.Drawing.Color.Transparent;
-            Description.BorderColor = System.Drawing.Color.FromArgb(180, 180, 180);
-            Description.EdgeColor = System.Drawing.Color.White;
-            Description.Font = new System.Drawing.Font("Tahoma", 11F);
-            Description.ForeColor = System.Drawing.Color.DimGray;
-            Description.Location = new System.Drawing.Point(346, 604);
-            Description.MaxLength = 32767;
-            Description.Multiline = true;
-            Description.Name = "Description";
-            Description.ReadOnly = false;
-            Description.Size = new System.Drawing.Size(788, 159);
-            Description.TabIndex = 98;
-            Description.TextAlignment = System.Windows.Forms.HorizontalAlignment.Left;
-            Description.UseSystemPasswordChar = false;
-            Description.Visible = false;
-            // 
-            // ChangeLimitDepositTxt2
-            // 
-            ChangeLimitDepositTxt2.AutoSize = true;
-            ChangeLimitDepositTxt2.BackColor = System.Drawing.Color.Transparent;
-            ChangeLimitDepositTxt2.Font = new System.Drawing.Font("Segoe UI Semibold", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ChangeLimitDepositTxt2.ForeColor = System.Drawing.Color.Azure;
-            ChangeLimitDepositTxt2.Location = new System.Drawing.Point(338, 547);
-            ChangeLimitDepositTxt2.Name = "ChangeLimitDepositTxt2";
-            ChangeLimitDepositTxt2.Size = new System.Drawing.Size(773, 40);
-            ChangeLimitDepositTxt2.TabIndex = 100;
-            ChangeLimitDepositTxt2.Text = "Опишите причину изменения (от 10 до 1000 символов):";
-            ChangeLimitDepositTxt2.Visible = false;
-            // 
-            // ChangeLimitDepositButton
-            // 
-            ChangeLimitDepositButton.Alpha = 20;
-            ChangeLimitDepositButton.BackColor = System.Drawing.Color.Transparent;
-            ChangeLimitDepositButton.Background = true;
-            ChangeLimitDepositButton.Background_WidthPen = 4F;
-            ChangeLimitDepositButton.BackgroundPen = true;
-            ChangeLimitDepositButton.ColorBackground = System.Drawing.Color.Transparent;
-            ChangeLimitDepositButton.ColorBackground_1 = System.Drawing.Color.White;
-            ChangeLimitDepositButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ChangeLimitDepositButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            ChangeLimitDepositButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            ChangeLimitDepositButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            ChangeLimitDepositButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ChangeLimitDepositButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            ChangeLimitDepositButton.Effect_1 = true;
-            ChangeLimitDepositButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            ChangeLimitDepositButton.Effect_1_Transparency = 25;
-            ChangeLimitDepositButton.Effect_2 = true;
-            ChangeLimitDepositButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            ChangeLimitDepositButton.Effect_2_Transparency = 20;
-            ChangeLimitDepositButton.Font = new System.Drawing.Font("Segoe UI Semibold", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ChangeLimitDepositButton.ForeColor = System.Drawing.Color.Tan;
-            ChangeLimitDepositButton.Lighting = false;
-            ChangeLimitDepositButton.LinearGradient_Background = false;
-            ChangeLimitDepositButton.LinearGradientPen = false;
-            ChangeLimitDepositButton.Location = new System.Drawing.Point(1159, 692);
-            ChangeLimitDepositButton.Name = "ChangeLimitDepositButton";
-            ChangeLimitDepositButton.PenWidth = 15;
-            ChangeLimitDepositButton.Rounding = true;
-            ChangeLimitDepositButton.RoundingInt = 20;
-            ChangeLimitDepositButton.Size = new System.Drawing.Size(246, 71);
-            ChangeLimitDepositButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            ChangeLimitDepositButton.TabIndex = 101;
-            ChangeLimitDepositButton.Tag = "Cyber";
-            ChangeLimitDepositButton.TextButton = "Отправить";
-            ChangeLimitDepositButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            ChangeLimitDepositButton.Timer_Effect_1 = 5;
-            ChangeLimitDepositButton.Timer_RGB = 300;
-            ChangeLimitDepositButton.Visible = false;
-            ChangeLimitDepositButton.Click += ChangeLimitDepositButton_Click;
-            // 
-            // CloseAndOpenTxt
-            // 
-            CloseAndOpenTxt.AutoSize = true;
-            CloseAndOpenTxt.BackColor = System.Drawing.Color.Transparent;
-            CloseAndOpenTxt.Font = new System.Drawing.Font("Segoe UI Semibold", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            CloseAndOpenTxt.ForeColor = System.Drawing.Color.Azure;
-            CloseAndOpenTxt.Location = new System.Drawing.Point(346, 794);
-            CloseAndOpenTxt.Name = "CloseAndOpenTxt";
-            CloseAndOpenTxt.Size = new System.Drawing.Size(626, 40);
-            CloseAndOpenTxt.TabIndex = 102;
-            CloseAndOpenTxt.Text = "Опишите причину  (от 10 до 1000 символов):";
-            CloseAndOpenTxt.Visible = false;
-            // 
-            // CloseCardButton
-            // 
-            CloseCardButton.Alpha = 20;
-            CloseCardButton.BackColor = System.Drawing.Color.Transparent;
-            CloseCardButton.Background = true;
-            CloseCardButton.Background_WidthPen = 4F;
-            CloseCardButton.BackgroundPen = true;
-            CloseCardButton.ColorBackground = System.Drawing.Color.Transparent;
-            CloseCardButton.ColorBackground_1 = System.Drawing.Color.White;
-            CloseCardButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            CloseCardButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            CloseCardButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            CloseCardButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            CloseCardButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            CloseCardButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            CloseCardButton.Effect_1 = true;
-            CloseCardButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            CloseCardButton.Effect_1_Transparency = 25;
-            CloseCardButton.Effect_2 = true;
-            CloseCardButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            CloseCardButton.Effect_2_Transparency = 20;
-            CloseCardButton.Font = new System.Drawing.Font("Segoe UI Semibold", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            CloseCardButton.ForeColor = System.Drawing.Color.Tan;
-            CloseCardButton.Lighting = false;
-            CloseCardButton.LinearGradient_Background = false;
-            CloseCardButton.LinearGradientPen = false;
-            CloseCardButton.Location = new System.Drawing.Point(1159, 787);
-            CloseCardButton.Name = "CloseCardButton";
-            CloseCardButton.PenWidth = 15;
-            CloseCardButton.Rounding = true;
-            CloseCardButton.RoundingInt = 20;
-            CloseCardButton.Size = new System.Drawing.Size(246, 71);
-            CloseCardButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            CloseCardButton.TabIndex = 103;
-            CloseCardButton.Tag = "Cyber";
-            CloseCardButton.TextButton = "Отправить";
-            CloseCardButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            CloseCardButton.Timer_Effect_1 = 5;
-            CloseCardButton.Timer_RGB = 300;
-            CloseCardButton.Visible = false;
-            CloseCardButton.Click += CloseCardButton_Click;
-            // 
             // ManagerCard
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
             ClientSize = new System.Drawing.Size(1420, 1312);
-            Controls.Add(CloseCardButton);
-            Controls.Add(CloseAndOpenTxt);
-            Controls.Add(ChangeLimitDepositButton);
-            Controls.Add(ChangeLimitDepositTxt2);
-            Controls.Add(Description);
-            Controls.Add(ChangeLimitDepositTxt1);
-            Controls.Add(ReplenishDepositButton);
-            Controls.Add(PayTxt);
-            Controls.Add(Amount);
-            Controls.Add(ReplenishBalanceButton);
-            Controls.Add(ReplenishBalanceTxt);
             Controls.Add(PanelBussinesCard);
-            Controls.Add(LabelBussinesCard);
             Controls.Add(PanelCreditCard);
-            Controls.Add(LabelCreditCard);
-            Controls.Add(LabelDebitCard);
             Controls.Add(PanelDebitCard);
-            Controls.Add(PayButton);
             Controls.Add(TransferMoneyOtherSideButton);
             Controls.Add(TransferMoneySelfSideButton);
             Controls.Add(spaceSeparatorVertical2);
             Controls.Add(CloseCardSideButton);
             Controls.Add(ReplenishBalanceSideButton);
-            Controls.Add(ReplenishDepositSideButton);
-            Controls.Add(ChangeLimitDepositSideButton);
             Controls.Add(PaySideButton);
             Controls.Add(PanelUsuallyCard);
             Controls.Add(MainMenuButton);
@@ -1554,8 +1088,6 @@
         private ReaLTaiizor.Controls.BigLabel LabelUsuallyCard;
         private ReaLTaiizor.Controls.DungeonButtonLeft CloseButton;
         private ReaLTaiizor.Controls.CyberButton PaySideButton;
-        private ReaLTaiizor.Controls.CyberButton ChangeLimitDepositSideButton;
-        private ReaLTaiizor.Controls.CyberButton ReplenishDepositSideButton;
         private ReaLTaiizor.Controls.CyberButton ReplenishBalanceSideButton;
         private ReaLTaiizor.Controls.CyberButton CloseCardSideButton;
         private ReaLTaiizor.Controls.CyberButton TransferMoneySelfSideButton;
@@ -1570,8 +1102,6 @@
         private ReaLTaiizor.Controls.BigLabel U_balanceLabel;
         private ReaLTaiizor.Controls.BigLabel U_limitBalanceLabel;
         private ReaLTaiizor.Controls.BigLabel U_limitBalanceTxt;
-        private ReaLTaiizor.Controls.CyberButton PayButton;
-        private ReaLTaiizor.Controls.DungeonTextBox Amount;
         private ReaLTaiizor.Controls.Panel PanelDebitCard;
         private ReaLTaiizor.Controls.BigLabel D_limitBalanceLabel;
         private ReaLTaiizor.Controls.BigLabel D_limitBalanceTxt;
@@ -1583,10 +1113,8 @@
         private ReaLTaiizor.Controls.BigLabel D_balanceDepositTxt;
         private ReaLTaiizor.Controls.BigLabel D_numberCardTxt;
         private ReaLTaiizor.Controls.BigLabel D_balanceTxt;
-        private ReaLTaiizor.Controls.BigLabel LabelDebitCard;
         private ReaLTaiizor.Controls.BigLabel D_cashbackBalanceLabel;
         private ReaLTaiizor.Controls.BigLabel D_cashbackBalanceTxt;
-        private ReaLTaiizor.Controls.BigLabel LabelCreditCard;
         private ReaLTaiizor.Controls.Panel PanelCreditCard;
         private ReaLTaiizor.Controls.BigLabel C_debtLabel;
         private ReaLTaiizor.Controls.BigLabel C_debtTxt;
@@ -1600,7 +1128,6 @@
         private ReaLTaiizor.Controls.BigLabel C_balanceDepositTxt;
         private ReaLTaiizor.Controls.BigLabel C_numberCardTxt;
         private ReaLTaiizor.Controls.BigLabel C_balanceTxt;
-        private ReaLTaiizor.Controls.BigLabel LabelBussinesCard;
         private ReaLTaiizor.Controls.Panel PanelBussinesCard;
         private ReaLTaiizor.Controls.BigLabel B_percentLabel;
         private ReaLTaiizor.Controls.BigLabel B_percentTxt;
@@ -1614,15 +1141,5 @@
         private ReaLTaiizor.Controls.BigLabel B_balanceDepositTxt;
         private ReaLTaiizor.Controls.BigLabel B_numberCardTxt;
         private ReaLTaiizor.Controls.BigLabel B_balanceTxt;
-        private ReaLTaiizor.Controls.CyberButton ReplenishBalanceButton;
-        private ReaLTaiizor.Controls.BigLabel ReplenishBalanceTxt;
-        private ReaLTaiizor.Controls.CyberButton ReplenishDepositButton;
-        private ReaLTaiizor.Controls.BigLabel PayTxt;
-        private ReaLTaiizor.Controls.BigLabel ChangeLimitDepositTxt1;
-        private ReaLTaiizor.Controls.DungeonTextBox Description;
-        private ReaLTaiizor.Controls.BigLabel ChangeLimitDepositTxt2;
-        private ReaLTaiizor.Controls.CyberButton ChangeLimitDepositButton;
-        private ReaLTaiizor.Controls.BigLabel CloseAndOpenTxt;
-        private ReaLTaiizor.Controls.CyberButton CloseCardButton;
     }
 }
