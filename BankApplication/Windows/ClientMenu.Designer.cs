@@ -36,20 +36,15 @@
             spaceSeparatorVertical1 = new ReaLTaiizor.Controls.SpaceSeparatorVertical();
             cyberButton1 = new ReaLTaiizor.Controls.CyberButton();
             metroListBox1 = new ReaLTaiizor.Controls.MetroListBox();
-            MyCardsPanel = new ReaLTaiizor.Controls.Panel();
-            spaceSeparatorVertical2 = new ReaLTaiizor.Controls.SpaceSeparatorVertical();
-            ShowBusinessCardsButton = new ReaLTaiizor.Controls.CyberButton();
-            ShowCreditCardsButton = new ReaLTaiizor.Controls.CyberButton();
-            ShowDebitCardsButton = new ReaLTaiizor.Controls.CyberButton();
             cyberButton8 = new ReaLTaiizor.Controls.CyberButton();
             NotificationsButton = new ReaLTaiizor.Controls.CyberButton();
             UpdatePageClientMenu = new ReaLTaiizor.Controls.CyberButton();
             OpenRequestButton = new ReaLTaiizor.Controls.CyberButton();
-            PanelRequest = new ReaLTaiizor.Controls.Panel();
-            PanelNotifications = new ReaLTaiizor.Controls.Panel();
             cyberButton2 = new ReaLTaiizor.Controls.CyberButton();
             dataClient = new ReaLTaiizor.Controls.CyberButton();
-            MyCardsPanel.SuspendLayout();
+            PanelCards = new ReaLTaiizor.Controls.Panel();
+            PersonalCard = new ReaLTaiizor.Controls.CyberButton();
+            PersonalPayment = new ReaLTaiizor.Controls.CyberButton();
             SuspendLayout();
             // 
             // bigLabel3
@@ -257,162 +252,6 @@
             metroListBox1.ThemeAuthor = "Taiizor";
             metroListBox1.ThemeName = "MetroLight";
             // 
-            // MyCardsPanel
-            // 
-            MyCardsPanel.AutoScroll = true;
-            MyCardsPanel.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
-            MyCardsPanel.Controls.Add(spaceSeparatorVertical2);
-            MyCardsPanel.Controls.Add(ShowBusinessCardsButton);
-            MyCardsPanel.Controls.Add(ShowCreditCardsButton);
-            MyCardsPanel.Controls.Add(ShowDebitCardsButton);
-            MyCardsPanel.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
-            MyCardsPanel.Location = new System.Drawing.Point(385, 105);
-            MyCardsPanel.Name = "MyCardsPanel";
-            MyCardsPanel.Padding = new System.Windows.Forms.Padding(5);
-            MyCardsPanel.Size = new System.Drawing.Size(1001, 600);
-            MyCardsPanel.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            MyCardsPanel.TabIndex = 37;
-            MyCardsPanel.Text = "panel2";
-            // 
-            // spaceSeparatorVertical2
-            // 
-            spaceSeparatorVertical2.Customization = "Kioq/yoqKv8jIyP/Kioq/w==";
-            spaceSeparatorVertical2.Font = new System.Drawing.Font("Verdana", 8F);
-            spaceSeparatorVertical2.Image = null;
-            spaceSeparatorVertical2.Location = new System.Drawing.Point(273, 19);
-            spaceSeparatorVertical2.Name = "spaceSeparatorVertical2";
-            spaceSeparatorVertical2.NoRounding = false;
-            spaceSeparatorVertical2.Size = new System.Drawing.Size(4, 550);
-            spaceSeparatorVertical2.TabIndex = 38;
-            spaceSeparatorVertical2.Text = "spaceSeparatorVertical2";
-            spaceSeparatorVertical2.Transparent = false;
-            // 
-            // ShowBusinessCardsButton
-            // 
-            ShowBusinessCardsButton.Alpha = 20;
-            ShowBusinessCardsButton.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
-            ShowBusinessCardsButton.BackColor = System.Drawing.Color.Transparent;
-            ShowBusinessCardsButton.Background = true;
-            ShowBusinessCardsButton.Background_WidthPen = 4F;
-            ShowBusinessCardsButton.BackgroundPen = true;
-            ShowBusinessCardsButton.ColorBackground = System.Drawing.Color.Transparent;
-            ShowBusinessCardsButton.ColorBackground_1 = System.Drawing.Color.White;
-            ShowBusinessCardsButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ShowBusinessCardsButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            ShowBusinessCardsButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            ShowBusinessCardsButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            ShowBusinessCardsButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ShowBusinessCardsButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            ShowBusinessCardsButton.Effect_1 = true;
-            ShowBusinessCardsButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            ShowBusinessCardsButton.Effect_1_Transparency = 25;
-            ShowBusinessCardsButton.Effect_2 = true;
-            ShowBusinessCardsButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            ShowBusinessCardsButton.Effect_2_Transparency = 20;
-            ShowBusinessCardsButton.Font = new System.Drawing.Font("Segoe UI Semibold", 26.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ShowBusinessCardsButton.ForeColor = System.Drawing.Color.Linen;
-            ShowBusinessCardsButton.Lighting = false;
-            ShowBusinessCardsButton.LinearGradient_Background = false;
-            ShowBusinessCardsButton.LinearGradientPen = false;
-            ShowBusinessCardsButton.Location = new System.Drawing.Point(22, 383);
-            ShowBusinessCardsButton.Name = "ShowBusinessCardsButton";
-            ShowBusinessCardsButton.PenWidth = 15;
-            ShowBusinessCardsButton.Rounding = true;
-            ShowBusinessCardsButton.RoundingInt = 20;
-            ShowBusinessCardsButton.Size = new System.Drawing.Size(219, 75);
-            ShowBusinessCardsButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            ShowBusinessCardsButton.TabIndex = 41;
-            ShowBusinessCardsButton.Tag = "Cyber1";
-            ShowBusinessCardsButton.TextButton = "Счета";
-            ShowBusinessCardsButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            ShowBusinessCardsButton.Timer_Effect_1 = 5;
-            ShowBusinessCardsButton.Timer_RGB = 300;
-            ShowBusinessCardsButton.Click += ShowBusinessCardsButton_Click;
-            // 
-            // ShowCreditCardsButton
-            // 
-            ShowCreditCardsButton.Alpha = 20;
-            ShowCreditCardsButton.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
-            ShowCreditCardsButton.BackColor = System.Drawing.Color.Transparent;
-            ShowCreditCardsButton.Background = true;
-            ShowCreditCardsButton.Background_WidthPen = 4F;
-            ShowCreditCardsButton.BackgroundPen = true;
-            ShowCreditCardsButton.ColorBackground = System.Drawing.Color.Transparent;
-            ShowCreditCardsButton.ColorBackground_1 = System.Drawing.Color.White;
-            ShowCreditCardsButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ShowCreditCardsButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            ShowCreditCardsButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            ShowCreditCardsButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            ShowCreditCardsButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ShowCreditCardsButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            ShowCreditCardsButton.Effect_1 = true;
-            ShowCreditCardsButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            ShowCreditCardsButton.Effect_1_Transparency = 25;
-            ShowCreditCardsButton.Effect_2 = true;
-            ShowCreditCardsButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            ShowCreditCardsButton.Effect_2_Transparency = 20;
-            ShowCreditCardsButton.Font = new System.Drawing.Font("Segoe UI Semibold", 26.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ShowCreditCardsButton.ForeColor = System.Drawing.Color.Linen;
-            ShowCreditCardsButton.Lighting = false;
-            ShowCreditCardsButton.LinearGradient_Background = false;
-            ShowCreditCardsButton.LinearGradientPen = false;
-            ShowCreditCardsButton.Location = new System.Drawing.Point(22, 262);
-            ShowCreditCardsButton.Name = "ShowCreditCardsButton";
-            ShowCreditCardsButton.PenWidth = 15;
-            ShowCreditCardsButton.Rounding = true;
-            ShowCreditCardsButton.RoundingInt = 20;
-            ShowCreditCardsButton.Size = new System.Drawing.Size(219, 75);
-            ShowCreditCardsButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            ShowCreditCardsButton.TabIndex = 40;
-            ShowCreditCardsButton.Tag = "Cyber1";
-            ShowCreditCardsButton.TextButton = "Кредитные";
-            ShowCreditCardsButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            ShowCreditCardsButton.Timer_Effect_1 = 5;
-            ShowCreditCardsButton.Timer_RGB = 300;
-            ShowCreditCardsButton.Click += ShowCreditCardsButton_Click;
-            // 
-            // ShowDebitCardsButton
-            // 
-            ShowDebitCardsButton.Alpha = 20;
-            ShowDebitCardsButton.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
-            ShowDebitCardsButton.BackColor = System.Drawing.Color.Transparent;
-            ShowDebitCardsButton.Background = true;
-            ShowDebitCardsButton.Background_WidthPen = 4F;
-            ShowDebitCardsButton.BackgroundPen = true;
-            ShowDebitCardsButton.ColorBackground = System.Drawing.Color.Transparent;
-            ShowDebitCardsButton.ColorBackground_1 = System.Drawing.Color.White;
-            ShowDebitCardsButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ShowDebitCardsButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            ShowDebitCardsButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            ShowDebitCardsButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            ShowDebitCardsButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ShowDebitCardsButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            ShowDebitCardsButton.Effect_1 = true;
-            ShowDebitCardsButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            ShowDebitCardsButton.Effect_1_Transparency = 25;
-            ShowDebitCardsButton.Effect_2 = true;
-            ShowDebitCardsButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            ShowDebitCardsButton.Effect_2_Transparency = 20;
-            ShowDebitCardsButton.Font = new System.Drawing.Font("Segoe UI Semibold", 26.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ShowDebitCardsButton.ForeColor = System.Drawing.Color.Linen;
-            ShowDebitCardsButton.Lighting = false;
-            ShowDebitCardsButton.LinearGradient_Background = false;
-            ShowDebitCardsButton.LinearGradientPen = false;
-            ShowDebitCardsButton.Location = new System.Drawing.Point(22, 138);
-            ShowDebitCardsButton.Name = "ShowDebitCardsButton";
-            ShowDebitCardsButton.PenWidth = 15;
-            ShowDebitCardsButton.Rounding = true;
-            ShowDebitCardsButton.RoundingInt = 20;
-            ShowDebitCardsButton.Size = new System.Drawing.Size(219, 75);
-            ShowDebitCardsButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            ShowDebitCardsButton.TabIndex = 39;
-            ShowDebitCardsButton.Tag = "Cyber1";
-            ShowDebitCardsButton.TextButton = "Дебетовые";
-            ShowDebitCardsButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            ShowDebitCardsButton.Timer_Effect_1 = 5;
-            ShowDebitCardsButton.Timer_RGB = 300;
-            ShowDebitCardsButton.Click += ShowDebitCardsButton_Click;
-            // 
             // cyberButton8
             // 
             cyberButton8.Alpha = 20;
@@ -574,32 +413,6 @@
             OpenRequestButton.Timer_Effect_1 = 5;
             OpenRequestButton.Timer_RGB = 300;
             // 
-            // PanelRequest
-            // 
-            PanelRequest.AutoScroll = true;
-            PanelRequest.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
-            PanelRequest.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
-            PanelRequest.Location = new System.Drawing.Point(385, 105);
-            PanelRequest.Name = "PanelRequest";
-            PanelRequest.Padding = new System.Windows.Forms.Padding(5);
-            PanelRequest.Size = new System.Drawing.Size(702, 600);
-            PanelRequest.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            PanelRequest.TabIndex = 42;
-            PanelRequest.Text = "panel2";
-            // 
-            // PanelNotifications
-            // 
-            PanelNotifications.AutoScroll = true;
-            PanelNotifications.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
-            PanelNotifications.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
-            PanelNotifications.Location = new System.Drawing.Point(385, 105);
-            PanelNotifications.Name = "PanelNotifications";
-            PanelNotifications.Padding = new System.Windows.Forms.Padding(5);
-            PanelNotifications.Size = new System.Drawing.Size(1001, 600);
-            PanelNotifications.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            PanelNotifications.TabIndex = 43;
-            PanelNotifications.Text = "panel2";
-            // 
             // cyberButton2
             // 
             cyberButton2.Alpha = 20;
@@ -682,17 +495,111 @@
             dataClient.Timer_RGB = 300;
             dataClient.Click += dataClient_Click;
             // 
+            // PanelCards
+            // 
+            PanelCards.AutoScroll = true;
+            PanelCards.BackColor = System.Drawing.Color.Gray;
+            PanelCards.EdgeColor = System.Drawing.Color.FromArgb(30, 30, 30);
+            PanelCards.Location = new System.Drawing.Point(385, 221);
+            PanelCards.Name = "PanelCards";
+            PanelCards.Padding = new System.Windows.Forms.Padding(5);
+            PanelCards.Size = new System.Drawing.Size(600, 489);
+            PanelCards.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            PanelCards.TabIndex = 45;
+            PanelCards.Tag = "30; 30; 30";
+            PanelCards.Text = "panel2";
+            // 
+            // PersonalCard
+            // 
+            PersonalCard.Alpha = 20;
+            PersonalCard.BackColor = System.Drawing.Color.Transparent;
+            PersonalCard.Background = true;
+            PersonalCard.Background_WidthPen = 4F;
+            PersonalCard.BackgroundPen = true;
+            PersonalCard.ColorBackground = System.Drawing.Color.Transparent;
+            PersonalCard.ColorBackground_1 = System.Drawing.Color.White;
+            PersonalCard.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            PersonalCard.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
+            PersonalCard.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
+            PersonalCard.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
+            PersonalCard.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            PersonalCard.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
+            PersonalCard.Effect_1 = true;
+            PersonalCard.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
+            PersonalCard.Effect_1_Transparency = 25;
+            PersonalCard.Effect_2 = true;
+            PersonalCard.Effect_2_ColorBackground = System.Drawing.Color.White;
+            PersonalCard.Effect_2_Transparency = 20;
+            PersonalCard.Font = new System.Drawing.Font("Segoe UI", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
+            PersonalCard.ForeColor = System.Drawing.Color.Tan;
+            PersonalCard.Lighting = false;
+            PersonalCard.LinearGradient_Background = false;
+            PersonalCard.LinearGradientPen = false;
+            PersonalCard.Location = new System.Drawing.Point(417, 96);
+            PersonalCard.Name = "PersonalCard";
+            PersonalCard.PenWidth = 15;
+            PersonalCard.Rounding = true;
+            PersonalCard.RoundingInt = 20;
+            PersonalCard.Size = new System.Drawing.Size(237, 75);
+            PersonalCard.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            PersonalCard.TabIndex = 46;
+            PersonalCard.Tag = "Cyber";
+            PersonalCard.TextButton = "Личные карты";
+            PersonalCard.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            PersonalCard.Timer_Effect_1 = 5;
+            PersonalCard.Timer_RGB = 300;
+            // 
+            // PersonalPayment
+            // 
+            PersonalPayment.Alpha = 20;
+            PersonalPayment.BackColor = System.Drawing.Color.Transparent;
+            PersonalPayment.Background = true;
+            PersonalPayment.Background_WidthPen = 4F;
+            PersonalPayment.BackgroundPen = true;
+            PersonalPayment.ColorBackground = System.Drawing.Color.Transparent;
+            PersonalPayment.ColorBackground_1 = System.Drawing.Color.White;
+            PersonalPayment.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            PersonalPayment.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
+            PersonalPayment.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
+            PersonalPayment.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
+            PersonalPayment.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            PersonalPayment.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
+            PersonalPayment.Effect_1 = true;
+            PersonalPayment.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
+            PersonalPayment.Effect_1_Transparency = 25;
+            PersonalPayment.Effect_2 = true;
+            PersonalPayment.Effect_2_ColorBackground = System.Drawing.Color.White;
+            PersonalPayment.Effect_2_Transparency = 20;
+            PersonalPayment.Font = new System.Drawing.Font("Segoe UI", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
+            PersonalPayment.ForeColor = System.Drawing.Color.Tan;
+            PersonalPayment.Lighting = false;
+            PersonalPayment.LinearGradient_Background = false;
+            PersonalPayment.LinearGradientPen = false;
+            PersonalPayment.Location = new System.Drawing.Point(703, 96);
+            PersonalPayment.Name = "PersonalPayment";
+            PersonalPayment.PenWidth = 15;
+            PersonalPayment.Rounding = true;
+            PersonalPayment.RoundingInt = 20;
+            PersonalPayment.Size = new System.Drawing.Size(237, 75);
+            PersonalPayment.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            PersonalPayment.TabIndex = 47;
+            PersonalPayment.Tag = "Cyber";
+            PersonalPayment.TextButton = "Личные счета";
+            PersonalPayment.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            PersonalPayment.Timer_Effect_1 = 5;
+            PersonalPayment.Timer_RGB = 300;
+            // 
             // ClientMenu
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
             ClientSize = new System.Drawing.Size(1416, 741);
+            Controls.Add(PersonalPayment);
+            Controls.Add(PersonalCard);
+            Controls.Add(PanelCards);
             Controls.Add(dataClient);
             Controls.Add(cyberButton2);
-            Controls.Add(MyCardsPanel);
-            Controls.Add(PanelNotifications);
-            Controls.Add(PanelRequest);
             Controls.Add(OpenRequestButton);
             Controls.Add(UpdatePageClientMenu);
             Controls.Add(NotificationsButton);
@@ -711,7 +618,7 @@
             TextColor = System.Drawing.Color.White;
             ThemeName = "MetroDark";
             TransparencyKey = System.Drawing.Color.Fuchsia;
-            MyCardsPanel.ResumeLayout(false);
+            Activated += ClientMenu_Activated;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -725,18 +632,14 @@
         private ReaLTaiizor.Controls.SpaceSeparatorVertical spaceSeparatorVertical1;
         private ReaLTaiizor.Controls.CyberButton cyberButton1;
         private ReaLTaiizor.Controls.MetroListBox metroListBox1;
-        private ReaLTaiizor.Controls.Panel MyCardsPanel;
-        private ReaLTaiizor.Controls.CyberButton ShowBusinessCardsButton;
-        private ReaLTaiizor.Controls.CyberButton ShowCreditCardsButton;
-        private ReaLTaiizor.Controls.CyberButton ShowDebitCardsButton;
-        private ReaLTaiizor.Controls.SpaceSeparatorVertical spaceSeparatorVertical2;
         private ReaLTaiizor.Controls.CyberButton cyberButton8;
         private ReaLTaiizor.Controls.CyberButton NotificationsButton;
         private ReaLTaiizor.Controls.CyberButton UpdatePageClientMenu;
         private ReaLTaiizor.Controls.CyberButton OpenRequestButton;
-        private ReaLTaiizor.Controls.Panel PanelRequest;
-        private ReaLTaiizor.Controls.Panel PanelNotifications;
         private ReaLTaiizor.Controls.CyberButton cyberButton2;
         private ReaLTaiizor.Controls.CyberButton dataClient;
+        private ReaLTaiizor.Controls.Panel PanelCards;
+        private ReaLTaiizor.Controls.CyberButton PersonalCard;
+        private ReaLTaiizor.Controls.CyberButton PersonalPayment;
     }
 }

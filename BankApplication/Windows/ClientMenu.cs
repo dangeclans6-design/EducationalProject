@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using static System.Windows.Forms.DataFormats;
 
 namespace BankApplication
 {
@@ -30,46 +31,6 @@ namespace BankApplication
         private void CloseButton_Click(object sender, EventArgs e)
         {
             Application.Exit();
-        }
-
-
-        //---------------------[Кнопка "Дебетовые" в панели "Мои карты"]-----------------------//
-        private async void ShowDebitCardsButton_Click(object sender, EventArgs e)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        //---------------------[Кнопка "Кредитные" в панели "Мои карты"]-----------------------//
-        private async void ShowCreditCardsButton_Click(object sender, EventArgs e)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        //---------------------[Кнопка "Бизнес" в панели "Мои карты"]-----------------------//
-        private async void ShowBusinessCardsButton_Click(object sender, EventArgs e)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
         }
 
         //---------------------[Кнопка "Обновить страницу"]-----------------------//
@@ -94,32 +55,9 @@ namespace BankApplication
             // Достаем из её свойства Tag данные запроса (i-тый элемент в списке), который мы туда положили в цикле
             var (index, currentNoti) = ((int, Notifications))clickedButton.Tag;
 
-            PanelNotifications.Visible = false;
-            PanelNotifications.Controls.Clear();
-
             ShowNoti notification = new(index, currentNoti);
 
             notification.ShowDialog();
-        }
-        #endregion
-
-
-        #region Кнопка "Отправить" (запрос - Открыть карту)
-        private async void GoOpenCardButton_Click(object sender, EventArgs e)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            finally
-            {
-                Enabled = true;
-                Cursor = Cursors.Default;
-            }
         }
         #endregion
 
@@ -129,6 +67,29 @@ namespace BankApplication
             MessageBox.Show($"{currentClient.Id}\n{currentClient.ClientType}\n{currentClient.Login}\n{currentClient.Password}\n{currentClient.Name1}\n" +
                             $"{currentClient.Name2}\n{currentClient.Name3}\n{currentClient.DateBirth}\n{currentClient.NumberPhone}\n" +
                             $"{currentClient.Mail}\n{currentClient.CreateAt}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        #region Обновление спика карт / счетов
+        private void UpdateList()
+        {
+            PanelCards.Controls.Clear();
+
+            int y = 10;
+            foreach (IBankCard card in currentClient.Cards)
+            {
+                CardItem item = new(card);
+
+                PanelCards.Controls.Add(item);
+                item.Location = new Point((PanelCards.Width - item.Width) / 2, y);
+
+                y += item.Height + 30;
+            }
+        }
+        #endregion
+
+        private void ClientMenu_Activated(object sender, EventArgs e)
+        {
+            UpdateList();
         }
     }
 }

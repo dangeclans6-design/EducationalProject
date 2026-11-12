@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace BankApplication
 {
@@ -22,16 +24,17 @@ namespace BankApplication
         public int Id { get; }                          // ID карты в БД
         public int ClientId { get; }                    // ID влдельца (клиента) в БД
         public string CardNumber { get; }               // Номер карты (16 цифр)
-        public decimal Balance { get; set; }            // Баланс карты
-        public CardStatus Status { get; set; }          // Статус карту (смотреть CardStatus)
-        public string Reason { get; set; }              // Причина статуса (если не Active)
+        public decimal Balance { get; }                 // Баланс карты
+        public CardStatus Status { get; }               // Статус карту (смотреть CardStatus)
+        public string Reason { get; }                   // Причина статуса (если не Active)
         public DateTime CreateAt { get; }               // Дата открытия карты
-        public DateTime CloseAt { get; }               // Дата закрытия карты
+        public DateTime CloseAt { get; }                // Дата закрытия карты
+        public string Name { get; }                     // Имя карты (для форм)
 
         public PayStruct PreparePay(decimal amount, ITarget target);                                // Проверка перед оплатой
         public Task PayCard(PayStruct preview);                                                     // Оплата
         public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);      // Проверка паеред пополнением баланса
-        public abstract Task ReplenishBalance(ReplenishBalanceStruct preview);               // Пополнить баланс карты
+        public abstract Task ReplenishBalance(ReplenishBalanceStruct preview);                      // Пополнить баланс карты
     }
 
     #region Скрытое описание
@@ -67,11 +70,12 @@ namespace BankApplication
         public int Id { get; } = id;
         public int ClientId { get; } = clientid;
         public string CardNumber { get; } = cardNumber;
-        public decimal Balance { get; set; } = balance;
-        public CardStatus Status { get; set; } = (CardStatus)status;
-        public string Reason { get; set; } = reason;
+        public decimal Balance { get; protected set; } = balance;
+        public CardStatus Status { get; protected set; } = (CardStatus)status;
+        public string Reason { get; protected set; } = reason;
         public DateTime CreateAt { get; } = createAt;
         public DateTime CloseAt { get; } = closeAt;
+        public string Name { get; protected set; }
 
         public abstract PayStruct PreparePay(decimal amount, ITarget target);
         public abstract Task PayCard(PayStruct preview);
@@ -79,11 +83,11 @@ namespace BankApplication
         public abstract Task ReplenishBalance(ReplenishBalanceStruct preview);
 
         // ISource
-        public string NameSource { get; } = $"Карта *{cardNumber}";
+        public string NameSource { get; set; }
         public abstract bool PossibleToWithdraw(decimal amount);
 
         // ITarget
-        public string NameTarget { get; } = $"Карта *{cardNumber}";
+        public string NameTarget { get; set; }
         public abstract bool CanDeposit(decimal amount);
         
     }
@@ -91,13 +95,23 @@ namespace BankApplication
 
 
     #region Debit Card
-    public class DebitCard(int id, int clientid, string cardnumber, decimal balance, decimal cashback, int status, string reason, DateTime createAt, DateTime closeAt, int isCashbackEnabled) :
-        BankCard(id, clientid, cardnumber, balance, status, reason, createAt, closeAt)
+    public class DebitCard : BankCard
     {
         public decimal LimitBalance { get; } = 6000000;
-        public bool IsCashbackEnabled { get; set; } = (isCashbackEnabled == 1);
+        public bool IsCashbackEnabled { get; set; }
         decimal LimitCashback { get; } = 400000;
-        decimal Cashback { get; set; } = cashback;
+        decimal Cashback { get; set; }
+
+        public DebitCard(int id, int clientid, string cardnumber, decimal balance, decimal cashback, int status, string reason, DateTime createAt, DateTime closeAt, int isCashbackEnabled) :
+        base(id, clientid, cardnumber, balance, status, reason, createAt, closeAt)
+        {
+            Cashback = cashback;
+            IsCashbackEnabled = (isCashbackEnabled == 1);
+            Name = $"Дебетовая карта ****{CardNumber.Substring(12)}";
+
+            NameSource = $"Дебетовая карта *{cardnumber.Substring(12)}";
+            NameTarget = $"Дебетовая карта *{cardnumber.Substring(12)}";
+        }
 
 
         public override bool PossibleToWithdraw(decimal amount)
@@ -189,7 +203,7 @@ namespace BankApplication
         #region Пополнить баланс
         public override ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source)
         {
-            bool canDeposit = CanDeposit(amount);                       // Возможно ли цель (target) пополнить
+            bool canDeposit = CanDeposit(amount);                     // Возможно ли цель (target) пополнить
             bool withdraw = source.PossibleToWithdraw(amount);        // Возможно ли с источника (source) списать деньги
 
             if (withdraw && canDeposit)
