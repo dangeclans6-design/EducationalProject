@@ -38,7 +38,10 @@ namespace BankApplication
     Эти интерфейсы обязуют любой объект (который его наследует) проверить, можно ли с него снять деньги
     или проверить можно ли на него зачислить деньги.
 
-    NameMoneySource - Название для интерфейса (например, "Карта *номер*" или "Bitcoin-кошелек")
+    ISource - интерфейс для объектов, которые могут быть источником (source)
+    ITarget - интерфейс для объектов, которые могут быть целью (target)
+
+    NameSource \ NameTarget - Название (например, "Карта *номер*" или "Bitcoin-кошелек")
     PossibleToWithdraw - Проверить, если объект является источником (source) - можно ли списать деньги
     CanDeposit - Проверка, если объект является целью (target) - можно ли пополнить деньги
     */
@@ -173,24 +176,55 @@ namespace BankApplication
                 else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
             }            
         }
-        #endregion        
+        #endregion
 
-        #region Пополннить баланс
+        #region Скрытое описание
+        /*
+        На данный момент здесь имеется ввиду пополнить со своеей другой карты \ расчетного счета (в дальнейшем, возможно добавится функция пополнения с чужой карты,
+        но необходимо подстверждение перевода от владельца в виде смс или др.)
+        */
+        #endregion
+
+        #region Пополнить баланс
         public override ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source)
-        {            
-            CanDeposit(amount);                       // Возможно ли цель (target) пополнить
-            source.PossibleToWithdraw(amount);        // Возможно ли с источника (source) списать деньги
+        {
+            bool canDeposit = CanDeposit(amount);                       // Возможно ли цель (target) пополнить
+            bool withdraw = source.PossibleToWithdraw(amount);        // Возможно ли с источника (source) списать деньги
 
-            decimal newBalance = Balance + amount;
+            if (withdraw && canDeposit)
+            {
+                decimal newBalance = Balance + amount;
 
-            return new ReplenishBalanceStruct(amount, newBalance, source);
+                return new ReplenishBalanceStruct(amount, newBalance, source);
+            }
+            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
         public async override Task ReplenishBalance(ReplenishBalanceStruct preview)
         {
-            // ВОТ ТУТ НАДО ДОПИСАТЬ МЕТОД ПОПОЛНЕНИЯ (ДОБАВИТЬ СНЯТИЕ С SOURCE-КАРТЫ)+
-            await DataBase.ReplenishBalanceDebitCard(Id, preview.NewBalance, Balance, Deposit, LimitDeposit, Cashback);
+            #region Скрытое описание
+            /*
+            Здесь необходимо разделить логику транзакций по разным типам карт, потому что каждый тип карт находится в своей таблице в БД (DebitCard, CreditCard)
+            */
+            #endregion
 
-            Balance = preview.NewBalance;
+            if (preview.Source is DebitCard card)            // Если источник пополнения - это дебетовая банковская карта
+            {
+                decimal newBalanceSource = card.Balance - preview.Amount;       // Новый баланс карты-источника (source-карты)
+
+                bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCardFromDebitCard(Id, preview.NewBalance, Balance, Deposit, LimitDeposit, Cashback, card.Id, newBalanceSource, card.Balance,
+                                            card.Deposit, card.LimitDeposit, card.Cashback);
+
+                if (IsDbUpdate)
+                {
+                    Balance = preview.NewBalance;
+                    card.Balance = newBalanceSource;
+                }
+                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+            }
+            if (preview.Source is PaymentAccount paymentAccount)            // Если источник пополнения - это расчетный счет
+            {
+                decimal newBalanceSource = paymentAccount.Balance - preview.Amount;       // Новый баланс счета-источника (source-карты)
+            }
         }
         #endregion
 
@@ -486,6 +520,11 @@ namespace BankApplication
         }
     }*/
 
+    #region Скрытое описание
+    /*
+    В рамках данного проекта (приложения) расчетный счет (PaymentAccount) — это просто отдельный самостоятельный счет (не привязанный к картам, как в настоящих банках. Сделано для простоты.).
+    */
+    #endregion
 
     #region Расчетный счет
     public class PaymentAccount(int id, int clientId, string bic, string corAccount, decimal balance, Currency currency, decimal frozenBalance, CardStatus status,

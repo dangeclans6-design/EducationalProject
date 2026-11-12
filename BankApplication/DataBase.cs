@@ -48,8 +48,6 @@ namespace BankApplication
         readonly static string connectionString = @"Data Source=C:\Users\Gleb24\Desktop\my_database\myDB.db";
         //--------------------------------------------------//
 
-        #region Refactor +
-
         #region Оплата на расчетный счет (D)
         public async static Task<bool> PayDebitCardToPaymentAccount(decimal newBalanceSource, decimal newCashbackSource, int id, decimal currentBalanceSource,
                                                     decimal currentDepositSource, decimal currentLimitDepositSource, decimal currentCashbackSource, int idPayment, decimal newBalanceTarget, decimal currentBalanceTarget)
@@ -89,6 +87,7 @@ namespace BankApplication
                 int sourceRows = await cmdSource.ExecuteNonQueryAsync();
 
                 if (sourceRows == 0) return false;
+                #endregion
 
                 #region Действие 2: Зачисляем на target
                 await using var cmdTarget = connection.CreateCommand();
@@ -107,6 +106,7 @@ namespace BankApplication
                 int targetRows = await cmdTarget.ExecuteNonQueryAsync();
 
                 if (targetRows == 0) return false;
+                #endregion
 
                 await transaction.CommitAsync();            // Если все хорошо: Сохраняем оба действия в БД разом
                 return true;
@@ -117,9 +117,81 @@ namespace BankApplication
                 throw;
             }            
         }
-        #endregion        
-
         #endregion
+
+        #region Пополнить баланс с другой Debit карты (D)
+        public async static Task<bool> ReplenishBalanceDebitCardFromDebitCard(int idTarget, decimal newBalanceTarget, decimal currentBalanceTarget, decimal currentDepositTarget, decimal currentLimitDepositTarget,
+                        decimal currentCashbackTarget, int idSource, decimal newBalanceSource, decimal currentBalanceSource, decimal currentDepositSource, decimal currentLimitDepositSource,
+                        decimal currentCashbackSource)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();     // Открываем транзакцию
+
+            try
+            {
+                #region Действие 1: Зачисляем на target-карту
+                await using var cmdTarget = connection.CreateCommand();
+
+                cmdTarget.Transaction = transaction;
+                cmdTarget.CommandText = @"
+                    UPDATE DebitCard
+                    SET Balance = @newBalanceTarget
+                    WHERE Id = @idTarget
+                    AND Balance = @currentBalanceTarget
+                    AND Deposit = @currentDepositTarget
+                    AND LimitDeposit = @currentLimitDepositTarget
+                    AND CashBack = @currentCashbackTarget";
+                cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("idTarget", idTarget);
+                cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("currentDepositTarget", currentDepositTarget);
+                cmdTarget.Parameters.AddWithValue("currentLimitDepositTarget", currentLimitDepositTarget);
+                cmdTarget.Parameters.AddWithValue("currentCashbackTarget", currentCashbackTarget);
+
+                var readerTarget = await cmdTarget.ExecuteNonQueryAsync();
+
+                if (readerTarget == 0) return false;
+                #endregion
+
+                #region Действие 2: Списываем с source-карты
+                await using var cmdSource = connection.CreateCommand();
+
+                cmdSource.Transaction = transaction;
+                cmdSource.CommandText = @"
+                    UPDATE DebitCard
+                    SET Balance = @newBalanceSource
+                    WHERE Id = @idSource
+                    AND Balance = @currentBalanceSource
+                    AND Deposit = @currentDepositSource
+                    AND LimitDeposit = @currentLimitDepositSource
+                    AND CashBack = @currentCashbackSource";
+                cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
+                cmdSource.Parameters.AddWithValue("idSource", idSource);
+                cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource);
+                cmdSource.Parameters.AddWithValue("currentDepositSource", currentDepositSource);
+                cmdSource.Parameters.AddWithValue("currentLimitDepositSource", currentLimitDepositSource);
+                cmdSource.Parameters.AddWithValue("currentCashbackSource", currentCashbackSource);
+
+                var readerSource = await cmdSource.ExecuteNonQueryAsync();
+
+                if (readerSource == 0) return false;
+                #endregion
+
+                await transaction.CommitAsync();            // Если все хорошо: Сохраняем оба действия в БД разом
+                return true;
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }            
+        }
+        #endregion
+
 
         #region Аторизация/Регистрация
 
@@ -1152,36 +1224,6 @@ namespace BankApplication
 
             // Отдаем структуре полученный список из дебетовых карт
             return new StructCheckDebitCardsClient(debit_cards);
-        }
-        #endregion
-
-        #region Пополнить баланс (D)
-        public async static Task<bool> ReplenishBalanceDebitCard(int id, decimal new_balance, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_cashback)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    UPDATE DebitCard
-                    SET Balance = @new_balance
-                    WHERE Id = @id
-                    AND Balance = @current_balance
-                    AND Deposit = @current_deposit
-                    AND LimitDeposit = @current_limitDeposit
-                    AND CashBack = @current_cashback";
-            command.Parameters.AddWithValue("new_balance", new_balance);
-            command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("current_balance", current_balance);
-            command.Parameters.AddWithValue("current_deposit", current_deposit);
-            command.Parameters.AddWithValue("current_limitDeposit", current_limit);
-            command.Parameters.AddWithValue("current_cashback", current_cashback);
-
-            var reader = Convert.ToInt32(await command.ExecuteNonQueryAsync());
-
-            return reader > 0;
         }
         #endregion
 
