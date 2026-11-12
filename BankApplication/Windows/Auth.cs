@@ -13,10 +13,11 @@ namespace BankApplication
 {
     public partial class Auth : MetroForm
     {
-        private int count = 0;      // Количество попыток
+        private int count = 1;      // Количество попыток
         public Auth()
         {
             InitializeComponent();
+            DoubleBuffered = true;
         }
         //--------------------[Кнопка "Войти" в меню авторизации]---------------------//
         private async void GoAuthClick(object sender, EventArgs e)
@@ -24,115 +25,66 @@ namespace BankApplication
             string login = login_auth.Text.Trim();              // Введенный пользователем логин
             string password = password_auth.Text.Trim();        // Введенный пользователем пароль
 
-            bool retry = true;          // Переменная для цикла
-
             try
             {
-                do
+                var clientData = await DataBase.CheckPasswordAndOutDataClient(login);
+
+                if (clientData.Login != null)                // Если нашел пользователя с Login == login
                 {
-                    var check = await DataBase.CheckPasswordAndOutDataClient(login);
+                    if (clientData.Password == password)     // Если пароли совпадают
+                    {                        
+                        var findCardsClient = await DataBase.FindCardsClient(clientData.Id);
+                        
+                        Client currentClient = new(
+                            clientData.Id,
+                            clientData.ClientType,
+                            clientData.Login,
+                            clientData.Password,
+                            clientData.Name1,
+                            clientData.Name2,
+                            clientData.Name3,
+                            clientData.DateBirth,
+                            clientData.NumberPhone,
+                            clientData.Mail,
+                            findCardsClient.cards,
+                            findCardsClient.paymentAccounts
+                            );                                          // Создание клиента в памяти
 
-                    if (check.Login != null)                // Если нашел пользователя с Login == login
-                    {
-                        if (check.Password == password)     // Если пароли совпадают
-                        {                            
-                            if (count == 0) { count = 1; }
-                            else { count++; }
+                        Session.CurrentClient = currentClient;
 
-                            // Поиск карт клиента
-                            var find_debit_cards = DataBase.CheckDebitCardsClient(check.Id);
+                        ClientMenu clientMenu1 = new();
+                        Hide();
 
-                            // Запросы
-                            var find_request = DataBase.SearchRequestClient(check.id);
+                        MessageBox.Show($"Вы успешно авторизировались!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                            // Уведомления
-                            var notifications = new List<Notifications>();
-                            var isReadNotifications = new List<Notifications>();
-
-                            // Ждем завершения всех запросов за ОДИН раз
-                            await Task.WhenAll(find_debit_cards, find_credit_cards, find_request);
-
-                            // "Создание" клиента в памяти
-                            Client currentClient = new(
-                                check.id,
-                                check.login,
-                                check.password,
-                                check.name1,
-                                check.name2,
-                                check.name3,
-                                check.dateBirth,
-                                check.numberPhone,
-                                check.mail,
-                                (await find_debit_cards).DebitCards,
-                                (await find_request).Request,
-                                notifications,
-                                isReadNotifications
-                                );
-
-                            // Передаем в "контейнер" нашего клиента (чтобы в других окнах не перекидывать в конструкторах CurrentClient)
-                            Session.CurrentClient = currentClient;
-
-                            // Создание окна "Меню Клиента"
-                            ClientMenu clientMenu1 = new();
-
-                            // Скрывает текущее окно
-                            Hide();
-
-                            // Выдаем сообщение об успешной авторизации
-                            MessageBox.Show($"Вы успешно авторизировались!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            // Открывает меню (окно) клиента
-                            clientMenu1.Show();
-                        }
-                        else
-                        {
-                            MessageBox.Show($"Вы ввели неверный пароль!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            count++;
-                            return;
-                        }
+                        clientMenu1.Show();
                     }
                     else
                     {
-                        MessageBox.Show($"Вы ввели неверный логин!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show($"Вы ввели неверный пароль!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         count++;
                         return;
                     }
-
-                    // Отправляем сообщение об авторизации в лог
-                    string messegeForLog = $"Пользователь с ID: {Session.CurrentClient.Id} авторизировался. Попыток: {count}.";
-                    await DataBase.AddLogs(Session.CurrentClient.Id, "INFO", messegeForLog, "Окно авторизации");
                 }
-                while (retry);
+                else
+                {
+                    MessageBox.Show($"Вы ввели неверный логин!", "Авторизация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    count++;
+                    return;
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"{ex.Message}", "Ошибка авторизации", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 count++;
             }
         }
         //--------------------[Кнопка "Назад"]---------------------//
         private void BackAuthClick(object sender, EventArgs e)
         {
-            // Закрываем окно при нажатии на кнопку назад
             Hide();
-
-            // Создаем новый экземпляр окна Window1
             StartWindow window1 = new();
-
-            // Открываем Window1 (возвращаемся назад)
             window1.Show();
-        }
-
-        //--------------------[Закрытие формы]---------------------//
-        private void AuthFormClosed(object sender, FormClosedEventArgs e)
-        {
-            Application.Exit();
-        }
-
-        //--------------------[Изменение размеров формы]---------------------//
-        private void ResizeAuth(object sender, EventArgs e)
-        {
-
         }
 
         //--------------------[Кнопка "Закрыть"]---------------------//

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -26,11 +27,12 @@ namespace BankApplication
         public decimal LimitDeposit { get; set; }       // Лимит баланса депозита
         public CardStatus Status { get; set; }          // Статус карту (смотреть CardStatus)
         public string Reason { get; set; }              // Причина статуса (если не Active)
+        public DateTime CreateAt { get; }               // Дата открытия карты
 
         public PayStruct PreparePay(decimal amount, ITarget target);                                // Проверка перед оплатой
         public Task PayCard(PayStruct preview);                                                     // Оплата
         public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);      // Проверка паеред пополнением баланса
-        public abstract Task ReplenishBalance(decimal amount, ISource moneytransfer);               // Пополнить баланс карты
+        public abstract Task ReplenishBalance(ReplenishBalanceStruct preview);               // Пополнить баланс карты
     }
 
     #region Скрытое описание
@@ -60,7 +62,7 @@ namespace BankApplication
         public bool CanDeposit(decimal amount);                // Проверка для target-объекта
     }
 
-    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, decimal deposit, decimal limitDeposit, int status, string reason) : IBankCard, ISource, ITarget
+    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, decimal deposit, decimal limitDeposit, int status, string reason, DateTime createAt) : IBankCard, ISource, ITarget
     {
         // IBankCard
         public int Id { get; } = id;
@@ -71,6 +73,7 @@ namespace BankApplication
         public decimal LimitDeposit { get; set; } = limitDeposit;
         public CardStatus Status { get; set; } = (CardStatus)status;
         public string Reason { get; set; } = reason;
+        public DateTime CreateAt { get; } = createAt;
 
         public abstract PayStruct PreparePay(decimal amount, ITarget target);
         public abstract Task PayCard(PayStruct preview);
@@ -224,6 +227,15 @@ namespace BankApplication
             if (preview.Source is PaymentAccount paymentAccount)            // Если источник пополнения - это расчетный счет
             {
                 decimal newBalanceSource = paymentAccount.Balance - preview.Amount;       // Новый баланс счета-источника (source-карты)
+
+                bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCardFromPaymentAccountCard(Id, preview.NewBalance, Balance, Deposit, LimitDeposit, Cashback, paymentAccount.Id, newBalanceSource);
+
+                if (IsDbUpdate)
+                {
+                    Balance = preview.NewBalance;
+                    paymentAccount.Balance = newBalanceSource;
+                }
+                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
             }
         }
         #endregion
@@ -547,7 +559,7 @@ namespace BankApplication
         public bool CanDeposit(decimal amount)              // Возможно ли сюда пополнить баланс (target)
         {
             if (amount < 0) return false;
-            if (Status == CardStatus.Closed || Status == CardStatus.Frozen) return false;
+            if (Status != CardStatus.Active) return false;
             
             return true;
         }
@@ -556,7 +568,7 @@ namespace BankApplication
         {
             if (amount < 0) return false;
             if (Balance < amount) return false;            
-            if (Status == CardStatus.Closed || Status == CardStatus.Frozen) return false;
+            if (Status != CardStatus.Active) return false;
 
             return true;
         }

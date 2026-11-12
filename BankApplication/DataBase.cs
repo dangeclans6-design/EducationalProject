@@ -192,6 +192,213 @@ namespace BankApplication
         }
         #endregion
 
+        #region Пополнить баланс с другого счета (PaymentAccount) карты (D)
+        public async static Task<bool> ReplenishBalanceDebitCardFromPaymentAccountCard(int idTarget, decimal newBalanceTarget, decimal currentBalanceTarget, decimal currentDepositTarget, decimal currentLimitDepositTarget,
+                        decimal currentCashbackTarget, int idSource, decimal newBalanceSource)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();     // Открываем транзакцию
+
+            try
+            {
+                #region Действие 1: Зачисляем на target-карту
+                await using var cmdTarget = connection.CreateCommand();
+
+                cmdTarget.Transaction = transaction;            // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО
+                cmdTarget.CommandText = @"
+                    UPDATE DebitCard
+                    SET Balance = @newBalanceTarget
+                    WHERE Id = @idTarget
+                    AND Balance = @currentBalanceTarget
+                    AND Deposit = @currentDepositTarget
+                    AND LimitDeposit = @currentLimitDepositTarget
+                    AND CashBack = @currentCashbackTarget
+                    AND Status = 1";
+                cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("idTarget", idTarget);
+                cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("currentDepositTarget", currentDepositTarget);
+                cmdTarget.Parameters.AddWithValue("currentLimitDepositTarget", currentLimitDepositTarget);
+                cmdTarget.Parameters.AddWithValue("currentCashbackTarget", currentCashbackTarget);
+
+                var readerTarget = await cmdTarget.ExecuteNonQueryAsync();
+
+                if (readerTarget == 0) return false;
+                #endregion
+
+                #region Действие 2: Списываем с source-счета
+                await using var cmdSource = connection.CreateCommand();
+
+                cmdSource.Transaction = transaction;                // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО
+                cmdSource.CommandText = @"
+                    UPDATE PaymentAccount
+                    SET Balance = @newBalanceSource
+                    WHERE Id = @idSource
+                    AND Status = 1";
+                cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
+                cmdSource.Parameters.AddWithValue("idSource", idSource);
+
+                var readerSource = await cmdSource.ExecuteNonQueryAsync();
+
+                if (readerSource == 0) return false;
+                #endregion
+
+                await transaction.CommitAsync();            // Если все хорошо: Сохраняем оба действия в БД разом
+                return true;
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        #endregion
+
+        #region Поиск карт и счетов клиента по ID клиента
+        public struct StructCheckCardsPaymentClient(List<BankCard> cards, List<PaymentAccount> paymentAccounts)
+        {
+            public List<BankCard> cards = cards;
+            public List<PaymentAccount> paymentAccounts = paymentAccounts;
+        }
+        public async static Task<StructCheckCardsPaymentClient> FindCardsClient(int clientId)
+        {
+            List<BankCard> cards = [];
+            List<PaymentAccount> paymentAccounts = [];
+
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                #region Действие 1: Поиск дебетовых карт (DebitCard)
+                await using var cmdDebit = connection.CreateCommand();
+
+                cmdDebit.Transaction = transaction;             // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО
+                cmdDebit.CommandText = @"
+                    SELECT Id, CardNumber, Balance, Deposit, LimitDeposit, CashBack, Status, Reason, CreateAt, IsCashbackEnabled
+                    FROM DebitCard WHERE ClientId = @clientId";
+                cmdDebit.Parameters.AddWithValue("clientId", clientId);
+
+                await using var readerDebit = await cmdDebit.ExecuteReaderAsync();
+
+                while (await readerDebit.ReadAsync())
+                {
+                    int idcard = readerDebit.GetInt32(0);
+                    string cardnumber = readerDebit.GetString(1);
+                    decimal balance = readerDebit.GetDecimal(2);
+                    decimal deposit = readerDebit.GetDecimal(3);
+                    decimal limitDeposit = readerDebit.GetDecimal(4);
+                    decimal cashback = readerDebit.GetDecimal(5);
+                    int status = readerDebit.GetInt32(6);
+                    string reason = readerDebit.IsDBNull(7) ? "" : readerDebit.GetString(7);
+                    DateTime createAt = readerDebit.GetDateTime(8);
+                    int isCashbackEnabled = readerDebit.GetInt32(9);
+
+                    cards.Add(new DebitCard(idcard, clientId, cardnumber, balance, deposit, limitDeposit, cashback, status, reason, createAt, isCashbackEnabled));
+                }
+                #endregion
+
+                #region Действие 2: Поиск кредитных карт клиента (ПОКА ЧТО ПУСТО)
+
+                #endregion
+
+                #region Действие 3: Поиск счетов (PaymentAccount)
+                await using var cmdPaymentAccount = connection.CreateCommand();
+
+                cmdPaymentAccount.Transaction = transaction;             // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО
+                cmdPaymentAccount.CommandText = @"
+                    SELECT Id, AccountNumber, Bic, CorAccount, Balance, Currency, FrozenBalance, Status, OpenedAt, ClosedAt
+                    FROM PaymentAccount WHERE ClientId = @clientId";
+                cmdPaymentAccount.Parameters.AddWithValue("clientId", clientId);
+
+                await using var readerPayment = await cmdPaymentAccount.ExecuteReaderAsync();
+
+                while (await readerPayment.ReadAsync())
+                {
+                    int idPayment = readerPayment.GetInt32(0);
+                    string accountNumber = readerPayment.GetString(1);
+                    string bic = readerPayment.GetString(2);
+                    string corAccount = readerPayment.GetString(3);
+                    decimal balance = readerPayment.GetDecimal(4);
+                    int currency = readerPayment.GetInt32(5);
+                    decimal frozenBalance = readerPayment.GetDecimal(6);
+                    int status = readerPayment.GetInt32(7);
+                    DateTime openedAt = readerPayment.GetDateTime(8);
+                    DateTime closedAt = readerPayment.IsDBNull(8) ? default : readerPayment.GetDateTime(8);
+
+                    paymentAccounts.Add(new PaymentAccount(idPayment, clientId, bic, corAccount, balance, currency, frozenBalance, status, openedAt, closedAt, accountNumber));
+                }
+                #endregion
+
+                await transaction.CommitAsync();                                           // Если все хорошо: Сохраняем все действия в БД разом
+
+                return new StructCheckCardsPaymentClient(cards, paymentAccounts);            // Отдаем структуре полученные списоки
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }            
+        }
+        #endregion
+
+        #region Проверка пароля (Авторизация)
+        public readonly struct StructCheckPassword(int id, int clientType, string login, string password, string name1, string name2, string name3, string dateBirth, string numberPhone, string mail)
+        {
+            public readonly int Id = id;
+            public readonly int ClientType = clientType;
+            public readonly string Login = login;
+            public readonly string Password = password;
+            public readonly string Name1 = name1;
+            public readonly string Name2 = name2;
+            public readonly string Name3 = name3;
+            public readonly string DateBirth = dateBirth;
+            public readonly string NumberPhone = numberPhone;
+            public readonly string Mail = mail;
+        }
+        public async static Task<StructCheckPassword> CheckPasswordAndOutDataClient(string login)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = @"
+                    SELECT Id, ClientType, Password, Name1, Name2, Name3, DateBirth, NumberPhone, Mail
+                    FROM Client
+                    WHERE Login = @login";
+            command.Parameters.AddWithValue("login", login);
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            if (await reader.ReadAsync())
+            {
+                int id = reader.GetInt32(0);
+                int clientType = reader.GetInt32(1);
+                string password = reader.GetString(2);
+                string name1 = reader.GetString(3);
+                string name2 = reader.GetString(4);
+                string name3 = reader.GetString(5);
+                string datebirth = reader.GetString(6);
+                string numberPhone = reader.GetString(7);
+                string mail = reader.GetString(8);
+
+                return new StructCheckPassword(id, clientType, login, password, name1, name2, name3, datebirth, numberPhone, mail);
+            }
+            else return new StructCheckPassword();
+        }
+        #endregion
+
+
 
         #region Аторизация/Регистрация
 
@@ -303,55 +510,7 @@ namespace BankApplication
             command.Parameters.AddWithValue("mail", mail);
 
             await command.ExecuteNonQueryAsync();
-        }
-
-        //-------------------[Проверка пароля (Авторизация). Возвращает структуру с данными пользователя]-------------------//
-        public readonly struct StructCheckPassword(int id, int clientType, string login, string password, string name1, string name2, string name3,
-                                          string dateBirth, string numberPhone, string mail)
-        {
-            public readonly int Id = id;
-            public readonly int ClientType = clientType;
-            public readonly string Login = login;
-            public readonly string Password = password;
-            public readonly string Name1 = name1;
-            public readonly string Name2 = name2;
-            public readonly string Name3 = name3;
-            public readonly string DateBirth = dateBirth;
-            public readonly string NumberPhone = numberPhone;
-            public readonly string Mail = mail;
-        }
-        public async static Task<StructCheckPassword> CheckPasswordAndOutDataClient(string login)
-        {
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    SELECT Id, ClientType, Password, Name1, Name2, Name3, DateBirth, NumberPhone, Mail
-                    FROM Client
-                    WHERE Login = @login";
-            command.Parameters.AddWithValue("login", login);
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            if (await reader.ReadAsync())
-            {
-                int id = reader.GetInt32(0);
-                int clientType = reader.GetInt32(1);
-                string password = reader.GetString(2);
-                string name1 = reader.GetString(3);
-                string name2 = reader.GetString(4);
-                string name3 = reader.GetString(5);
-                string datebirth = reader.GetString(6);
-                string numberPhone = reader.GetString(7);
-                string mail = reader.GetString(8);
-
-                return new StructCheckPassword(id, clientType, login, password, name1, name2, name3, datebirth, numberPhone, mail);
-            }
-            else return new StructCheckPassword();
-        }
+        }        
 
         //-------------------[Проверка пароля (Панель Администратора)]-------------------//
         public readonly struct StructCheckPasswordAdmin(int id, string login, string password, string secureCode, int status, bool checkStatus)
@@ -1184,50 +1343,7 @@ namespace BankApplication
         #endregion
 
 
-        #region Работа с Debit картами
-
-        #region Поиск карт клиента по ID (D)
-        public struct StructCheckDebitCardsClient(List<DebitCard> debit_cards)
-        {
-            public List<DebitCard> DebitCards = debit_cards;
-        }
-        public async static Task<StructCheckDebitCardsClient> CheckDebitCardsClient(int clientid)
-        {
-            List<DebitCard> debit_cards = [];
-
-            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
-
-            await using var connection = new MySqlConnection(builder.ConnectionString);
-            await connection.OpenAsync();
-
-            await using var command = connection.CreateCommand();
-            command.CommandText = @"
-                    SELECT Id, CardNumber, Balance, Deposit, LimitDeposit, CashBack, Status, Reason
-                    FROM DebitCard WHERE ClientId = @clientid";
-            command.Parameters.AddWithValue("clientid", clientid);
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                int idcard = reader.GetInt32(0);
-                string cardnumber = reader.GetString(1);
-                decimal balance = reader.GetDecimal(2);
-                decimal deposit = reader.GetDecimal(3);
-                decimal limitdeposit = reader.GetDecimal(4);
-                decimal cashback = reader.GetDecimal(5);
-                int status = reader.GetInt32(6);
-                string reason = reader.IsDBNull(7) ? "" : reader.GetString(7);
-
-                debit_cards.Add(new DebitCard(idcard, cardnumber, balance, deposit, limitdeposit, clientid, cashback, status, reason));
-            }
-
-            // Отдаем структуре полученный список из дебетовых карт
-            return new StructCheckDebitCardsClient(debit_cards);
-        }
-        #endregion
-
-        
+        #region Работа с Debit картами                
 
         #region Пополнить депозит (D)
         public async static Task<bool> ReplenishDepositDebitCard(int id, decimal new_deposit, decimal current_balance, decimal current_deposit, decimal current_limit, decimal current_cashback) 

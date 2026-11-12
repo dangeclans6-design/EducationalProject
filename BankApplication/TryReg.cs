@@ -11,7 +11,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 namespace BankApplication
 {
     public class Client(int id, int clientType, string login, string password, string name1, string name2, string name3, string dateBirth, string numberPhone, string mail,
-                        List<BankCard> cards, List<Request> openRequest, List<Notifications> notifications, List<Notifications> isReadNotifications)
+                        List<BankCard> cards, List<PaymentAccount> paymentAccount)
     {
         public int Id { get; set; } = id;
         public ClientType ClientType { get; set; } = (ClientType)clientType;
@@ -26,22 +26,22 @@ namespace BankApplication
 
 
         public List<BankCard> Cards { get; set; } = cards;
-        public List<Request> OpenRequest { get; set; } = openRequest;
-        public List<Notifications> Notifications { get; set; } = notifications;
-        public List<Notifications> IsReadNotifications { get; set; } = isReadNotifications;
+        public List<PaymentAccount> PaymentAccounts { get; set; } = paymentAccount;
+
+        //public List<Request> OpenRequest { get; set; } = openRequest;
+        //public List<Notifications> Notifications { get; set; } = notifications;
+        //public List<Notifications> IsReadNotifications { get; set; } = isReadNotifications;
     }
 
     public class Admin(int id, string login, string password, string secureCode, int status, List<RequestAdmin> myRequest, List<RequestAdmin> request, List<RequestAdminFull> requestFull)
     {
-        // АвтоСвойства (Auto-Properties)
-        //----------------------[Данные Администратора]------------------------//
         public int Id { get; set; } = id;
         public string Login { get; set; } = login;
         public string Password { get; set; } = password;
         public string SecureCode { get; set; } = secureCode;
         public int Status { get; set; } = status;
 
-        //----------------------[Запросы]------------------------//
+
         public List<RequestAdmin> MyRequestAdmin { get; set; } = myRequest;
         public List<RequestAdmin> RequestAdmin { get; set; } = request;
         public List<RequestAdminFull> RequestAdminFull { get; set; } = requestFull;
@@ -73,14 +73,6 @@ namespace BankApplication
 
                         switch (typeCard, answer)
                         {
-                            case ("U", "Одобрено"):
-                                await DataBase.U_ChangeLimitDepositAndAnswerRequest(newDeposit, idCard, answer, comment, dateAnswer, idRequest, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("U", "Отказано"):
-                                await DataBase.UDC_RefusalCLD(idRequest, answer, comment, dateAnswer, clientId, title, comment);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
                             case ("D", "Одобрено"):
                                 await DataBase.D_ChangeLimitDepositAndAnswerRequest(newDeposit, idCard, answer, comment, dateAnswer, idRequest, clientId, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
@@ -116,14 +108,6 @@ namespace BankApplication
 
                         switch (typeCard, answer)
                         {
-                            case ("U", "Одобрено"):
-                                await DataBase.U_CloseAccept(idCard, answer, comment, dateAnswer, idRequest, typeCard, cardNumber, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("U", "Отказано"):
-                                await DataBase.U_RefusalClose(idRequest, answer, comment, dateAnswer, clientId, title, idCard);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
                             case ("D", "Одобрено"):
                                 await DataBase.D_CloseAccept(idCard, answer, comment, dateAnswer, idRequest, typeCard, cardNumber, clientId, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);
@@ -159,14 +143,6 @@ namespace BankApplication
 
                         switch (typeCard, answer)
                         {
-                            case ("U", "Одобрено"):
-                                await DataBase.U_AcceptOpenCard(clientId, newCardNumber, answer, comment, dateAnswer, idRequest, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
-                            case ("U", "Отказано"):
-                                await DataBase.U_RefusalOpenCard(idRequest, answer, comment, dateAnswer, clientId, title);
-                                MyRequestAdmin.RemoveAt(indexMyRequest);
-                                break;
                             case ("D", "Одобрено"):
                                 await DataBase.D_AcceptOpenCard(clientId, newCardNumber, answer, comment, dateAnswer, idRequest, title);
                                 MyRequestAdmin.RemoveAt(indexMyRequest);

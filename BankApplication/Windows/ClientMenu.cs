@@ -375,7 +375,7 @@ namespace BankApplication
 
                 // Поиск карт клиента (Запускаем поиск всех карт одновременно)
                 var find_usually_cards = DataBase.CheckUsuallyCardsClient(check.id);
-                var find_debit_cards = DataBase.CheckDebitCardsClient(check.id);
+                var find_debit_cards = DataBase.FindCardsClient(check.id);
                 var find_credit_cards = DataBase.CheckCreditCardsClient(check.id);
                 var find_business_cards = DataBase.CheckBusinessCardsClient(check.id);
                 var find_request = DataBase.SearchRequestClient(check.id);

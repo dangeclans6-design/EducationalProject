@@ -17,9 +17,9 @@ namespace BankApplication
 
     public enum CardStatus
     {
-        Frozen = 0, // Заморожена
-        Active = 1, // Активна
-        Closed = 2  // Закрыта
+        Frozen = 0,     // Заморожена
+        Active = 1,     // Активна
+        Closed = 2      // Закрыта
     }
 
     public enum ClientType
@@ -45,7 +45,7 @@ namespace BankApplication
     {
         RUB = 0,        // Валюта рубли
         USD = 1,        // Валюта доллары
-        УГК = 2         // Валюта евро
+        EUR = 2         // Валюта евро
     }
 
     // Struct-уры
@@ -67,8 +67,9 @@ namespace BankApplication
 
     public struct ReplenishBalanceStruct(decimal amount, decimal newBalance, ISource source)
     {
-        public decimal Amount = amount;
-        public decimal NewBalance = newBalance;
-        public ISource Source = source;
+        // Общие
+        public decimal Amount = amount;                     // Сумма пополнения
+        public decimal NewBalance = newBalance;             // Заранее вычесленный новый баланс
+        public ISource Source = source;                     // Источник (source). Откуда "берутся" деньги
     }
 }
