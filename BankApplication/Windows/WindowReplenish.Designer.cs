@@ -33,6 +33,9 @@
             CloseButton = new ReaLTaiizor.Controls.DungeonButtonLeft();
             Amount = new ReaLTaiizor.Controls.DungeonRichTextBox();
             ReplenishButton = new ReaLTaiizor.Controls.CyberButton();
+            bigLabel3 = new ReaLTaiizor.Controls.BigLabel();
+            bigLabel1 = new ReaLTaiizor.Controls.BigLabel();
+            bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
             SuspendLayout();
             // 
             // BoxSource
@@ -49,11 +52,11 @@
             BoxSource.FormattingEnabled = true;
             BoxSource.IntegralHeight = false;
             BoxSource.ItemHeight = 43;
-            BoxSource.Location = new System.Drawing.Point(280, 45);
+            BoxSource.Location = new System.Drawing.Point(54, 127);
             BoxSource.MaxDropDownItems = 4;
             BoxSource.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             BoxSource.Name = "BoxSource";
-            BoxSource.Size = new System.Drawing.Size(414, 49);
+            BoxSource.Size = new System.Drawing.Size(605, 49);
             BoxSource.StartIndex = 0;
             BoxSource.TabIndex = 0;
             BoxSource.SelectedIndexChanged += BoxSource_SelectedIndexChanged;
@@ -63,7 +66,7 @@
             panel1.BackColor = System.Drawing.Color.Tan;
             panel1.Location = new System.Drawing.Point(-6, -6);
             panel1.Name = "panel1";
-            panel1.Size = new System.Drawing.Size(54, 485);
+            panel1.Size = new System.Drawing.Size(54, 504);
             panel1.TabIndex = 12;
             // 
             // CloseButton
@@ -75,7 +78,7 @@
             CloseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             CloseButton.InactiveColorA = System.Drawing.Color.FromArgb(253, 252, 252);
             CloseButton.InactiveColorB = System.Drawing.Color.FromArgb(239, 237, 236);
-            CloseButton.Location = new System.Drawing.Point(873, 4);
+            CloseButton.Location = new System.Drawing.Point(649, 4);
             CloseButton.Name = "CloseButton";
             CloseButton.PressedColorA = System.Drawing.Color.FromArgb(226, 226, 226);
             CloseButton.PressedColorB = System.Drawing.Color.FromArgb(237, 237, 237);
@@ -95,10 +98,10 @@
             Amount.EdgeColor = System.Drawing.Color.White;
             Amount.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
             Amount.ForeColor = System.Drawing.Color.Black;
-            Amount.Location = new System.Drawing.Point(112, 264);
+            Amount.Location = new System.Drawing.Point(54, 318);
             Amount.Name = "Amount";
             Amount.ReadOnly = false;
-            Amount.Size = new System.Drawing.Size(485, 36);
+            Amount.Size = new System.Drawing.Size(605, 36);
             Amount.TabIndex = 87;
             Amount.TextBackColor = System.Drawing.Color.White;
             Amount.WordWrap = true;
@@ -129,7 +132,7 @@
             ReplenishButton.Lighting = false;
             ReplenishButton.LinearGradient_Background = false;
             ReplenishButton.LinearGradientPen = false;
-            ReplenishButton.Location = new System.Drawing.Point(559, 351);
+            ReplenishButton.Location = new System.Drawing.Point(418, 382);
             ReplenishButton.Name = "ReplenishButton";
             ReplenishButton.PenWidth = 15;
             ReplenishButton.Rounding = true;
@@ -144,12 +147,51 @@
             ReplenishButton.Timer_RGB = 300;
             ReplenishButton.Click += ReplenishButton_Click;
             // 
+            // bigLabel3
+            // 
+            bigLabel3.AutoSize = true;
+            bigLabel3.BackColor = System.Drawing.Color.Transparent;
+            bigLabel3.Font = new System.Drawing.Font("Segoe UI", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+            bigLabel3.ForeColor = System.Drawing.Color.Azure;
+            bigLabel3.Location = new System.Drawing.Point(163, 4);
+            bigLabel3.Name = "bigLabel3";
+            bigLabel3.Size = new System.Drawing.Size(406, 50);
+            bigLabel3.TabIndex = 89;
+            bigLabel3.Text = "Пополнение баланса";
+            // 
+            // bigLabel1
+            // 
+            bigLabel1.AutoSize = true;
+            bigLabel1.BackColor = System.Drawing.Color.Transparent;
+            bigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            bigLabel1.ForeColor = System.Drawing.Color.Tan;
+            bigLabel1.Location = new System.Drawing.Point(54, 80);
+            bigLabel1.Name = "bigLabel1";
+            bigLabel1.Size = new System.Drawing.Size(610, 30);
+            bigLabel1.TabIndex = 90;
+            bigLabel1.Text = "Выберите карту (счет), с которой хотите пополнить баланс:";
+            // 
+            // bigLabel2
+            // 
+            bigLabel2.AutoSize = true;
+            bigLabel2.BackColor = System.Drawing.Color.Transparent;
+            bigLabel2.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            bigLabel2.ForeColor = System.Drawing.Color.Tan;
+            bigLabel2.Location = new System.Drawing.Point(54, 269);
+            bigLabel2.Name = "bigLabel2";
+            bigLabel2.Size = new System.Drawing.Size(334, 32);
+            bigLabel2.TabIndex = 91;
+            bigLabel2.Text = "Введите сумму пополнения:";
+            // 
             // WindowReplenish
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
-            ClientSize = new System.Drawing.Size(904, 473);
+            ClientSize = new System.Drawing.Size(684, 479);
+            Controls.Add(bigLabel2);
+            Controls.Add(bigLabel1);
+            Controls.Add(bigLabel3);
             Controls.Add(Amount);
             Controls.Add(ReplenishButton);
             Controls.Add(panel1);
@@ -160,6 +202,7 @@
             TextColor = System.Drawing.Color.White;
             ThemeName = "MetroDark";
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -169,5 +212,8 @@
         private ReaLTaiizor.Controls.DungeonButtonLeft CloseButton;
         private ReaLTaiizor.Controls.DungeonRichTextBox Amount;
         private ReaLTaiizor.Controls.CyberButton ReplenishButton;
+        private ReaLTaiizor.Controls.BigLabel bigLabel3;
+        private ReaLTaiizor.Controls.BigLabel bigLabel1;
+        private ReaLTaiizor.Controls.BigLabel bigLabel2;
     }
 }

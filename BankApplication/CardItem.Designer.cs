@@ -28,44 +28,44 @@
         /// </summary>
         private void InitializeComponent()
         {
-            NameCard = new ReaLTaiizor.Controls.BigLabel();
+            NameTarget = new ReaLTaiizor.Controls.BigLabel();
             panel1 = new ReaLTaiizor.Controls.Panel();
-            Status = new ReaLTaiizor.Controls.BigLabel();
+            StatusTarget = new ReaLTaiizor.Controls.BigLabel();
             BlockButton = new ReaLTaiizor.Controls.Button();
             RequisitesButton = new ReaLTaiizor.Controls.Button();
             TransferMoneyButton = new ReaLTaiizor.Controls.Button();
             PayButton = new ReaLTaiizor.Controls.Button();
             ReplenishButton = new ReaLTaiizor.Controls.Button();
-            BalanceCard = new ReaLTaiizor.Controls.BigLabel();
-            NumberCard = new ReaLTaiizor.Controls.BigLabel();
+            BalanceTarget = new ReaLTaiizor.Controls.BigLabel();
+            NumberTarget = new ReaLTaiizor.Controls.BigLabel();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
-            // NameCard
+            // NameTarget
             // 
-            NameCard.AutoSize = true;
-            NameCard.BackColor = System.Drawing.Color.Transparent;
-            NameCard.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            NameCard.ForeColor = System.Drawing.Color.Linen;
-            NameCard.Location = new System.Drawing.Point(6, 4);
-            NameCard.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            NameCard.Name = "NameCard";
-            NameCard.Size = new System.Drawing.Size(68, 30);
-            NameCard.TabIndex = 0;
-            NameCard.Text = "Карта";
+            NameTarget.AutoSize = true;
+            NameTarget.BackColor = System.Drawing.Color.Transparent;
+            NameTarget.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
+            NameTarget.ForeColor = System.Drawing.Color.Linen;
+            NameTarget.Location = new System.Drawing.Point(6, 4);
+            NameTarget.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            NameTarget.Name = "NameTarget";
+            NameTarget.Size = new System.Drawing.Size(68, 30);
+            NameTarget.TabIndex = 0;
+            NameTarget.Text = "Карта";
             // 
             // panel1
             // 
             panel1.BackColor = System.Drawing.SystemColors.WindowFrame;
-            panel1.Controls.Add(Status);
+            panel1.Controls.Add(StatusTarget);
             panel1.Controls.Add(BlockButton);
             panel1.Controls.Add(RequisitesButton);
             panel1.Controls.Add(TransferMoneyButton);
             panel1.Controls.Add(PayButton);
             panel1.Controls.Add(ReplenishButton);
-            panel1.Controls.Add(BalanceCard);
-            panel1.Controls.Add(NumberCard);
-            panel1.Controls.Add(NameCard);
+            panel1.Controls.Add(BalanceTarget);
+            panel1.Controls.Add(NumberTarget);
+            panel1.Controls.Add(NameTarget);
             panel1.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
             panel1.Location = new System.Drawing.Point(-6, -4);
             panel1.Margin = new System.Windows.Forms.Padding(2);
@@ -76,18 +76,18 @@
             panel1.TabIndex = 1;
             panel1.Text = "panel1";
             // 
-            // Status
+            // StatusTarget
             // 
-            Status.AutoSize = true;
-            Status.BackColor = System.Drawing.Color.Transparent;
-            Status.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            Status.ForeColor = System.Drawing.Color.Linen;
-            Status.Location = new System.Drawing.Point(312, 45);
-            Status.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            Status.Name = "Status";
-            Status.Size = new System.Drawing.Size(75, 30);
-            Status.TabIndex = 8;
-            Status.Text = "Статус";
+            StatusTarget.AutoSize = true;
+            StatusTarget.BackColor = System.Drawing.Color.Transparent;
+            StatusTarget.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
+            StatusTarget.ForeColor = System.Drawing.Color.Linen;
+            StatusTarget.Location = new System.Drawing.Point(312, 45);
+            StatusTarget.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            StatusTarget.Name = "StatusTarget";
+            StatusTarget.Size = new System.Drawing.Size(75, 30);
+            StatusTarget.TabIndex = 8;
+            StatusTarget.Text = "Статус";
             // 
             // BlockButton
             // 
@@ -168,6 +168,7 @@
             PayButton.TabIndex = 4;
             PayButton.Text = "Оплатить";
             PayButton.TextAlignment = System.Drawing.StringAlignment.Center;
+            PayButton.Click += PayButton_Click;
             // 
             // ReplenishButton
             // 
@@ -190,31 +191,31 @@
             ReplenishButton.TextAlignment = System.Drawing.StringAlignment.Center;
             ReplenishButton.Click += ReplenishButton_Click;
             // 
-            // BalanceCard
+            // BalanceTarget
             // 
-            BalanceCard.AutoSize = true;
-            BalanceCard.BackColor = System.Drawing.Color.Transparent;
-            BalanceCard.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            BalanceCard.ForeColor = System.Drawing.Color.Linen;
-            BalanceCard.Location = new System.Drawing.Point(312, 4);
-            BalanceCard.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            BalanceCard.Name = "BalanceCard";
-            BalanceCard.Size = new System.Drawing.Size(80, 30);
-            BalanceCard.TabIndex = 2;
-            BalanceCard.Text = "Баланс";
+            BalanceTarget.AutoSize = true;
+            BalanceTarget.BackColor = System.Drawing.Color.Transparent;
+            BalanceTarget.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
+            BalanceTarget.ForeColor = System.Drawing.Color.Linen;
+            BalanceTarget.Location = new System.Drawing.Point(312, 4);
+            BalanceTarget.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            BalanceTarget.Name = "BalanceTarget";
+            BalanceTarget.Size = new System.Drawing.Size(80, 30);
+            BalanceTarget.TabIndex = 2;
+            BalanceTarget.Text = "Баланс";
             // 
-            // NumberCard
+            // NumberTarget
             // 
-            NumberCard.AutoSize = true;
-            NumberCard.BackColor = System.Drawing.Color.Transparent;
-            NumberCard.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            NumberCard.ForeColor = System.Drawing.Color.Linen;
-            NumberCard.Location = new System.Drawing.Point(6, 34);
-            NumberCard.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            NumberCard.Name = "NumberCard";
-            NumberCard.Size = new System.Drawing.Size(89, 30);
-            NumberCard.TabIndex = 1;
-            NumberCard.Text = "Номер: ";
+            NumberTarget.AutoSize = true;
+            NumberTarget.BackColor = System.Drawing.Color.Transparent;
+            NumberTarget.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
+            NumberTarget.ForeColor = System.Drawing.Color.Linen;
+            NumberTarget.Location = new System.Drawing.Point(6, 34);
+            NumberTarget.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            NumberTarget.Name = "NumberTarget";
+            NumberTarget.Size = new System.Drawing.Size(89, 30);
+            NumberTarget.TabIndex = 1;
+            NumberTarget.Text = "Номер: ";
             // 
             // CardItem
             // 
@@ -231,15 +232,15 @@
 
         #endregion
 
-        private ReaLTaiizor.Controls.BigLabel BalanceCard;
+        private ReaLTaiizor.Controls.BigLabel BalanceTarget;
         private ReaLTaiizor.Controls.Panel panel1;
-        private ReaLTaiizor.Controls.BigLabel NumberCard;
-        private ReaLTaiizor.Controls.BigLabel NameCard;
+        private ReaLTaiizor.Controls.BigLabel NumberTarget;
+        private ReaLTaiizor.Controls.BigLabel NameTarget;
         private ReaLTaiizor.Controls.Button BlockButton;
         private ReaLTaiizor.Controls.Button RequisitesButton;
         private ReaLTaiizor.Controls.Button TransferMoneyButton;
         private ReaLTaiizor.Controls.Button ReplenishButton;
         private ReaLTaiizor.Controls.Button PayButton;
-        private ReaLTaiizor.Controls.BigLabel Status;
+        private ReaLTaiizor.Controls.BigLabel StatusTarget;
     }
 }

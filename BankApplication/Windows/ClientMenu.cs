@@ -25,6 +25,30 @@ namespace BankApplication
             DoubleBuffered = true;
 
             currentClient = Session.CurrentClient;
+
+            PanelCards.Controls.Clear();
+
+            int y = 10;
+            foreach (IBankCard card in currentClient.Cards)
+            {
+                CardItem item = new(card);
+
+                PanelCards.Controls.Add(item);
+                item.Location = new Point((PanelCards.Width - item.Width) / 2, y);
+
+                item.OnReplenishButton += OpenReplenishWindow;
+
+                y += item.Height + 30;
+            }
+        }
+
+        private void OpenReplenishWindow(IBankCard currentCard)
+        {
+            WindowReplenish wr = new(currentCard);
+
+            wr.ShowDialog();
+
+            UpdateList();
         }
 
         //---------------------[Кнопка "Закрыть форму"]-----------------------//
@@ -69,11 +93,9 @@ namespace BankApplication
                             $"{currentClient.Mail}\n{currentClient.CreateAt}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        #region Обновление спика карт / счетов
+        #region Обновление спика карт / счетов UpdateList()
         private void UpdateList()
         {
-            PanelCards.Controls.Clear();
-
             int y = 10;
             foreach (IBankCard card in currentClient.Cards)
             {
@@ -82,14 +104,11 @@ namespace BankApplication
                 PanelCards.Controls.Add(item);
                 item.Location = new Point((PanelCards.Width - item.Width) / 2, y);
 
+                item.OnReplenishButton += OpenReplenishWindow;
+
                 y += item.Height + 30;
             }
         }
         #endregion
-
-        private void ClientMenu_Activated(object sender, EventArgs e)
-        {
-            UpdateList();
-        }
     }
 }

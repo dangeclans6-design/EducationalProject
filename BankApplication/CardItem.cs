@@ -18,26 +18,31 @@ namespace BankApplication
 
             this.currentCard = currentCard;
 
-            NameCard.Text = currentCard.Name;
-            NumberCard.Text = $"Номер: {currentCard.CardNumber}";
-            BalanceCard.Text = $"{currentCard.Balance} ₽";
-            Status.Text = $"{currentCard.Status}";
+            NameTarget.Text = currentCard.Name;
+            NumberTarget.Text = $"Номер: {currentCard.CardNumber}";
+            BalanceTarget.Text = $"{currentCard.Balance} ₽";
+            StatusTarget.Text = $"{currentCard.Status}";
 
-            if (currentCard.Status == CardStatus.Active) Status.ForeColor = Color.Green;
-            if (currentCard.Status == CardStatus.Frozen) Status.ForeColor = Color.Tan;
-            if (currentCard.Status == CardStatus.Closed) Status.ForeColor = Color.Red;
+            if (currentCard.Status == CardStatus.Active) StatusTarget.ForeColor = Color.Green;
+            if (currentCard.Status == CardStatus.Frozen) StatusTarget.ForeColor = Color.Tan;
+            if (currentCard.Status == CardStatus.Closed) StatusTarget.ForeColor = Color.Red;
         }
+
+        public event Action<IBankCard> OnReplenishButton;
 
         private void ReplenishButton_Click(object sender, EventArgs e)
         {
             if (currentCard.Status != CardStatus.Active) MessageBox.Show($"Карта на данный момент недоступна. Причина: {currentCard.Reason}.",
-                                                                        "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                                           "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
             {
-                WindowReplenish wr = new(currentCard);
+                OnReplenishButton?.Invoke(currentCard);
+            }
+        }
 
-                wr.ShowDialog();
-            }            
+        private void PayButton_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

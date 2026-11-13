@@ -16,7 +16,9 @@ namespace BankApplication
     #region Скрытое описание
     /*
     Интерфейс декларирурет, что свойства должны быть. В нем мы объявляем методы (без тела).
-    Данный интерфейс показывает что может делать каждая карта и какими свойствами она обладает обязательно    
+    Данный интерфейс показывает что может делать каждая карта и какими свойствами она обладает обязательно
+
+    !!! На данный момент этот интерфейс является изыбточным (так как всего 1 класс BankCard подписан на него) !!!
     */
     #endregion
     public interface IBankCard
@@ -64,13 +66,19 @@ namespace BankApplication
         public bool CanDeposit(decimal amount);                // Проверка для target-объекта
     }
 
-    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, int status, string reason, DateTime createAt, DateTime closeAt) : IBankCard, ISource, ITarget
+    public interface ITransferable : ISource
+    {
+        public TransferToStruct PrepareTransferTo(decimal amount, ITarget target);
+        public Task TransferTo(TransferToStruct preview);
+    }
+
+    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, int status, string reason, DateTime createAt, DateTime closeAt) : IBankCard, ITransferable, ITarget
     {
         // IBankCard
         public int Id { get; } = id;
         public int ClientId { get; } = clientid;
         public string CardNumber { get; } = cardNumber;
-        public decimal Balance { get; protected set; } = balance;
+        public decimal Balance { get; protected internal set; } = balance;
         public CardStatus Status { get; protected set; } = (CardStatus)status;
         public string Reason { get; protected set; } = reason;
         public DateTime CreateAt { get; } = createAt;
@@ -79,12 +87,16 @@ namespace BankApplication
 
         public abstract PayStruct PreparePay(decimal amount, ITarget target);
         public abstract Task PayCard(PayStruct preview);
+
         public abstract ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);
         public abstract Task ReplenishBalance(ReplenishBalanceStruct preview);
 
-        // ISource
+        // ITransferable : ISource
         public string NameSource { get; set; }
         public abstract bool PossibleToWithdraw(decimal amount);
+
+        public abstract TransferToStruct PrepareTransferTo(decimal amount, ITarget target);
+        public abstract Task TransferTo(TransferToStruct preview);
 
         // ITarget
         public string NameTarget { get; set; }
@@ -99,8 +111,8 @@ namespace BankApplication
     {
         public decimal LimitBalance { get; } = 6000000;
         public bool IsCashbackEnabled { get; set; }
-        decimal LimitCashback { get; } = 400000;
-        decimal Cashback { get; set; }
+        public decimal LimitCashback { get; } = 400000;
+        public decimal Cashback { get; protected internal set; }
 
         public DebitCard(int id, int clientid, string cardnumber, decimal balance, decimal cashback, int status, string reason, DateTime createAt, DateTime closeAt, int isCashbackEnabled) :
         base(id, clientid, cardnumber, balance, status, reason, createAt, closeAt)
@@ -162,7 +174,7 @@ namespace BankApplication
                 }
                 else status = CashBackStatus.NoCashback;
 
-                return new PayStruct(amount, cashback, newCashback, newBalance, status, target);
+                return new PayStruct(amount, newBalance, target, cashback, newCashback, status);
             }
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
@@ -250,6 +262,60 @@ namespace BankApplication
             }
         }
         #endregion
+
+        #region Скрытое описание
+        /*
+        На данный момент здесь имеется ввиду перевод между своими счетами \ картами
+        */
+        #endregion
+
+        #region Перевод денег
+        public override TransferToStruct PrepareTransferTo(decimal amount, ITarget target)
+        {
+            bool withdraw = PossibleToWithdraw(amount);
+            bool canDeposit = target.CanDeposit(amount);
+
+            if (withdraw && canDeposit)
+            {
+                decimal newBalance = Balance - amount;
+
+                return new TransferToStruct(amount, newBalance, target);
+            }
+            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+        }
+
+        public async override Task TransferTo(TransferToStruct preview)
+        {
+            if (preview.Target is DebitCard debit)
+            {
+                decimal newBalanceTarget = debit.Balance - preview.Amount;
+
+                bool IsDbUpdate = await DataBase.TransferDebitCardToDebitCard(Id, preview.NewBalance, Balance, Cashback, debit.Id, newBalanceTarget, debit.Balance, debit.Cashback);
+
+                if (IsDbUpdate)
+                {
+                    Balance = preview.NewBalance;
+                    debit.Balance = newBalanceTarget;
+                }
+                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+            }
+
+            if (preview.Target is PaymentAccount payment)
+            {
+                decimal newBalanceTarget = payment.Balance - preview.Amount;
+
+                bool IsDbUpdate = await DataBase.TransferDebitCardToPayment(Id, preview.NewBalance, Balance, Cashback, payment.Id, newBalanceTarget, payment.Balance);
+
+                if (IsDbUpdate)
+                {
+                    Balance = preview.NewBalance;
+                    payment.Balance = newBalanceTarget;
+                }
+                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+            }
+        }
+        #endregion
+
 
         /*
         //--------------------------[Закрыть карту (запрос)]------------------------------//
@@ -445,7 +511,7 @@ namespace BankApplication
     */
     #endregion
     public class PaymentAccount(int id, int clientId, string bic, string corAccount, decimal balance, int currency, decimal frozenBalance, int status,
-                                DateTime openedAt, DateTime closeAt, string accountNumber) : ITarget, ISource
+                                DateTime openedAt, DateTime closeAt, string accountNumber) : ITarget, ITransferable
     {
         public int Id { get; } = id;                                                    // Уникальный идентификатор счета в БД
         public int ClientId { get; } = clientId;                                        // ID владельца счета (физического или юридического лица)
@@ -460,6 +526,7 @@ namespace BankApplication
         public CardStatus Status { get; set; } = (CardStatus)status;                    // Состояние счета
         public DateTime OpenedAt { get; } = openedAt;                                   // Дата открытия счета
         public DateTime ClosedAt { get; } = closeAt;                                    // Дата закрытия счета        
+
 
         public bool CanDeposit(decimal amount)              // Возможно ли сюда пополнить баланс (target)
         {
@@ -477,6 +544,54 @@ namespace BankApplication
 
             return true;
         }
+
+
+        #region Перевод денег
+        public TransferToStruct PrepareTransferTo(decimal amount, ITarget target)
+        {
+            bool withdraw = PossibleToWithdraw(amount);
+            bool canDeposit = target.CanDeposit(amount);
+
+            if (withdraw && canDeposit)
+            {
+                decimal newBalance = Balance - amount;
+
+                return new TransferToStruct(amount, newBalance, target);
+            }
+            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+        }
+
+        public async Task TransferTo(TransferToStruct preview)
+        {
+            if (preview.Target is DebitCard debit)
+            {
+                decimal newBalanceTarget = debit.Balance - preview.Amount;
+
+                bool IsDbUpdate = await DataBase.TransferPaymentToDebitCard(Id, preview.NewBalance, Balance, debit.Id, newBalanceTarget, debit.Balance, debit.Cashback);
+
+                if (IsDbUpdate)
+                {
+                    Balance = preview.NewBalance;
+                    debit.Balance = newBalanceTarget;
+                }
+                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+            }
+
+            if (preview.Target is PaymentAccount payment)
+            {
+                decimal newBalanceTarget = payment.Balance - preview.Amount;
+
+                bool IsDbUpdate = await DataBase.TransferPaymentToPayment(Id, preview.NewBalance, Balance, payment.Id, newBalanceTarget, payment.Balance);
+
+                if (IsDbUpdate)
+                {
+                    Balance = preview.NewBalance;
+                    payment.Balance = newBalanceTarget;
+                }
+                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+            }
+        }
+        #endregion
     }
     #endregion
 

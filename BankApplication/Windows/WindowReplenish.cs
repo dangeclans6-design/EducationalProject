@@ -11,7 +11,7 @@ namespace BankApplication
 {
     public partial class WindowReplenish : MetroForm
     {
-        private readonly IBankCard currentCard;                 // Текущая карта
+        private readonly IBankCard currentCard;                 // Текущая цель (куда пополняются деньги)
         private readonly Client currentClient;                  // Клиент
         private readonly List<ISource> source = [];             // Список всех доступных источников
         private ISource _source;                                // Выбранный источник
@@ -32,6 +32,11 @@ namespace BankApplication
                 {
                     this.source.Add(source);
                 }
+            }
+
+            foreach (ISource source in currentClient.PaymentAccounts)
+            {
+                this.source.Add(source);
             }
 
             BoxSource.DisplayMember = nameof(ISource.NameSource);

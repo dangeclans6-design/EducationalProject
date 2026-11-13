@@ -108,7 +108,8 @@ namespace BankApplication
         }
         #endregion
 
-        #region Пополнить баланс с другой Debit карты (D)
+
+        #region Пополнить баланс дебетовой карты с другой дебетовой карты (D - D)
         public async static Task<bool> ReplenishBalanceDebitCardFromDebitCard(int idTarget, decimal newBalanceTarget, decimal currentBalanceTarget,
                         decimal currentCashbackTarget, int idSource, decimal newBalanceSource, decimal currentBalanceSource, decimal currentCashbackSource)
         {
@@ -172,7 +173,7 @@ namespace BankApplication
         }
         #endregion
 
-        #region Пополнить баланс с другого счета (PaymentAccount) карты (D)
+        #region Пополнить баланс дебетовой карты с счета (PaymentAccount - D)
         public async static Task<bool> ReplenishBalanceDebitCardFromPaymentAccountCard(int idTarget, decimal newBalanceTarget, decimal currentBalanceTarget, decimal currentCashbackTarget, int idSource, decimal newBalanceSource)
         {
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
@@ -232,6 +233,7 @@ namespace BankApplication
             }
         }
         #endregion
+
 
         #region Поиск карт и счетов клиента по ID клиента
         public struct StructCheckCardsPaymentClient(List<BankCard> cards, List<PaymentAccount> paymentAccounts)
@@ -326,6 +328,7 @@ namespace BankApplication
         }
         #endregion
 
+
         #region Проверка пароля (Авторизация)
         public readonly struct StructCheckPassword(int id, int clientType, string login, string password, string name1, string name2, string name3, string dateBirth, string numberPhone, string mail, DateTime createAt)
         {
@@ -398,6 +401,7 @@ namespace BankApplication
         }
         #endregion
 
+
         #region Добавление клиента в БД без фамилии (Регистрация)
         public async static Task<bool> AddClientNoPatronymic(string login, string password, string name1, string name2, string datebirth, string numberPhone, string mail)
         {
@@ -448,6 +452,260 @@ namespace BankApplication
             var reader = await command.ExecuteNonQueryAsync();
 
             return reader > 0;
+        }
+        #endregion
+
+
+        #region Перевод с расчетного счета на дебетовую карту (Payment - D)
+        public async static Task<bool> TransferPaymentToDebitCard(int idPayment, decimal newBalanceSource, decimal currentBalanceSource, int idCard, decimal newBalanceTarget, decimal currentBalanceTarget, decimal currentCashbackTarget)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();     // Открываем транзакцию
+
+            try
+            {
+                #region Действие 1: Списываем с source
+                await using var cmdSource = connection.CreateCommand();
+
+                cmdSource.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdSource.CommandText = @"
+                    UPDATE PaymentAccount
+                    SET Balance = @newBalanceSource
+                    WHERE Id = @idPayment
+                    AND Balance = @currentBalanceSource
+                    AND Status = 1";
+                cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
+                cmdSource.Parameters.AddWithValue("idPayment", idPayment);
+                cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource);
+
+                int sourceRows = await cmdSource.ExecuteNonQueryAsync();
+
+                if (sourceRows == 0) return false;
+                #endregion
+
+                #region Действие 2: Зачисляем на target
+                await using var cmdTarget = connection.CreateCommand();
+
+                cmdTarget.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdTarget.CommandText = @"
+                    UPDATE DebitCard
+                    SET Balance = @newBalanceTarget
+                    WHERE Id = @idCard
+                    AND Balance = @currentBalanceTarget                    
+                    AND CashBack = @currentCashbackTarget
+                    AND Status = 1";
+                cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("idCard", idCard);
+                cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("currentCashbackTarget", currentCashbackTarget); ;
+
+                int targetRows = await cmdTarget.ExecuteNonQueryAsync();
+
+                if (targetRows == 0) return false;
+                #endregion
+
+                await transaction.CommitAsync();            // Если все хорошо: Сохраняем оба действия в БД разом
+                return true;
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        #endregion
+
+        #region Перевод с расчетного счета на расчетный счет (Payment - Payment)
+        public async static Task<bool> TransferPaymentToPayment(int idPayment, decimal newBalanceSource, decimal currentBalanceSource, int idPaymentTo, decimal newBalanceTarget, decimal currentBalanceTarget)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();     // Открываем транзакцию
+
+            try
+            {
+                #region Действие 1: Списываем с source
+                await using var cmdSource = connection.CreateCommand();
+
+                cmdSource.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdSource.CommandText = @"
+                    UPDATE PaymentAccount
+                    SET Balance = @newBalanceSource
+                    WHERE Id = @idPayment
+                    AND Balance = @currentBalanceSource
+                    AND Status = 1";
+                cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
+                cmdSource.Parameters.AddWithValue("idPayment", idPayment);
+                cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource);
+
+                int sourceRows = await cmdSource.ExecuteNonQueryAsync();
+
+                if (sourceRows == 0) return false;
+                #endregion
+
+                #region Действие 2: Зачисляем на target
+                await using var cmdTarget = connection.CreateCommand();
+
+                cmdTarget.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdTarget.CommandText = @"
+                    UPDATE PaymentAccount
+                    SET Balance = @newBalanceSource
+                    WHERE Id = @idPaymentTo
+                    AND Balance = @currentBalanceSource
+                    AND Status = 1";
+                cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("idPaymentTo", idPaymentTo);
+                cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
+
+                int targetRows = await cmdTarget.ExecuteNonQueryAsync();
+
+                if (targetRows == 0) return false;
+                #endregion
+
+                await transaction.CommitAsync();            // Если все хорошо: Сохраняем оба действия в БД разом
+                return true;
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        #endregion
+
+        #region Перевод с дебетовой карты на расчетный счет (D - Payment)
+        public async static Task<bool> TransferDebitCardToPayment(int idCard, decimal newBalanceSource, decimal currentBalanceSource, decimal currentCashbackSource, int idPayment, decimal newBalanceTarget, decimal currentBalanceTarget)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();     // Открываем транзакцию
+
+            try
+            {
+                #region Действие 1: Списываем с source
+                await using var cmdSource = connection.CreateCommand();
+
+                cmdSource.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdSource.CommandText = @"
+                    UPDATE DebitCard
+                    SET Balance = @newBalanceSource
+                    WHERE Id = @idCard
+                    AND Balance = @currentBalanceSource           
+                    AND CashBack = @currentCashbackSource
+                    AND Status = 1";
+                cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
+                cmdSource.Parameters.AddWithValue("idCard", idCard);
+                cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource);
+                cmdSource.Parameters.AddWithValue("currentCashbackSource", currentCashbackSource); ;
+
+                int sourceRows = await cmdSource.ExecuteNonQueryAsync();
+
+                if (sourceRows == 0) return false;
+                #endregion
+
+                #region Действие 2: Зачисляем на target
+                await using var cmdTarget = connection.CreateCommand();
+
+                cmdTarget.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdTarget.CommandText = @"
+                    UPDATE PaymentAccount
+                    SET Balance = @newBalanceTarget
+                    WHERE Id = @idPayment
+                    AND Balance = @currentBalanceTarget
+                    AND Status = 1";
+                cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("idPayment", idPayment);
+                cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
+
+                int targetRows = await cmdSource.ExecuteNonQueryAsync();
+
+                if (targetRows == 0) return false;
+                #endregion
+
+                await transaction.CommitAsync();            // Если все хорошо: Сохраняем оба действия в БД разом
+                return true;
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        #endregion
+
+        #region Перевод с дебетовой карты на дебетовую карту (D - D)
+        public async static Task<bool> TransferDebitCardToDebitCard(int idCard, decimal newBalanceSource, decimal currentBalanceSource, decimal currentCashbackSource,
+                                                                    int idCardTarget, decimal newBalanceTarget, decimal currentBalanceTarget, decimal currentCashbackTarget)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();     // Открываем транзакцию
+
+            try
+            {
+                #region Действие 1: Списываем с source
+                await using var cmdSource = connection.CreateCommand();
+
+                cmdSource.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdSource.CommandText = @"
+                    UPDATE DebitCard
+                    SET Balance = @newBalanceSource
+                    WHERE Id = @idCard
+                    AND Balance = @currentBalanceSource           
+                    AND CashBack = @currentCashbackSource
+                    AND Status = 1";
+                cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
+                cmdSource.Parameters.AddWithValue("idCard", idCard);
+                cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource);
+                cmdSource.Parameters.AddWithValue("currentCashbackSource", currentCashbackSource); ;
+
+                int sourceRows = await cmdSource.ExecuteNonQueryAsync();
+
+                if (sourceRows == 0) return false;
+                #endregion
+
+                #region Действие 2: Зачисляем на target
+                await using var cmdTarget = connection.CreateCommand();
+
+                cmdTarget.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdTarget.CommandText = @"
+                    UPDATE DebitCard
+                    SET Balance = @newBalanceTarget
+                    WHERE Id = @idCardTarget
+                    AND Balance = @currentBalanceTarget           
+                    AND CashBack = @currentCashbackTarget
+                    AND Status = 1";
+                cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("idCardTarget", idCardTarget);
+                cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("currentCashbackTarget", currentCashbackTarget);
+
+                int targetRows = await cmdSource.ExecuteNonQueryAsync();
+
+                if (targetRows == 0) return false;
+                #endregion
+
+                await transaction.CommitAsync();            // Если все хорошо: Сохраняем оба действия в БД разом
+                return true;
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
         }
         #endregion
 

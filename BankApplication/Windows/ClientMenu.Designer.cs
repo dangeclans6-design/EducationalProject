@@ -618,7 +618,6 @@
             TextColor = System.Drawing.Color.White;
             ThemeName = "MetroDark";
             TransparencyKey = System.Drawing.Color.Fuchsia;
-            Activated += ClientMenu_Activated;
             ResumeLayout(false);
             PerformLayout();
         }
