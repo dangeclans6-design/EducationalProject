@@ -11,23 +11,23 @@ namespace BankApplication
 {
     public partial class WindowReplenish : MetroForm
     {
-        private readonly IBankCard currentCard;                 // Текущая цель (куда пополняются деньги)
+        private readonly ITarget currentTarget;                 // Текущая цель (куда пополняются деньги)
         private readonly Client currentClient;                  // Клиент
         private readonly List<ISource> source = [];             // Список всех доступных источников
-        private ISource _source;                                // Выбранный источник
+        private ISource choiseSource;                           // Выбранный источник
 
 
-        public WindowReplenish(IBankCard currentCard)
+        public WindowReplenish(ITarget currentTarget)
         {
             InitializeComponent();
             DoubleBuffered = true;
 
-            this.currentCard = currentCard;
+            this.currentTarget = currentTarget;
             currentClient = Session.CurrentClient;
 
             foreach (ISource source in currentClient.Cards)
             {
-                if (source == currentCard) continue;
+                if (source == currentTarget) continue;
                 else
                 {
                     this.source.Add(source);
@@ -36,7 +36,11 @@ namespace BankApplication
 
             foreach (ISource source in currentClient.PaymentAccounts)
             {
-                this.source.Add(source);
+                if (source == currentTarget) continue;
+                else
+                {
+                    this.source.Add(source);
+                }
             }
 
             BoxSource.DisplayMember = nameof(ISource.NameSource);
@@ -53,7 +57,7 @@ namespace BankApplication
         #region Выбор карты
         private void BoxSource_SelectedIndexChanged(object sender, EventArgs e)
         {
-            _source = (ISource)BoxSource.SelectedItem;
+            choiseSource = (ISource)BoxSource.SelectedItem;
 
         }
         #endregion
@@ -65,16 +69,16 @@ namespace BankApplication
             {
                 decimal amount = TryReg.TryDecimal(Amount.Text);
 
-                var preview = currentCard.PrepareReplenishBalance(amount, _source);
+                var preview = currentTarget.PrepareReplenishBalance(amount, choiseSource);
 
-                DialogResult result = MessageBox.Show($"Вы действительно хотите пополнить баланс карты {currentCard.Name} с карты {_source.NameSource} на сумму {amount} рублей?",
+                DialogResult result = MessageBox.Show($"Вы действительно хотите пополнить баланс {currentTarget.NameTarget} с {choiseSource.NameSource} на сумму {amount} рублей?",
                                                       "Пополнение баланса", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
                 if (result == DialogResult.Yes)
                 {
-                    await currentCard.ReplenishBalance(preview);
+                    await currentTarget.ReplenishBalance(preview);
 
-                    MessageBox.Show($"Вы успешнно пополнили баланс карты {currentCard.Name} с карты {_source.NameSource} на сумму {amount} рублей.",
+                    MessageBox.Show($"Вы успешнно пополнили баланс {currentTarget.NameTarget} с {choiseSource.NameSource} на сумму {amount} рублей.",
                                     "Пополнение баланса", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     Close();

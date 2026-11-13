@@ -28,28 +28,53 @@ namespace BankApplication
 
             PanelCards.Controls.Clear();
 
-            int y = 10;
+            int y_card = 10;
+            int y_payment = 10;
             foreach (IBankCard card in currentClient.Cards)
             {
                 CardItem item = new(card);
 
                 PanelCards.Controls.Add(item);
-                item.Location = new Point((PanelCards.Width - item.Width) / 2, y);
+                item.Location = new Point((PanelCards.Width - item.Width) / 2, y_card);
 
                 item.OnReplenishButton += OpenReplenishWindow;
+                item.OnPayButton += OpenPayhWindow;
 
-                y += item.Height + 30;
+                y_card += item.Height + 30;
+            }
+
+            foreach (PaymentAccount paymant in currentClient.PaymentAccounts)
+            {
+                CardItem item = new(paymant);
+
+                PanelPayment.Controls.Add(item);
+                item.Location = new Point((PanelCards.Width - item.Width) / 2, y_payment);
+
+                item.OnReplenishButton += OpenReplenishWindow;
+                item.OnPayButton += OpenPayhWindow;
+
+                y_payment += item.Height + 30;
             }
         }
 
-        private void OpenReplenishWindow(IBankCard currentCard)
+
+        private void OpenReplenishWindow(ITarget currentTarget)
         {
-            WindowReplenish wr = new(currentCard);
+            WindowReplenish wr = new(currentTarget);
 
             wr.ShowDialog();
 
             UpdateList();
         }
+        private void OpenPayhWindow(ISource currentSource)
+        {
+            WindowPay wr = new(currentSource);
+
+            wr.ShowDialog();
+
+            UpdateList();
+        }
+
 
         //---------------------[Кнопка "Закрыть форму"]-----------------------//
         private void CloseButton_Click(object sender, EventArgs e)
@@ -96,7 +121,11 @@ namespace BankApplication
         #region Обновление спика карт / счетов UpdateList()
         private void UpdateList()
         {
+            PanelCards.Controls.Clear();
+            PanelPayment.Controls.Clear();
+
             int y = 10;
+            int y_payment = 10;
             foreach (IBankCard card in currentClient.Cards)
             {
                 CardItem item = new(card);
@@ -105,8 +134,21 @@ namespace BankApplication
                 item.Location = new Point((PanelCards.Width - item.Width) / 2, y);
 
                 item.OnReplenishButton += OpenReplenishWindow;
+                item.OnPayButton += OpenPayhWindow;
 
                 y += item.Height + 30;
+            }
+            foreach (PaymentAccount paymant in currentClient.PaymentAccounts)
+            {
+                CardItem item = new(paymant);
+
+                PanelPayment.Controls.Add(item);
+                item.Location = new Point((PanelCards.Width - item.Width) / 2, y_payment);
+
+                item.OnReplenishButton += OpenReplenishWindow;
+                item.OnPayButton += OpenPayhWindow;
+
+                y_payment += item.Height + 30;
             }
         }
         #endregion

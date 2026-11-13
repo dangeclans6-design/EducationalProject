@@ -82,7 +82,7 @@
             StatusTarget.BackColor = System.Drawing.Color.Transparent;
             StatusTarget.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
             StatusTarget.ForeColor = System.Drawing.Color.Linen;
-            StatusTarget.Location = new System.Drawing.Point(312, 45);
+            StatusTarget.Location = new System.Drawing.Point(312, 34);
             StatusTarget.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             StatusTarget.Name = "StatusTarget";
             StatusTarget.Size = new System.Drawing.Size(75, 30);

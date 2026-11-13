@@ -203,6 +203,19 @@ namespace BankApplication
         }
         #endregion
 
+        #region Введенное число на тип Int
+        public static decimal TryInt(string amount)
+        {
+            // Проверка на пустое поле
+            if (string.IsNullOrWhiteSpace(amount)) throw new Exception("Поле не может быть пустым!");
+
+            // Проверка на число
+            if (!int.TryParse(amount, out int result)) throw new Exception("Введите число!");
+
+            return result;
+        }
+        #endregion
+
         #region Текст (1000 символов)
         public static void TryString1000(string message)
         {

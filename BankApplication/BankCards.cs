@@ -21,7 +21,7 @@ namespace BankApplication
     !!! На данный момент этот интерфейс является изыбточным (так как всего 1 класс BankCard подписан на него) !!!
     */
     #endregion
-    public interface IBankCard
+    public interface IBankCard : ITarget, ITransferable
     {
         public int Id { get; }                          // ID карты в БД
         public int ClientId { get; }                    // ID влдельца (клиента) в БД
@@ -31,12 +31,7 @@ namespace BankApplication
         public string Reason { get; }                   // Причина статуса (если не Active)
         public DateTime CreateAt { get; }               // Дата открытия карты
         public DateTime CloseAt { get; }                // Дата закрытия карты
-        public string Name { get; }                     // Имя карты (для форм)
-
-        public PayStruct PreparePay(decimal amount, ITarget target);                                // Проверка перед оплатой
-        public Task PayCard(PayStruct preview);                                                     // Оплата
-        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);      // Проверка паеред пополнением баланса
-        public abstract Task ReplenishBalance(ReplenishBalanceStruct preview);                      // Пополнить баланс карты
+        public string Name { get; }                     // Имя карты (для форм)                   
     }
 
     #region Скрытое описание
@@ -56,7 +51,10 @@ namespace BankApplication
     {
         string NameSource { get; }                              // Имя source-объекта (источника)
 
-        public bool PossibleToWithdraw(decimal amount);        // Проверка для source-объекта (источника)
+        public bool PossibleToWithdraw(decimal amount);        // Проверка для source-объекта (источника)\
+
+        public PayStruct PreparePay(decimal amount, ITarget target);            // Проверка перед оплатой
+        public Task PayCard(PayStruct preview);                                 // Оплата
     }
 
     public interface ITarget
@@ -64,15 +62,18 @@ namespace BankApplication
         string NameTarget { get; }                              // Имя target-объекта
 
         public bool CanDeposit(decimal amount);                // Проверка для target-объекта
+
+        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);      // Проверка паеред пополнением баланса
+        public Task ReplenishBalance(ReplenishBalanceStruct preview);                               // Пополнить баланс карты
     }
 
     public interface ITransferable : ISource
     {
-        public TransferToStruct PrepareTransferTo(decimal amount, ITarget target);
-        public Task TransferTo(TransferToStruct preview);
+        public TransferToStruct PrepareTransferTo(decimal amount, ITarget target);          // Проверка паеред перевовдом
+        public Task TransferTo(TransferToStruct preview);                                   // Перевести
     }
 
-    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, int status, string reason, DateTime createAt, DateTime closeAt) : IBankCard, ITransferable, ITarget
+    public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, int status, string reason, DateTime createAt, DateTime closeAt) : IBankCard
     {
         // IBankCard
         public int Id { get; } = id;
@@ -510,8 +511,8 @@ namespace BankApplication
     В рамках данного проекта (приложения) расчетный счет (PaymentAccount) — это просто отдельный самостоятельный счет (не привязанный к картам, как в настоящих банках. Сделано для простоты.).
     */
     #endregion
-    public class PaymentAccount(int id, int clientId, string bic, string corAccount, decimal balance, int currency, decimal frozenBalance, int status,
-                                DateTime openedAt, DateTime closeAt, string accountNumber) : ITarget, ITransferable
+    public class PaymentAccount(int id, int clientId, string accountNumber, string bic, string corAccount, decimal balance, int currency, decimal frozenBalance, int status, string reason,
+                                DateTime openedAt, DateTime closeAt) : ITarget, ITransferable
     {
         public int Id { get; } = id;                                                    // Уникальный идентификатор счета в БД
         public int ClientId { get; } = clientId;                                        // ID владельца счета (физического или юридического лица)
@@ -524,6 +525,7 @@ namespace BankApplication
         public Currency Currency { get; set; } = (Currency)currency;                    // Валюта счета
         public decimal FrozenBalance { get; set; } = frozenBalance;                     // Заблокированный или «замороженный» баланс
         public CardStatus Status { get; set; } = (CardStatus)status;                    // Состояние счета
+        public string Reason { get; set; } = reason;                                    // Причина статуса
         public DateTime OpenedAt { get; } = openedAt;                                   // Дата открытия счета
         public DateTime ClosedAt { get; } = closeAt;                                    // Дата закрытия счета        
 
@@ -590,6 +592,50 @@ namespace BankApplication
                 }
                 else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
             }
+        }
+        #endregion
+
+        #region Оплата
+        public PayStruct PreparePay(decimal amount, ITarget target)
+        {
+            bool withdraw = PossibleToWithdraw(amount);
+            bool candeposit = target.CanDeposit(amount);
+
+            if (withdraw && candeposit)
+            {
+                decimal newBalance = Balance - amount;
+
+                return new PayStruct(amount, newBalance, target);
+            }
+            else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+        }
+
+        public async Task PayCard(PayStruct preview)
+        {
+            if (preview.Target is PaymentAccount target)
+            {
+                decimal newBalanceTarget = target.Balance + preview.Amount;
+
+                bool IsDbUpdate = await DataBase.PayPaymentToPaymentAccount(Id, preview.NewBalance, Balance, target.Id, newBalanceTarget, target.Balance);
+
+                if (IsDbUpdate)
+                {
+                    Balance = preview.NewBalance;
+                    target.Balance = newBalanceTarget;
+                }
+                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+            }
+        }
+        #endregion
+
+        #region Пополнение баланса (ПОКА НЕДОСТУПНО)
+        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source)
+        {
+            throw new NotImplementedException("Временно недоустпуно.");
+        }
+        public async Task ReplenishBalance(ReplenishBalanceStruct preview)
+        {
+
         }
         #endregion
     }

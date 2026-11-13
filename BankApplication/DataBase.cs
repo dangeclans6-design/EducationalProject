@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace BankApplication
 {
@@ -41,7 +42,7 @@ namespace BankApplication
         //readonly static string connectionString = @"Data Source=C:\Users\Gleb24\Desktop\my_database\myDB.db";
         //--------------------------------------------------//
 
-        #region Оплата на расчетный счет (D)
+        #region Оплата с дебетовой карты на расчетный счет
         public async static Task<bool> PayDebitCardToPaymentAccount(decimal newBalanceSource, decimal newCashbackSource, int id, decimal currentBalanceSource,
                                                     decimal currentCashbackSource, int idPayment, decimal newBalanceTarget, decimal currentBalanceTarget)
         {
@@ -105,6 +106,68 @@ namespace BankApplication
                 if (transaction != null) await transaction.RollbackAsync();
                 throw;
             }            
+        }
+        #endregion
+
+        #region Оплата с расчетного счета на расчетный счет
+        public async static Task<bool> PayPaymentToPaymentAccount(int idSource, decimal newBalanceSource, decimal currentBalanceSource,
+                                                                  int idTarget, decimal newBalanceTarget, decimal currentBalanceTarget)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();     // Открываем транзакцию
+
+            try
+            {
+                #region Действие 1: Списываем с source
+                await using var cmdSource = connection.CreateCommand();
+
+                cmdSource.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdSource.CommandText = @"
+                   UPDATE PaymentAccount
+                    SET Balance = @newBalanceSource
+                    WHERE Id = @idSource
+                    AND Balance = @currentBalanceSource
+                    AND Status = 1";
+                cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
+                cmdSource.Parameters.AddWithValue("idSource", idSource);
+                cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource);
+
+                int sourceRows = await cmdSource.ExecuteNonQueryAsync();
+
+                if (sourceRows == 0) return false;
+                #endregion
+
+                #region Действие 2: Зачисляем на target
+                await using var cmdTarget = connection.CreateCommand();
+
+                cmdTarget.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
+                cmdTarget.CommandText = @"
+                    UPDATE PaymentAccount
+                    SET Balance = @newBalanceTarget
+                    WHERE Id = @idTarget
+                    AND Balance = @currentBalanceTarget
+                    AND Status = 1";
+                cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
+                cmdTarget.Parameters.AddWithValue("idTarget", idTarget);
+
+                int targetRows = await cmdTarget.ExecuteNonQueryAsync();
+
+                if (targetRows == 0) return false;
+                #endregion
+
+                await transaction.CommitAsync();            // Если все хорошо: Сохраняем оба действия в БД разом
+                return true;
+            }
+            catch
+            {
+                if (transaction != null) await transaction.RollbackAsync();
+                throw;
+            }
         }
         #endregion
 
@@ -292,7 +355,7 @@ namespace BankApplication
 
                 cmdPaymentAccount.Transaction = transaction;             // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО
                 cmdPaymentAccount.CommandText = @"
-                    SELECT Id, AccountNumber, Bic, CorAccount, Balance, Currency, FrozenBalance, Status, OpenedAt, ClosedAt
+                    SELECT Id, AccountNumber, Bic, CorAccount, Balance, Currency, FrozenBalance, Status, Reason, OpenedAt, ClosedAt
                     FROM PaymentAccount WHERE ClientId = @clientId";
                 cmdPaymentAccount.Parameters.AddWithValue("clientId", clientId);
 
@@ -308,10 +371,11 @@ namespace BankApplication
                         int currency = readerPayment.GetInt32(5);
                         decimal frozenBalance = readerPayment.GetDecimal(6);
                         int status = readerPayment.GetInt32(7);
-                        DateTime openedAt = readerPayment.GetDateTime(8);
-                        DateTime closedAt = readerPayment.IsDBNull(8) ? default : readerPayment.GetDateTime(8);
+                        string reason = readerPayment.IsDBNull(8) ? default : readerPayment.GetString(8);
+                        DateTime openedAt = readerPayment.GetDateTime(9);
+                        DateTime closedAt = readerPayment.IsDBNull(10) ? default : readerPayment.GetDateTime(10);
 
-                        paymentAccounts.Add(new PaymentAccount(idPayment, clientId, bic, corAccount, balance, currency, frozenBalance, status, openedAt, closedAt, accountNumber));
+                        paymentAccounts.Add(new PaymentAccount(idPayment, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt));
                     }
                 }                    
                 #endregion
@@ -325,6 +389,108 @@ namespace BankApplication
                 if (transaction != null) await transaction.RollbackAsync();
                 throw;
             }            
+        }
+        #endregion
+
+        #region Поиск услуг для оплаты
+        public struct StructServiceProviders(List<string> serviceProviders, List<PaymentAccount> paymentAccount)
+        {
+            public List<string> serviceProviders = serviceProviders;
+            public List<PaymentAccount> paymentAccount = paymentAccount;
+        }
+        public async static Task<StructServiceProviders> FindServiceProviders()
+        {
+            List<string> serviceProviders = [];
+            List<PaymentAccount> paymentAccount = [];
+
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            #region Действие 1: Поиск всех доступных сервисов для оплаты
+            await using var cmdSelect = connection.CreateCommand();
+
+            cmdSelect.CommandText = @"
+                    SELECT sp.ServiceName, pa.*
+                    FROM ServiceProviders sp
+                    JOIN PaymentAccount pa ON sp.PaymentAccountId = pa.Id";
+
+            await using (var reader = await cmdSelect.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    string serviceName = reader.GetString(0);
+
+                    int paymentAccountId = reader.GetInt32(1);
+                    int clientId = reader.GetInt32(2);
+                    string accountNumber = reader.GetString(3);
+                    string bic = reader.GetString(4);
+                    string corAccount = reader.GetString(5);
+                    decimal balance = reader.GetDecimal(6);
+                    int currency = reader.GetInt32(7);
+                    decimal frozenBalance = reader.GetDecimal(8);
+                    int status = reader.GetInt32(9);
+                    string reason = reader.IsDBNull(10) ? default : reader.GetString(10);
+                    DateTime openedAt = reader.GetDateTime(11);
+                    DateTime closedAt = reader.IsDBNull(12) ? default : reader.GetDateTime(12);
+
+                    serviceProviders.Add(serviceName);
+                    paymentAccount.Add(new PaymentAccount(paymentAccountId, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt));
+                }
+            }
+            #endregion
+
+            return new StructServiceProviders(serviceProviders, paymentAccount);
+        }
+        #endregion
+
+        // ОСТАНОВИЛСЯ ТУТ
+        #region Поиск лицевого счета для оплаты
+        public async static Task<StructServiceProviders> FindServiceProviders()
+        {
+            List<string> serviceProviders = [];
+            List<PaymentAccount> paymentAccount = [];
+
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            #region Действие 1: Поиск всех доступных сервисов для оплаты
+            await using var cmdSelect = connection.CreateCommand();
+
+            cmdSelect.CommandText = @"
+                    SELECT sp.ServiceName, pa.*
+                    FROM ServiceProviders sp
+                    JOIN PaymentAccount pa ON sp.PaymentAccountId = pa.Id";
+
+            await using (var reader = await cmdSelect.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    string serviceName = reader.GetString(0);
+
+                    int paymentAccountId = reader.GetInt32(1);
+                    int clientId = reader.GetInt32(2);
+                    string accountNumber = reader.GetString(3);
+                    string bic = reader.GetString(4);
+                    string corAccount = reader.GetString(5);
+                    decimal balance = reader.GetDecimal(6);
+                    int currency = reader.GetInt32(7);
+                    decimal frozenBalance = reader.GetDecimal(8);
+                    int status = reader.GetInt32(9);
+                    string reason = reader.IsDBNull(10) ? default : reader.GetString(10);
+                    DateTime openedAt = reader.GetDateTime(11);
+                    DateTime closedAt = reader.IsDBNull(12) ? default : reader.GetDateTime(12);
+
+                    serviceProviders.Add(serviceName);
+                    paymentAccount.Add(new PaymentAccount(paymentAccountId, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt));
+                }
+            }
+            #endregion
+
+            return new StructServiceProviders(serviceProviders, paymentAccount);
         }
         #endregion
 

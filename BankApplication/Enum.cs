@@ -72,7 +72,6 @@ namespace BankApplication
             Cashback = cashback;
             NewCashback = newCashback;
             CashBackStatus = cashbackStatus;
-            Debt = default;
         }
         public PayStruct(decimal amount, decimal newBalance, ITarget target, decimal debt)
         {
@@ -80,10 +79,12 @@ namespace BankApplication
             NewBalance = newBalance;
             Target = target;
             Debt = debt;
-
-            Cashback = default;
-            NewCashback = default;
-            CashBackStatus = default;
+        }
+        public PayStruct(decimal amount, decimal newBalance, ITarget target)
+        {
+            Amount = amount;
+            NewBalance = newBalance;
+            Target = target;
         }
     }
 

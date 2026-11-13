@@ -30,8 +30,8 @@
         {
             bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
             bigLabel3 = new ReaLTaiizor.Controls.BigLabel();
-            Amount = new ReaLTaiizor.Controls.DungeonRichTextBox();
-            ReplenishButton = new ReaLTaiizor.Controls.CyberButton();
+            PersonalAccount = new ReaLTaiizor.Controls.DungeonRichTextBox();
+            FindData = new ReaLTaiizor.Controls.CyberButton();
             panel1 = new System.Windows.Forms.Panel();
             CloseButton = new ReaLTaiizor.Controls.DungeonButtonLeft();
             BoxTarget = new ReaLTaiizor.Controls.MaterialComboBox();
@@ -43,11 +43,11 @@
             bigLabel2.BackColor = System.Drawing.Color.Transparent;
             bigLabel2.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
             bigLabel2.ForeColor = System.Drawing.Color.Tan;
-            bigLabel2.Location = new System.Drawing.Point(63, 188);
+            bigLabel2.Location = new System.Drawing.Point(58, 169);
             bigLabel2.Name = "bigLabel2";
-            bigLabel2.Size = new System.Drawing.Size(178, 32);
+            bigLabel2.Size = new System.Drawing.Size(169, 32);
             bigLabel2.TabIndex = 97;
-            bigLabel2.Text = "Сумму оплаты";
+            bigLabel2.Text = "Лицевой счет";
             // 
             // bigLabel3
             // 
@@ -61,61 +61,62 @@
             bigLabel3.TabIndex = 96;
             bigLabel3.Text = "Оплата";
             // 
-            // Amount
+            // PersonalAccount
             // 
-            Amount.AutoWordSelection = false;
-            Amount.BackColor = System.Drawing.Color.Transparent;
-            Amount.BorderColor = System.Drawing.Color.FromArgb(180, 180, 180);
-            Amount.EdgeColor = System.Drawing.Color.White;
-            Amount.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            Amount.ForeColor = System.Drawing.Color.Black;
-            Amount.Location = new System.Drawing.Point(120, 297);
-            Amount.Name = "Amount";
-            Amount.ReadOnly = false;
-            Amount.Size = new System.Drawing.Size(605, 36);
-            Amount.TabIndex = 95;
-            Amount.TextBackColor = System.Drawing.Color.White;
-            Amount.WordWrap = true;
+            PersonalAccount.AutoWordSelection = false;
+            PersonalAccount.BackColor = System.Drawing.Color.Transparent;
+            PersonalAccount.BorderColor = System.Drawing.Color.FromArgb(180, 180, 180);
+            PersonalAccount.EdgeColor = System.Drawing.Color.White;
+            PersonalAccount.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
+            PersonalAccount.ForeColor = System.Drawing.Color.Black;
+            PersonalAccount.Location = new System.Drawing.Point(63, 217);
+            PersonalAccount.Name = "PersonalAccount";
+            PersonalAccount.ReadOnly = false;
+            PersonalAccount.Size = new System.Drawing.Size(605, 36);
+            PersonalAccount.TabIndex = 95;
+            PersonalAccount.TextBackColor = System.Drawing.Color.White;
+            PersonalAccount.WordWrap = true;
             // 
-            // ReplenishButton
+            // FindData
             // 
-            ReplenishButton.Alpha = 20;
-            ReplenishButton.BackColor = System.Drawing.Color.Transparent;
-            ReplenishButton.Background = true;
-            ReplenishButton.Background_WidthPen = 4F;
-            ReplenishButton.BackgroundPen = true;
-            ReplenishButton.ColorBackground = System.Drawing.Color.Transparent;
-            ReplenishButton.ColorBackground_1 = System.Drawing.Color.White;
-            ReplenishButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ReplenishButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            ReplenishButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            ReplenishButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            ReplenishButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            ReplenishButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            ReplenishButton.Effect_1 = true;
-            ReplenishButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            ReplenishButton.Effect_1_Transparency = 25;
-            ReplenishButton.Effect_2 = true;
-            ReplenishButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            ReplenishButton.Effect_2_Transparency = 20;
-            ReplenishButton.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            ReplenishButton.ForeColor = System.Drawing.Color.Tan;
-            ReplenishButton.Lighting = false;
-            ReplenishButton.LinearGradient_Background = false;
-            ReplenishButton.LinearGradientPen = false;
-            ReplenishButton.Location = new System.Drawing.Point(484, 361);
-            ReplenishButton.Name = "ReplenishButton";
-            ReplenishButton.PenWidth = 15;
-            ReplenishButton.Rounding = true;
-            ReplenishButton.RoundingInt = 20;
-            ReplenishButton.Size = new System.Drawing.Size(241, 83);
-            ReplenishButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            ReplenishButton.TabIndex = 94;
-            ReplenishButton.Tag = "Cyber";
-            ReplenishButton.TextButton = "Пополнить";
-            ReplenishButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            ReplenishButton.Timer_Effect_1 = 5;
-            ReplenishButton.Timer_RGB = 300;
+            FindData.Alpha = 20;
+            FindData.BackColor = System.Drawing.Color.Transparent;
+            FindData.Background = true;
+            FindData.Background_WidthPen = 4F;
+            FindData.BackgroundPen = true;
+            FindData.ColorBackground = System.Drawing.Color.Transparent;
+            FindData.ColorBackground_1 = System.Drawing.Color.White;
+            FindData.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            FindData.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
+            FindData.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
+            FindData.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
+            FindData.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            FindData.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
+            FindData.Effect_1 = true;
+            FindData.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
+            FindData.Effect_1_Transparency = 25;
+            FindData.Effect_2 = true;
+            FindData.Effect_2_ColorBackground = System.Drawing.Color.White;
+            FindData.Effect_2_Transparency = 20;
+            FindData.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            FindData.ForeColor = System.Drawing.Color.Tan;
+            FindData.Lighting = false;
+            FindData.LinearGradient_Background = false;
+            FindData.LinearGradientPen = false;
+            FindData.Location = new System.Drawing.Point(478, 324);
+            FindData.Name = "FindData";
+            FindData.PenWidth = 15;
+            FindData.Rounding = true;
+            FindData.RoundingInt = 20;
+            FindData.Size = new System.Drawing.Size(241, 83);
+            FindData.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            FindData.TabIndex = 94;
+            FindData.Tag = "Cyber";
+            FindData.TextButton = "Найти";
+            FindData.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            FindData.Timer_Effect_1 = 5;
+            FindData.Timer_RGB = 300;
+            FindData.Click += this.FindData_Click;
             // 
             // panel1
             // 
@@ -144,6 +145,7 @@
             CloseButton.TabIndex = 92;
             CloseButton.Text = "X";
             CloseButton.TextAlignment = System.Drawing.StringAlignment.Center;
+            CloseButton.Click += CloseButton_Click;
             // 
             // BoxTarget
             // 
@@ -166,6 +168,7 @@
             BoxTarget.Size = new System.Drawing.Size(605, 49);
             BoxTarget.StartIndex = 0;
             BoxTarget.TabIndex = 98;
+            BoxTarget.SelectedIndexChanged += BoxTarget_SelectedIndexChanged;
             // 
             // WindowPay
             // 
@@ -176,14 +179,15 @@
             Controls.Add(BoxTarget);
             Controls.Add(bigLabel2);
             Controls.Add(bigLabel3);
-            Controls.Add(Amount);
-            Controls.Add(ReplenishButton);
+            Controls.Add(PersonalAccount);
+            Controls.Add(FindData);
             Controls.Add(panel1);
             Controls.Add(CloseButton);
             Name = "WindowPay";
             Style = ReaLTaiizor.Enum.Metro.Style.Dark;
             TextColor = System.Drawing.Color.White;
             ThemeName = "MetroDark";
+            Load += WindowPay_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -192,8 +196,8 @@
 
         private ReaLTaiizor.Controls.BigLabel bigLabel2;
         private ReaLTaiizor.Controls.BigLabel bigLabel3;
-        private ReaLTaiizor.Controls.DungeonRichTextBox Amount;
-        private ReaLTaiizor.Controls.CyberButton ReplenishButton;
+        private ReaLTaiizor.Controls.DungeonRichTextBox PersonalAccount;
+        private ReaLTaiizor.Controls.CyberButton FindData;
         private System.Windows.Forms.Panel panel1;
         private ReaLTaiizor.Controls.DungeonButtonLeft CloseButton;
         private ReaLTaiizor.Controls.MaterialComboBox BoxTarget;
