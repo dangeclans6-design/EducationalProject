@@ -50,10 +50,10 @@ namespace BankApplication
             if (currentTarget is IBankCard card)
             {
                 if (card.Status != CardStatus.Active) MessageBox.Show($"Карта на данный момент недоступна. Причина: {card.Reason}.",
-                                                                           "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                                      "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else OnReplenishButton?.Invoke(currentTarget);
             }
-            if (currentTarget is PaymentAccount payment)
+            else if(currentTarget is PaymentAccount payment)
             {
                 if (payment.Status != CardStatus.Active) MessageBox.Show($"Счет на данный момент недоступен. Причина: {payment.Reason}.",
                                                                          "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -66,10 +66,10 @@ namespace BankApplication
             if (currentTarget is IBankCard card)
             {
                 if (card.Status != CardStatus.Active) MessageBox.Show($"Карта на данный момент недоступна. Причина: {card.Reason}.",
-                                                                           "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                                      "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else OnPayButton?.Invoke(card);
             }
-            if (currentTarget is PaymentAccount payment)
+            else if (currentTarget is PaymentAccount payment)
             {
                 if (payment.Status != CardStatus.Active) MessageBox.Show($"Счет на данный момент недоступен. Причина: {payment.Reason}.",
                                                                          "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);

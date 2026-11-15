@@ -203,16 +203,14 @@ namespace BankApplication
         }
         #endregion
 
-        #region Введенное число на тип Int
-        public static decimal TryInt(string amount)
+        #region Проверка лицевого счета
+        public static void TryPersonalAccount(string amount)
         {
             // Проверка на пустое поле
             if (string.IsNullOrWhiteSpace(amount)) throw new Exception("Поле не может быть пустым!");
 
             // Проверка на число
-            if (!int.TryParse(amount, out int result)) throw new Exception("Введите число!");
-
-            return result;
+            if (!decimal.TryParse(amount, out _)) throw new Exception("Номер лицевого счета не может содержать буквы!");
         }
         #endregion
 

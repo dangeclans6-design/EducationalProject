@@ -42,7 +42,7 @@ namespace BankApplication
         //readonly static string connectionString = @"Data Source=C:\Users\Gleb24\Desktop\my_database\myDB.db";
         //--------------------------------------------------//
 
-        #region Оплата с дебетовой карты на расчетный счет
+        #region Оплата услуг с дебетовой карты на расчетный счет (кешбека нет)
         public async static Task<bool> PayDebitCardToPaymentAccount(decimal newBalanceSource, decimal newCashbackSource, int id, decimal currentBalanceSource,
                                                     decimal currentCashbackSource, int idPayment, decimal newBalanceTarget, decimal currentBalanceTarget)
         {
@@ -69,10 +69,10 @@ namespace BankApplication
                     AND IsCashbackEnabled = 1
                     AND CashBack = @currentCashbackSource";
                 cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
-                cmdSource.Parameters.AddWithValue("newCashback", newCashbackSource);
+                cmdSource.Parameters.AddWithValue("newCashbackSource", newCashbackSource);
                 cmdSource.Parameters.AddWithValue("id", id);
-                cmdSource.Parameters.AddWithValue("currentBalance", currentBalanceSource);;
-                cmdSource.Parameters.AddWithValue("currentCashback", currentCashbackSource);
+                cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource);;
+                cmdSource.Parameters.AddWithValue("currentCashbackSource", currentCashbackSource);
 
                 int sourceRows = await cmdSource.ExecuteNonQueryAsync();
 
@@ -392,7 +392,7 @@ namespace BankApplication
         }
         #endregion
 
-        #region Поиск услуг для оплаты
+        #region Поиск услуг для оплаты и их реквизитов
         public struct StructServiceProviders(List<string> serviceProviders, List<PaymentAccount> paymentAccount)
         {
             public List<string> serviceProviders = serviceProviders;
@@ -445,52 +445,41 @@ namespace BankApplication
         }
         #endregion
 
-        // ОСТАНОВИЛСЯ ТУТ
         #region Поиск лицевого счета для оплаты
-        public async static Task<StructServiceProviders> FindServiceProviders()
+        // Используем современный синтаксис кортежа с именованными полями и знаком "?" (может вернуть null)
+        public async static Task<(int Id, string Adress, decimal DebtAmount)?> FindPersonalAccount(int paymentAccountId, string personalAccount)
         {
-            List<string> serviceProviders = [];
-            List<PaymentAccount> paymentAccount = [];
 
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
 
             await using var connection = new MySqlConnection(builder.ConnectionString);
             await connection.OpenAsync();
 
-            #region Действие 1: Поиск всех доступных сервисов для оплаты
+            #region Действие 1: Поиск лицевого счета для оплаты
             await using var cmdSelect = connection.CreateCommand();
 
             cmdSelect.CommandText = @"
-                    SELECT sp.ServiceName, pa.*
-                    FROM ServiceProviders sp
-                    JOIN PaymentAccount pa ON sp.PaymentAccountId = pa.Id";
+                    SELECT Id, Adress, DebtAmount
+                    FROM UtilityBills
+                    WHERE PaymentAccountId = @paymentAccountId
+                    AND PersonalAccount = @personalAccount";
+            cmdSelect.Parameters.AddWithValue("paymentAccountId", paymentAccountId);
+            cmdSelect.Parameters.AddWithValue("personalAccount", personalAccount);
 
             await using (var reader = await cmdSelect.ExecuteReaderAsync())
             {
-                while (await reader.ReadAsync())
+                if (await reader.ReadAsync())
                 {
-                    string serviceName = reader.GetString(0);
+                    int id = reader.GetInt32(0);
+                    string adress = reader.GetString(1);
+                    decimal debtAmount = reader.GetDecimal(2);
 
-                    int paymentAccountId = reader.GetInt32(1);
-                    int clientId = reader.GetInt32(2);
-                    string accountNumber = reader.GetString(3);
-                    string bic = reader.GetString(4);
-                    string corAccount = reader.GetString(5);
-                    decimal balance = reader.GetDecimal(6);
-                    int currency = reader.GetInt32(7);
-                    decimal frozenBalance = reader.GetDecimal(8);
-                    int status = reader.GetInt32(9);
-                    string reason = reader.IsDBNull(10) ? default : reader.GetString(10);
-                    DateTime openedAt = reader.GetDateTime(11);
-                    DateTime closedAt = reader.IsDBNull(12) ? default : reader.GetDateTime(12);
-
-                    serviceProviders.Add(serviceName);
-                    paymentAccount.Add(new PaymentAccount(paymentAccountId, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt));
+                    return (id, adress, debtAmount);
                 }
             }
             #endregion
 
-            return new StructServiceProviders(serviceProviders, paymentAccount);
+            return null;
         }
         #endregion
 
