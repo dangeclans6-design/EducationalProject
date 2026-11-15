@@ -126,7 +126,9 @@ namespace BankApplication
 
                 MessageBox.Show(requisites, "Реквизиты оплаты", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                string message = $"Вы действительно хотите оплатить {amount} рублей?";
+                string message1 = $"Вы действительно хотите оплатить {amount} рублей? Кешбек по оплате этой услуги отключен.";
+
+                string message = !target.IsCashbackAllowed ? message1 : 
 
                 DialogResult result = MessageBox.Show(message, "Подтверждение оплаты", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 

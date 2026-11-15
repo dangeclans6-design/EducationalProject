@@ -105,4 +105,11 @@ namespace BankApplication
         public decimal NewBalance { get; } = newBalance;             // Заранее вычесленный новый баланс
         public ITarget Target { get; } = target;                     // Цель (target). Куда "уходят" деньги
     }
+
+    public class BasePreparePay(decimal amount, decimal newBalance, ITarget target)
+    {
+        public decimal Amount { get; } = amount;                        // Сумма оплаты
+        public decimal NewBalance { get; } = newBalance;                    // Заранее вычесленный новый баланс
+        public ITarget Target { get; } = target;                        // Цель (target). Куда "уходят" деньги
+    }
 }

@@ -87,8 +87,7 @@ namespace BankApplication
                     SET Balance = @newBalanceTarget
                     WHERE Id = @idPayment
                     AND Balance = @currentBalanceTarget
-                    AND Status = 1
-                    AND IsCashbackAllowed = 0";
+                    AND Status = 1";
                 cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
                 cmdTarget.Parameters.AddWithValue("idPayment", idPayment);
                 cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
@@ -355,7 +354,7 @@ namespace BankApplication
 
                 cmdPaymentAccount.Transaction = transaction;             // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО
                 cmdPaymentAccount.CommandText = @"
-                    SELECT Id, AccountNumber, Bic, CorAccount, Balance, Currency, FrozenBalance, Status, Reason, OpenedAt, ClosedAt
+                    SELECT Id, AccountNumber, Bic, CorAccount, Balance, Currency, FrozenBalance, Status, Reason, OpenedAt, ClosedAt, IsCashbackAllowed
                     FROM PaymentAccount WHERE ClientId = @clientId";
                 cmdPaymentAccount.Parameters.AddWithValue("clientId", clientId);
 
@@ -374,8 +373,9 @@ namespace BankApplication
                         string reason = readerPayment.IsDBNull(8) ? default : readerPayment.GetString(8);
                         DateTime openedAt = readerPayment.GetDateTime(9);
                         DateTime closedAt = readerPayment.IsDBNull(10) ? default : readerPayment.GetDateTime(10);
+                        int isCashbackAllowed = readerPayment.GetInt32(11);
 
-                        paymentAccounts.Add(new PaymentAccount(idPayment, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt));
+                        paymentAccounts.Add(new PaymentAccount(idPayment, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt, isCashbackAllowed));
                     }
                 }                    
                 #endregion
@@ -434,9 +434,10 @@ namespace BankApplication
                     string reason = reader.IsDBNull(10) ? default : reader.GetString(10);
                     DateTime openedAt = reader.GetDateTime(11);
                     DateTime closedAt = reader.IsDBNull(12) ? default : reader.GetDateTime(12);
+                    int isCashbackAllowed = reader.GetInt32(13);
 
                     serviceProviders.Add(serviceName);
-                    paymentAccount.Add(new PaymentAccount(paymentAccountId, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt));
+                    paymentAccount.Add(new PaymentAccount(paymentAccountId, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt, isCashbackAllowed));
                 }
             }
             #endregion
@@ -863,6 +864,11 @@ namespace BankApplication
             }
         }
         #endregion
+
+
+
+
+
 
 
 
