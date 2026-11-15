@@ -50,14 +50,6 @@ namespace BankApplication
 
     // Struct-уры
 
-    public readonly struct ReplenishBalanceStruct(decimal amount, decimal newBalance, ISource source)
-    {
-        // Общие
-        public decimal Amount { get; } = amount;                     // Сумма пополнения
-        public decimal NewBalance { get; } = newBalance;             // Заранее вычесленный новый баланс
-        public ISource Source { get; } = source;                     // Источник (source). Откуда "берутся" деньги
-    }
-
     public readonly struct TransferToStruct(decimal amount, decimal newBalance, ITarget target)
     {
         // Общие
@@ -65,6 +57,19 @@ namespace BankApplication
         public decimal NewBalance { get; } = newBalance;             // Заранее вычесленный новый баланс
         public ITarget Target { get; } = target;                     // Цель (target). Куда "уходят" деньги
     }
+
+    #region Классы-хранилища для методов пополнения
+    public abstract class BasePrepareReplenish(decimal amount, decimal newBalance, ISource source)
+    {
+        public decimal Amount { get; } = amount;                                // Сумма пополнения
+        public decimal NewBalance { get; } = newBalance;                        // Заранее вычесленный новый баланс
+        public ISource Source { get; } = source;                                // Источник (source). Откуда "берутся" деньги
+    }
+
+    public class DebitCardPrepareReplenish(decimal amount, decimal newBalance, ISource source) : BasePrepareReplenish(amount, newBalance, source) { }
+
+    public class PaymountAccountPrepareReplenish(decimal amount, decimal newBalance, ISource source) : BasePrepareReplenish(amount, newBalance, source) { }
+    #endregion
 
     #region Классы-хранилища для методов оплаты
     public abstract class BasePreparePay(decimal amount, decimal newBalance, ITarget target)

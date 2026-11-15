@@ -64,8 +64,8 @@ namespace BankApplication
 
         public bool CanDeposit(decimal amount);                // Проверка для target-объекта
 
-        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);      // Проверка паеред пополнением баланса
-        public Task ReplenishBalance(ReplenishBalanceStruct preview);                               // Пополнить баланс карты
+        public BasePrepareReplenish PrepareReplenishBalance(decimal amount, ISource source);      // Проверка паеред пополнением баланса
+        public Task ReplenishBalance(BasePrepareReplenish preview);                               // Пополнить баланс карты
     }
 
     public interface ITransferable : ISource
@@ -90,8 +90,8 @@ namespace BankApplication
         public abstract BasePreparePay PreparePay(decimal amount, ITarget target);
         public abstract Task Pay(BasePreparePay preview);
 
-        public abstract ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);
-        public abstract Task ReplenishBalance(ReplenishBalanceStruct preview);
+        public abstract BasePrepareReplenish PrepareReplenishBalance(decimal amount, ISource source);
+        public abstract Task ReplenishBalance(BasePrepareReplenish preview);
 
         // ITransferable : ISource
         public string NameSource { get; set; }
@@ -148,7 +148,9 @@ namespace BankApplication
 
         #region Оплата
         public override BasePreparePay PreparePay(decimal amount, ITarget target)
-        {            
+        {
+            if (target is not PaymentAccount) throw new Exception("Оплата возможна только на расчетный счет.");             // Защита: оплатить что-либо можно только на РС
+
             bool withdraw = PossibleToWithdraw(amount);
             bool canDeposit = target.CanDeposit(amount);
 
@@ -181,46 +183,43 @@ namespace BankApplication
 
         public override async Task Pay(BasePreparePay preview)          // Тут BasePreparePay => DebitCardPreparePay и по другому быть не может
         {
-            if (preview is DebitCardPreparePay debitPreview)
+            if (preview is not DebitCardPreparePay debitPreview) throw new ArgumentException("Неверный тип данных для оплаты дебетовой картой.");
+
+            if (debitPreview.Target is PaymentAccount payment)
             {
-                if (preview.Target is PaymentAccount payment)
+                decimal newBalanceTarget = payment.Balance + debitPreview.Amount;
+
+                decimal newCashback = debitPreview.CashBackStatus switch
                 {
-                    decimal newBalanceTarget = payment.Balance + debitPreview.Amount;
+                    CashBackStatus.LimitExceede => LimitCashback,
+                    CashBackStatus.NormalCashback => debitPreview.NewCashback,
+                    _ => Cashback
+                };
 
-                    decimal newCashback = debitPreview.CashBackStatus switch
-                    {
-                        CashBackStatus.LimitExceede => LimitCashback,
-                        CashBackStatus.NormalCashback => debitPreview.NewCashback,
-                        _ => Cashback
-                    };
+                bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(debitPreview.NewBalance, newCashback, Id, Balance, Cashback, payment.Id, newBalanceTarget, payment.Balance);
 
-                    bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(debitPreview.NewBalance, newCashback, Id, Balance, Cashback, payment.Id, newBalanceTarget, payment.Balance);
+                if (!IsDbUpdate)
+                    throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
 
-                    if (!IsDbUpdate)
-                        throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
-
-                    Cashback = newCashback;
-                    Balance = debitPreview.NewBalance;
-                    payment.Balance = newBalanceTarget;
-                }
-                /*
-                Тут иного развития события не может (else), так как оплата может происходить только на счет
-                */ 
-
+                Cashback = newCashback;
+                Balance = debitPreview.NewBalance;
+                payment.Balance = newBalanceTarget;
             }
-            else throw new ArgumentException("Неверный тип данных для оплаты дебетовой картой.");
+            /*
+            Тут иного развития события не может быть (else), так как оплата может происходить только на счет
+            */
         }
         #endregion
 
+
+        #region Пополнить баланс
         #region Скрытое описание
         /*
         На данный момент здесь имеется ввиду пополнить со своеей другой карты \ расчетного счета (в дальнейшем, возможно добавится функция пополнения с чужой карты,
         но необходимо подстверждение перевода от владельца в виде смс или др.)
         */
         #endregion
-
-        #region Пополнить баланс
-        public override ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source)
+        public override BasePrepareReplenish PrepareReplenishBalance(decimal amount, ISource source)
         {
             bool canDeposit = CanDeposit(amount);                     // Возможно ли цель (target) пополнить
             bool withdraw = source.PossibleToWithdraw(amount);        // Возможно ли с источника (source) списать деньги
@@ -229,11 +228,11 @@ namespace BankApplication
             {
                 decimal newBalance = Balance + amount;
 
-                return new ReplenishBalanceStruct(amount, newBalance, source);
+                return new DebitCardPrepareReplenish(amount, newBalance, source);
             }
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
-        public async override Task ReplenishBalance(ReplenishBalanceStruct preview)
+        public async override Task ReplenishBalance(BasePrepareReplenish preview)
         {
             #region Скрытое описание
             /*
@@ -241,28 +240,31 @@ namespace BankApplication
             */
             #endregion
 
-            if (preview.Source is DebitCard card)            // Если источник пополнения - это дебетовая банковская карта
-            {
-                decimal newBalanceSource = card.Balance - preview.Amount;       // Новый баланс карты-источника (source-карты)
+            if (preview is not DebitCardPrepareReplenish debitPreview)
+                throw new ArgumentException("Неверный тип данных для пополнения дебетовой карты.");             // Защита, если вдруг будет передан неверный тип данных
 
-                bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCardFromDebitCard(Id, preview.NewBalance, Balance, Cashback, card.Id, newBalanceSource, card.Balance, card.Cashback);
+            if (debitPreview.Source is DebitCard card)                                                          // Если источник пополнения - это дебетовая банковская карта
+            {
+                decimal newBalanceSource = card.Balance - debitPreview.Amount;                                  // Новый баланс карты-источника (source-карты)
+
+                bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCardFromDebitCard(Id, debitPreview.NewBalance, Balance, Cashback, card.Id, newBalanceSource, card.Balance, card.Cashback);
 
                 if (IsDbUpdate)
                 {
-                    Balance = preview.NewBalance;
+                    Balance = debitPreview.NewBalance;
                     card.Balance = newBalanceSource;
                 }
                 else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
             }
-            if (preview.Source is PaymentAccount paymentAccount)            // Если источник пополнения - это расчетный счет
+            if (debitPreview.Source is PaymentAccount paymentAccount)                                           // Если источник пополнения - это расчетный счет
             {
-                decimal newBalanceSource = paymentAccount.Balance - preview.Amount;       // Новый баланс счета-источника (source-карты)
+                decimal newBalanceSource = paymentAccount.Balance - debitPreview.Amount;                        // Новый баланс счета-источника (source-карты)
 
-                bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCardFromPaymentAccountCard(Id, preview.NewBalance, Balance, Cashback, paymentAccount.Id, newBalanceSource);
+                bool IsDbUpdate = await DataBase.ReplenishBalanceDebitCardFromPaymentAccountCard(Id, debitPreview.NewBalance, Balance, Cashback, paymentAccount.Id, newBalanceSource);
 
                 if (IsDbUpdate)
                 {
-                    Balance = preview.NewBalance;
+                    Balance = debitPreview.NewBalance;
                     paymentAccount.Balance = newBalanceSource;
                 }
                 else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
@@ -270,13 +272,13 @@ namespace BankApplication
         }
         #endregion
 
+
+        #region Перевод денег
         #region Скрытое описание
         /*
         На данный момент здесь имеется ввиду перевод между своими счетами \ картами
         */
         #endregion
-
-        #region Перевод денег
         public override TransferToStruct PrepareTransferTo(decimal amount, ITarget target)
         {
             bool withdraw = PossibleToWithdraw(amount);
@@ -641,11 +643,11 @@ namespace BankApplication
         #endregion
 
         #region Пополнение баланса (ПОКА НЕДОСТУПНО)
-        public ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source)
+        public BasePrepareReplenish PrepareReplenishBalance(decimal amount, ISource source)
         {
             throw new NotImplementedException("Временно недоустпуно.");
         }
-        public async Task ReplenishBalance(ReplenishBalanceStruct preview)
+        public async Task ReplenishBalance(BasePrepareReplenish preview)
         {
 
         }
