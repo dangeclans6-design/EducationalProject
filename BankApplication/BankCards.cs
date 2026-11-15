@@ -53,8 +53,8 @@ namespace BankApplication
 
         public bool PossibleToWithdraw(decimal amount);        // Проверка для source-объекта (источника)\
 
-        public PayStruct PreparePay(decimal amount, ITarget target);            // Проверка перед оплатой
-        public Task PayCard(PayStruct preview);                                 // Оплата
+        public BasePreparePay PreparePay(decimal amount, ITarget target);            // Проверка перед оплатой
+        public Task Pay(BasePreparePay preview);                                 // Оплата
     }
 
     public interface ITarget
@@ -87,8 +87,8 @@ namespace BankApplication
         public DateTime CloseAt { get; } = closeAt;
         public string Name { get; protected set; }
 
-        public abstract PayStruct PreparePay(decimal amount, ITarget target);
-        public abstract Task PayCard(PayStruct preview);
+        public abstract BasePreparePay PreparePay(decimal amount, ITarget target);
+        public abstract Task Pay(BasePreparePay preview);
 
         public abstract ReplenishBalanceStruct PrepareReplenishBalance(decimal amount, ISource source);
         public abstract Task ReplenishBalance(ReplenishBalanceStruct preview);
@@ -102,7 +102,7 @@ namespace BankApplication
 
         // ITarget
         public string NameTarget { get; set; }
-        public bool IsCashbackAllowed { get; }
+        public bool IsCashbackAllowed { get; } = false;         // Всегда ложно, так как оплатить с карты на карту невозможно (оплата всегда происходит наь счет)
         public abstract bool CanDeposit(decimal amount);
         
     }
@@ -147,63 +147,68 @@ namespace BankApplication
 
 
         #region Оплата
-        public override PayStruct PreparePay(decimal amount, ITarget target)
+        public override BasePreparePay PreparePay(decimal amount, ITarget target)
         {            
             bool withdraw = PossibleToWithdraw(amount);
             bool canDeposit = target.CanDeposit(amount);
 
             if (withdraw && canDeposit)
             {
-                decimal newBalance = Balance - amount;      // Заранее вычисляем новый баланс
-                CashBackStatus status;                      // Объявляем переменную - статус кешбека
+                decimal newBalance = Balance - amount;                          // Заранее вычисляем новый баланс
+                CashBackStatus status = CashBackStatus.NoCashback;              // По умолчанию кешбека нет
 
-                decimal cashback = 0;
-                decimal newCashback = 0;
+                decimal cashback = 0;                                           // По умолчанию кешбек равен 0
+                decimal newCashback = Cashback;                                 // По умолчанию новый кешбек равен старому
 
-                if (IsCashbackEnabled)
+                if (IsCashbackEnabled && target.IsCashbackAllowed && amount >= 10000)
                 {
-                    if (amount >= 10000)
-                    {
-                        cashback = amount * 0.01m;
-                        newCashback = Cashback + cashback;
-                    }
-                    else
-                    {
-                        cashback = 0;
-                        newCashback = Cashback;
-                    }
+                    cashback = amount * 0.01m;
+                    newCashback = Cashback + cashback;
 
-                    status = newCashback > LimitCashback ? CashBackStatus.LimitExceede : CashBackStatus.NormalCashback;
+                    if (newCashback > LimitCashback)
+                    {
+                        newCashback = LimitCashback;
+                        status = CashBackStatus.LimitExceede;
+                    }
+                    else status = CashBackStatus.NormalCashback;
                 }
                 else status = CashBackStatus.NoCashback;
 
-                return new PayStruct(amount, newBalance, target, cashback, newCashback, status);
+                return new DebitCardPreparePay(amount, newBalance, target, cashback, newCashback, status);
             }
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
 
-        public override async Task PayCard(PayStruct preview)
+        public override async Task Pay(BasePreparePay preview)          // Тут BasePreparePay => DebitCardPreparePay и по другому быть не может
         {
-            if (preview.Target is PaymentAccount payment)
+            if (preview is DebitCardPreparePay debitPreview)
             {
-                decimal newBalanceTarget = payment.Balance + preview.Amount;
-
-                decimal newCashback = !payment.IsCashbackAllowed ? Cashback : preview.CashBackStatus switch
+                if (preview.Target is PaymentAccount payment)
                 {
-                    CashBackStatus.LimitExceede => LimitCashback,
-                    CashBackStatus.NormalCashback => preview.NewCashback,
-                    _ => Cashback
-                };
+                    decimal newBalanceTarget = payment.Balance + debitPreview.Amount;
 
-                bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(preview.NewBalance, newCashback, Id, Balance, Cashback, payment.Id, newBalanceTarget, payment.Balance);
+                    decimal newCashback = debitPreview.CashBackStatus switch
+                    {
+                        CashBackStatus.LimitExceede => LimitCashback,
+                        CashBackStatus.NormalCashback => debitPreview.NewCashback,
+                        _ => Cashback
+                    };
 
-                if (!IsDbUpdate) 
-                    throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+                    bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(debitPreview.NewBalance, newCashback, Id, Balance, Cashback, payment.Id, newBalanceTarget, payment.Balance);
 
-                Cashback = newCashback;
-                Balance = preview.NewBalance;
-                payment.Balance = newBalanceTarget;
-            }            
+                    if (!IsDbUpdate)
+                        throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+
+                    Cashback = newCashback;
+                    Balance = debitPreview.NewBalance;
+                    payment.Balance = newBalanceTarget;
+                }
+                /*
+                Тут иного развития события не может (else), так как оплата может происходить только на счет
+                */ 
+
+            }
+            else throw new ArgumentException("Неверный тип данных для оплаты дебетовой картой.");
         }
         #endregion
 
@@ -599,7 +604,7 @@ namespace BankApplication
         #endregion
 
         #region Оплата
-        public PayStruct PreparePay(decimal amount, ITarget target)
+        public BasePreparePay PreparePay(decimal amount, ITarget target)
         {
             bool withdraw = PossibleToWithdraw(amount);
             bool candeposit = target.CanDeposit(amount);
@@ -608,26 +613,30 @@ namespace BankApplication
             {
                 decimal newBalance = Balance - amount;
 
-                return new PayStruct(amount, newBalance, target);
+                return new PaymountAccountPreparePay(amount, newBalance, target);
             }
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
 
-        public async Task PayCard(PayStruct preview)
+        public async Task Pay(BasePreparePay preview)
         {
-            if (preview.Target is PaymentAccount target)
+            if (preview is PaymountAccountPreparePay paymountPreview)
             {
-                decimal newBalanceTarget = target.Balance + preview.Amount;
-
-                bool IsDbUpdate = await DataBase.PayPaymentToPaymentAccount(Id, preview.NewBalance, Balance, target.Id, newBalanceTarget, target.Balance);
-
-                if (IsDbUpdate)
+                if (paymountPreview.Target is PaymentAccount target)
                 {
-                    Balance = preview.NewBalance;
-                    target.Balance = newBalanceTarget;
+                    decimal newBalanceTarget = target.Balance + paymountPreview.Amount;
+
+                    bool IsDbUpdate = await DataBase.PayPaymentToPaymentAccount(Id, paymountPreview.NewBalance, Balance, target.Id, newBalanceTarget, target.Balance);
+
+                    if (IsDbUpdate)
+                    {
+                        Balance = paymountPreview.NewBalance;
+                        target.Balance = newBalanceTarget;
+                    }
+                    else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
                 }
-                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
             }
+            else throw new ArgumentException("Неверный тип данных для оплаты дебетовой картой.");
         }
         #endregion
 

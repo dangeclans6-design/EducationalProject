@@ -14,9 +14,9 @@ namespace BankApplication
 {
     public partial class WindowPay : MetroForm
     {
-        private readonly ISource currentSource;                                          // Источник (откуда уйдет деньги)
+        private readonly ISource currentSource;                                 // Источник (откуда уйдет деньги)
         private StructServiceProviders serviceProviders;                        // Сервисы для оплаты + их реквизиты
-        private ITarget target;                                                 // Счет оплаты (цель)
+        private PaymentAccount target;                                          // Счет оплаты (цель) (можно использовать ITarget target, но в логике программы, на данный момент, невозможен иной сценарий)
         private int choiseIndexService;                                         // Индекс выбранной услуги оплаты
         private (int Id, string Adress, decimal DebtAmount)? tupleReader;       // Кортеж с данными по ЛС
 
@@ -115,37 +115,45 @@ namespace BankApplication
             {
                 var currentRequisites = serviceProviders.paymentAccount[choiseIndexService];
                 decimal amount = TryReg.TryDecimal(Amount.Text);
+                var preview = currentSource.PreparePay(amount, target);
 
                 string nl = Environment.NewLine;
                 string requisites = $"Способ оплаты: {currentSource.NameSource}{nl}" +
-                                    $"Сумма оплаты: {amount} рублей{nl}" +
+                                    $"Сумма оплаты: {amount} рублей{nl}{nl}" +
                                     $"Реквизиты:{nl}" +
                                     $"Номер счета: {currentRequisites.AccountNumber}{nl}" +
                                     $"БИК: {currentRequisites.Bic}{nl}" +
                                     $"Кор. счет: {currentRequisites.CorAccount}";
 
-                MessageBox.Show(requisites, "Реквизиты оплаты", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                string message = preview switch
+                {
+                    DebitCardPreparePay debit => debit.CashBackStatus switch
+                    {
+                        CashBackStatus.NormalCashback => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Ваш кешбек составит {debit.Cashback} рублей.",
+                        CashBackStatus.LimitExceede => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Учтите, после оплаты Вы достигнете лимита по кешбеку. Часть, которая не войдет в лимит, сгорит!",
+                        _ => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Кешбек по данной операции начислен не будет (сумма оплаты менее 10000 рублей)."
+                    },
 
-                string message1 = $"Вы действительно хотите оплатить {amount} рублей? Кешбек по оплате этой услуги отключен.";
-
-                string message = !target.IsCashbackAllowed ? message1 : 
+                    _ => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей?"
+                };
 
                 DialogResult result = MessageBox.Show(message, "Подтверждение оплаты", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
-                {
-                    var preview = currentSource.PreparePay(amount, target);
-                    await currentSource.PayCard(preview);
+                {                    
+                    await currentSource.Pay(preview);
 
                     string payMessage = $"Вы успешно оплатили {amount} рублей.";
 
                     MessageBox.Show(payMessage, "Оплата", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    Close();
                 }
-                else return;
+                else return;                
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }            
         }
         #endregion

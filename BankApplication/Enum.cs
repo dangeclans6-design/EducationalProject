@@ -49,44 +49,6 @@ namespace BankApplication
     }
 
     // Struct-уры
-    public readonly struct PayStruct
-    {
-        // Общие
-        public decimal Amount { get; }                        // Сумма оплаты
-        public decimal NewBalance { get; }                    // Заранее вычесленный новый баланс
-        public ITarget Target { get; }                        // Цель (target). Куда "уходят" деньги
-
-        // Для Дебетовой карты
-        public decimal Cashback { get; }                      // Сумма кешбека
-        public decimal NewCashback { get; }                   // Заранее вычесленный новый баланс кешбека        
-        public CashBackStatus CashBackStatus { get; }         // Сюда будет смотреть форма, чтобы предложить клиенту нужное окно        
-
-        // Для кредитной карты
-        public decimal Debt { get; }                           // Сумма долга
-
-        public PayStruct(decimal amount, decimal newBalance, ITarget target, decimal cashback, decimal newCashback, CashBackStatus cashbackStatus)
-        {
-            Amount = amount;
-            NewBalance = newBalance;
-            Target = target;
-            Cashback = cashback;
-            NewCashback = newCashback;
-            CashBackStatus = cashbackStatus;
-        }
-        public PayStruct(decimal amount, decimal newBalance, ITarget target, decimal debt)
-        {
-            Amount = amount;
-            NewBalance = newBalance;
-            Target = target;
-            Debt = debt;
-        }
-        public PayStruct(decimal amount, decimal newBalance, ITarget target)
-        {
-            Amount = amount;
-            NewBalance = newBalance;
-            Target = target;
-        }
-    }
 
     public readonly struct ReplenishBalanceStruct(decimal amount, decimal newBalance, ISource source)
     {
@@ -94,8 +56,6 @@ namespace BankApplication
         public decimal Amount { get; } = amount;                     // Сумма пополнения
         public decimal NewBalance { get; } = newBalance;             // Заранее вычесленный новый баланс
         public ISource Source { get; } = source;                     // Источник (source). Откуда "берутся" деньги
-
-
     }
 
     public readonly struct TransferToStruct(decimal amount, decimal newBalance, ITarget target)
@@ -106,10 +66,21 @@ namespace BankApplication
         public ITarget Target { get; } = target;                     // Цель (target). Куда "уходят" деньги
     }
 
-    public class BasePreparePay(decimal amount, decimal newBalance, ITarget target)
+    #region Классы-хранилища для методов оплаты
+    public abstract class BasePreparePay(decimal amount, decimal newBalance, ITarget target)
     {
         public decimal Amount { get; } = amount;                        // Сумма оплаты
         public decimal NewBalance { get; } = newBalance;                    // Заранее вычесленный новый баланс
         public ITarget Target { get; } = target;                        // Цель (target). Куда "уходят" деньги
     }
+
+    public class DebitCardPreparePay(decimal amount, decimal newBalance, ITarget target, decimal cashback, decimal newCashback, CashBackStatus cashBackStatus) : BasePreparePay(amount, newBalance, target)
+    {
+        public decimal Cashback { get; } = cashback;
+        public decimal NewCashback { get; } = newCashback;
+        public CashBackStatus CashBackStatus { get; } = cashBackStatus;
+    }
+
+    public class PaymountAccountPreparePay(decimal amount, decimal newBalance, ITarget target) : BasePreparePay(amount, newBalance, target) { }
+    #endregion
 }
