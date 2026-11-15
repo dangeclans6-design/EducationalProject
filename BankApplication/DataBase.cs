@@ -42,7 +42,7 @@ namespace BankApplication
         //readonly static string connectionString = @"Data Source=C:\Users\Gleb24\Desktop\my_database\myDB.db";
         //--------------------------------------------------//
 
-        #region Оплата услуг с дебетовой карты на расчетный счет (кешбека нет)
+        #region Оплата услуг с дебетовой карты на расчетный счет (кешбек есть / нет)
         public async static Task<bool> PayDebitCardToPaymentAccount(decimal newBalanceSource, decimal newCashbackSource, int id, decimal currentBalanceSource,
                                                     decimal currentCashbackSource, int idPayment, decimal newBalanceTarget, decimal currentBalanceTarget)
         {
@@ -50,7 +50,7 @@ namespace BankApplication
 
             await using var connection = new MySqlConnection(builder.ConnectionString);
             await connection.OpenAsync();
-            
+
             await using var transaction = await connection.BeginTransactionAsync();     // Открываем транзакцию
 
             try
@@ -61,17 +61,16 @@ namespace BankApplication
                 cmdSource.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
                 cmdSource.CommandText = @"
                     UPDATE DebitCard
-                    SET Balance = @newBalanceSource, CashBack = @newCashbackSource
+                    SET Balance = @newBalanceSource, Cashback = @newCashbackSource
                     WHERE Id = @id
                     AND Balance = @currentBalanceSource
                     AND Status = 1
                     AND Reason IS NULL
-                    AND IsCashbackEnabled = 1
                     AND CashBack = @currentCashbackSource";
                 cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
                 cmdSource.Parameters.AddWithValue("newCashbackSource", newCashbackSource);
                 cmdSource.Parameters.AddWithValue("id", id);
-                cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource);;
+                cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource); ;
                 cmdSource.Parameters.AddWithValue("currentCashbackSource", currentCashbackSource);
 
                 int sourceRows = await cmdSource.ExecuteNonQueryAsync();
@@ -88,10 +87,11 @@ namespace BankApplication
                     SET Balance = @newBalanceTarget
                     WHERE Id = @idPayment
                     AND Balance = @currentBalanceTarget
-                    AND Status = 1";
+                    AND Status = 1
+                    AND IsCashbackAllowed = 0";
                 cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
-                cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
                 cmdTarget.Parameters.AddWithValue("idPayment", idPayment);
+                cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
 
                 int targetRows = await cmdTarget.ExecuteNonQueryAsync();
 
@@ -105,7 +105,7 @@ namespace BankApplication
             {
                 if (transaction != null) await transaction.RollbackAsync();
                 throw;
-            }            
+            }
         }
         #endregion
 

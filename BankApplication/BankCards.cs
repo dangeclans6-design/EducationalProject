@@ -60,6 +60,7 @@ namespace BankApplication
     public interface ITarget
     {
         string NameTarget { get; }                              // Имя target-объекта
+        bool IsCashbackAllowed { get; }                         // Начисляется ли кэшбэк при оплате на эту цель
 
         public bool CanDeposit(decimal amount);                // Проверка для target-объекта
 
@@ -101,6 +102,7 @@ namespace BankApplication
 
         // ITarget
         public string NameTarget { get; set; }
+        public bool IsCashbackAllowed { get; }
         public abstract bool CanDeposit(decimal amount);
         
     }
@@ -182,26 +184,25 @@ namespace BankApplication
 
         public override async Task PayCard(PayStruct preview)
         {
-            if (preview.Target is PaymentAccount target)
+            if (preview.Target is PaymentAccount payment)
             {
-                decimal newCashback = preview.CashBackStatus switch
+                decimal newBalanceTarget = payment.Balance + preview.Amount;
+
+                decimal newCashback = !payment.IsCashbackAllowed ? Cashback : preview.CashBackStatus switch
                 {
                     CashBackStatus.LimitExceede => LimitCashback,
                     CashBackStatus.NormalCashback => preview.NewCashback,
                     _ => Cashback
                 };
 
-                decimal newBalanceTarget = target.Balance + preview.Amount;
+                bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(preview.NewBalance, newCashback, Id, Balance, Cashback, payment.Id, newBalanceTarget, payment.Balance);
 
-                bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(preview.NewBalance, newCashback, Id, Balance, Cashback, target.Id, newBalanceTarget, target.Balance);
+                if (!IsDbUpdate) 
+                    throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
 
-                if (IsDbUpdate)
-                {
-                    Cashback = newCashback;
-                    Balance = preview.NewBalance;
-                    target.Balance = newBalanceTarget;
-                }
-                else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
+                Cashback = newCashback;
+                Balance = preview.NewBalance;
+                payment.Balance = newBalanceTarget;
             }            
         }
         #endregion
@@ -512,7 +513,7 @@ namespace BankApplication
     */
     #endregion
     public class PaymentAccount(int id, int clientId, string accountNumber, string bic, string corAccount, decimal balance, int currency, decimal frozenBalance, int status, string reason,
-                                DateTime openedAt, DateTime closeAt) : ITarget, ITransferable
+                                DateTime openedAt, DateTime closeAt, int isCashbackAllowed) : ITarget, ITransferable
     {
         public int Id { get; } = id;                                                    // Уникальный идентификатор счета в БД
         public int ClientId { get; } = clientId;                                        // ID владельца счета (физического или юридического лица)
@@ -527,7 +528,9 @@ namespace BankApplication
         public CardStatus Status { get; set; } = (CardStatus)status;                    // Состояние счета
         public string Reason { get; set; } = reason;                                    // Причина статуса
         public DateTime OpenedAt { get; } = openedAt;                                   // Дата открытия счета
-        public DateTime ClosedAt { get; } = closeAt;                                    // Дата закрытия счета        
+        public DateTime ClosedAt { get; } = closeAt;                                    // Дата закрытия счета
+
+        public bool IsCashbackAllowed { get; } = (isCashbackAllowed == 1);
 
 
         public bool CanDeposit(decimal amount)              // Возможно ли сюда пополнить баланс (target)
