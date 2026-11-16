@@ -712,9 +712,9 @@ namespace BankApplication
                 cmdTarget.Transaction = transaction;         // ТРАНЗАКЦИЯ ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ
                 cmdTarget.CommandText = @"
                     UPDATE PaymentAccount
-                    SET Balance = @newBalanceSource
+                    SET Balance = @newBalanceTarget
                     WHERE Id = @idPaymentTo
-                    AND Balance = @currentBalanceSource
+                    AND Balance = @currentBalanceTarget
                     AND Status = 1";
                 cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
                 cmdTarget.Parameters.AddWithValue("idPaymentTo", idPaymentTo);
@@ -783,7 +783,7 @@ namespace BankApplication
                 cmdTarget.Parameters.AddWithValue("idPayment", idPayment);
                 cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
 
-                int targetRows = await cmdSource.ExecuteNonQueryAsync();
+                int targetRows = await cmdTarget.ExecuteNonQueryAsync();
 
                 if (targetRows == 0) return false;
                 #endregion
@@ -849,7 +849,7 @@ namespace BankApplication
                 cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
                 cmdTarget.Parameters.AddWithValue("currentCashbackTarget", currentCashbackTarget);
 
-                int targetRows = await cmdSource.ExecuteNonQueryAsync();
+                int targetRows = await cmdTarget.ExecuteNonQueryAsync();
 
                 if (targetRows == 0) return false;
                 #endregion

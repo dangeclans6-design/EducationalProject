@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -265,6 +266,27 @@ namespace BankApplication
             return cardNumber;
         }
         #endregion
+
+        public static (string Message, decimal AmountTransfer, Color ColorText, bool IsTransferAmount) TryTransferAmount(string amount)
+        {
+            amount = amount.Replace('.', ',');
+
+            if (decimal.TryParse(amount, out decimal result) && result > 0)
+            {
+                string message = $"Перевод {result} рублей";        // Текст
+                var color = Color.Tan;                              // Цвет текста
+
+                return (message, result, color, true);
+            }
+            else
+            {
+                string message = "Введите число больше нуля";
+                decimal amountResult = -1;
+                var color = Color.Red;
+
+                return (message, amountResult, color, false);
+            }
+        }
     }
     #endregion
 }

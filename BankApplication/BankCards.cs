@@ -53,8 +53,9 @@ namespace BankApplication
 
         public bool PossibleToWithdraw(decimal amount);        // Проверка для source-объекта (источника)\
 
+
         public BasePreparePay PreparePay(decimal amount, ITarget target);            // Проверка перед оплатой
-        public Task Pay(BasePreparePay preview);                                 // Оплата
+        public Task Pay(BasePreparePay preview);                                     // Оплата
     }
 
     public interface ITarget
@@ -70,8 +71,8 @@ namespace BankApplication
 
     public interface ITransferable : ISource
     {
-        public TransferToStruct PrepareTransferTo(decimal amount, ITarget target);          // Проверка паеред перевовдом
-        public Task TransferTo(TransferToStruct preview);                                   // Перевести
+        public BasePrepareTransfer PrepareTransfer(decimal amount, ITarget target);          // Проверка паеред перевовдом
+        public Task Transfer(BasePrepareTransfer preview);                                   // Перевести
     }
 
     public abstract class BankCard(int id, int clientid, string cardNumber, decimal balance, int status, string reason, DateTime createAt, DateTime closeAt) : IBankCard
@@ -97,8 +98,8 @@ namespace BankApplication
         public string NameSource { get; set; }
         public abstract bool PossibleToWithdraw(decimal amount);
 
-        public abstract TransferToStruct PrepareTransferTo(decimal amount, ITarget target);
-        public abstract Task TransferTo(TransferToStruct preview);
+        public abstract BasePrepareTransfer PrepareTransfer(decimal amount, ITarget target);
+        public abstract Task Transfer(BasePrepareTransfer preview);
 
         // ITarget
         public string NameTarget { get; set; }
@@ -236,12 +237,12 @@ namespace BankApplication
         {
             #region Скрытое описание
             /*
-            Здесь необходимо разделить логику транзакций по разным типам карт, потому что каждый тип карт находится в своей таблице в БД (DebitCard, CreditCard)
+            Здесь необходимо разделить логику транзакций по разным типам карт, потому что каждый тип карт находится в своей таблице в БД (DebitCard, CreditCard, PaymentAccount)
             */
             #endregion
 
             if (preview is not DebitCardPrepareReplenish debitPreview)
-                throw new ArgumentException("Неверный тип данных для пополнения дебетовой карты.");             // Защита, если вдруг будет передан неверный тип данных
+                throw new ArgumentException("Неверный тип данных для пополнения дебетовой карты.");             // Защита, если вдруг будет передан неверный тип данных (на всякий случай)
 
             if (debitPreview.Source is DebitCard card)                                                          // Если источник пополнения - это дебетовая банковская карта
             {
@@ -274,12 +275,13 @@ namespace BankApplication
 
 
         #region Перевод денег
+
         #region Скрытое описание
         /*
         На данный момент здесь имеется ввиду перевод между своими счетами \ картами
         */
         #endregion
-        public override TransferToStruct PrepareTransferTo(decimal amount, ITarget target)
+        public override BasePrepareTransfer PrepareTransfer(decimal amount, ITarget target)
         {
             bool withdraw = PossibleToWithdraw(amount);
             bool canDeposit = target.CanDeposit(amount);
@@ -288,16 +290,19 @@ namespace BankApplication
             {
                 decimal newBalance = Balance - amount;
 
-                return new TransferToStruct(amount, newBalance, target);
+                return new DebitCardPrepareTransfer(amount, newBalance, target);
             }
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
 
-        public async override Task TransferTo(TransferToStruct preview)
+        public async override Task Transfer(BasePrepareTransfer preview)
         {
+            if (preview is not DebitCardPrepareTransfer)
+                throw new ArgumentException("Неверный тип данных для перевода с дебетовой карты");             // Защита, если вдруг будет передан неверный тип данных (на всякий случай)
+
             if (preview.Target is DebitCard debit)
             {
-                decimal newBalanceTarget = debit.Balance - preview.Amount;
+                decimal newBalanceTarget = debit.Balance + preview.Amount;
 
                 bool IsDbUpdate = await DataBase.TransferDebitCardToDebitCard(Id, preview.NewBalance, Balance, Cashback, debit.Id, newBalanceTarget, debit.Balance, debit.Cashback);
 
@@ -311,7 +316,7 @@ namespace BankApplication
 
             if (preview.Target is PaymentAccount payment)
             {
-                decimal newBalanceTarget = payment.Balance - preview.Amount;
+                decimal newBalanceTarget = payment.Balance + preview.Amount;
 
                 bool IsDbUpdate = await DataBase.TransferDebitCardToPayment(Id, preview.NewBalance, Balance, Cashback, payment.Id, newBalanceTarget, payment.Balance);
 
@@ -559,7 +564,7 @@ namespace BankApplication
 
 
         #region Перевод денег
-        public TransferToStruct PrepareTransferTo(decimal amount, ITarget target)
+        public BasePrepareTransfer PrepareTransfer(decimal amount, ITarget target)
         {
             bool withdraw = PossibleToWithdraw(amount);
             bool canDeposit = target.CanDeposit(amount);
@@ -568,16 +573,19 @@ namespace BankApplication
             {
                 decimal newBalance = Balance - amount;
 
-                return new TransferToStruct(amount, newBalance, target);
+                return new PaymountAccountPrepareTransfer(amount, newBalance, target);
             }
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
 
-        public async Task TransferTo(TransferToStruct preview)
+        public async Task Transfer(BasePrepareTransfer preview)
         {
+            if (preview is not PaymountAccountPrepareTransfer)
+                throw new ArgumentException("Неверный тип данных для перевода с расчетного счета");             // Защита, если вдруг будет передан неверный тип данных (на всякий случай)
+
             if (preview.Target is DebitCard debit)
             {
-                decimal newBalanceTarget = debit.Balance - preview.Amount;
+                decimal newBalanceTarget = debit.Balance + preview.Amount;
 
                 bool IsDbUpdate = await DataBase.TransferPaymentToDebitCard(Id, preview.NewBalance, Balance, debit.Id, newBalanceTarget, debit.Balance, debit.Cashback);
 
@@ -591,7 +599,7 @@ namespace BankApplication
 
             if (preview.Target is PaymentAccount payment)
             {
-                decimal newBalanceTarget = payment.Balance - preview.Amount;
+                decimal newBalanceTarget = payment.Balance + preview.Amount;
 
                 bool IsDbUpdate = await DataBase.TransferPaymentToPayment(Id, preview.NewBalance, Balance, payment.Id, newBalanceTarget, payment.Balance);
 

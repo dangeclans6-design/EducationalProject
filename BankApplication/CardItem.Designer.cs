@@ -148,6 +148,7 @@
             TransferMoneyButton.TabIndex = 5;
             TransferMoneyButton.Text = "Перевести";
             TransferMoneyButton.TextAlignment = System.Drawing.StringAlignment.Center;
+            TransferMoneyButton.Click += TransferMoneyButton_Click;
             // 
             // PayButton
             // 

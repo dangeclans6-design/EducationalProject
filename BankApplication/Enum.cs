@@ -48,15 +48,19 @@ namespace BankApplication
         EUR = 2         // Валюта евро
     }
 
-    // Struct-уры
-
-    public readonly struct TransferToStruct(decimal amount, decimal newBalance, ITarget target)
+    #region Классы-хранилища для методов перевода
+    public class BasePrepareTransfer(decimal amount, decimal newBalance, ITarget target)
     {
-        // Общие
         public decimal Amount { get; } = amount;                     // Сумма перевода
         public decimal NewBalance { get; } = newBalance;             // Заранее вычесленный новый баланс
         public ITarget Target { get; } = target;                     // Цель (target). Куда "уходят" деньги
     }
+
+    public class DebitCardPrepareTransfer(decimal amount, decimal newBalance, ITarget target) : BasePrepareTransfer(amount, newBalance, target) { }
+
+    public class PaymountAccountPrepareTransfer(decimal amount, decimal newBalance, ITarget target) : BasePrepareTransfer(amount, newBalance, target) { }
+
+    #endregion
 
     #region Классы-хранилища для методов пополнения
     public abstract class BasePrepareReplenish(decimal amount, decimal newBalance, ISource source)

@@ -39,6 +39,7 @@ namespace BankApplication
 
                 item.OnReplenishButton += OpenReplenishWindow;
                 item.OnPayButton += OpenPayhWindow;
+                item.OnTransferButton += OpenTransferhWindow;
 
                 y_card += item.Height + 30;
             }
@@ -52,6 +53,7 @@ namespace BankApplication
 
                 item.OnReplenishButton += OpenReplenishWindow;
                 item.OnPayButton += OpenPayhWindow;
+                item.OnTransferButton += OpenTransferhWindow;
 
                 y_payment += item.Height + 30;
             }
@@ -69,6 +71,15 @@ namespace BankApplication
         private void OpenPayhWindow(ISource currentSource)
         {
             WindowPay wr = new(currentSource);
+
+            wr.ShowDialog();
+
+            UpdateList();
+        }
+
+        private void OpenTransferhWindow(ITransferable currentSource)
+        {
+            TransferWindow wr = new(currentSource);
 
             wr.ShowDialog();
 
@@ -135,6 +146,7 @@ namespace BankApplication
 
                 item.OnReplenishButton += OpenReplenishWindow;
                 item.OnPayButton += OpenPayhWindow;
+                item.OnTransferButton += OpenTransferhWindow;
 
                 y += item.Height + 30;
             }
@@ -147,6 +159,7 @@ namespace BankApplication
 
                 item.OnReplenishButton += OpenReplenishWindow;
                 item.OnPayButton += OpenPayhWindow;
+                item.OnTransferButton += OpenTransferhWindow;
 
                 y_payment += item.Height + 30;
             }
