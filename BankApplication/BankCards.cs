@@ -527,20 +527,20 @@ namespace BankApplication
     public class PaymentAccount(int id, int clientId, string accountNumber, string bic, string corAccount, decimal balance, int currency, decimal frozenBalance, int status, string reason,
                                 DateTime openedAt, DateTime closeAt, int isCashbackAllowed) : ITarget, ITransferable
     {
-        public int Id { get; } = id;                                                    // Уникальный идентификатор счета в БД
-        public int ClientId { get; } = clientId;                                        // ID владельца счета (физического или юридического лица)
-        public string NameTarget { get; } = $"Расчетный счет #{accountNumber}";         // Имя для target
-        public string NameSource { get; } = $"Расчетный счет #{accountNumber}";         // Имя для source
-        public string AccountNumber { get; } = accountNumber;                           // Номер расчетного счета (20 цифр)
-        public string Bic { get; } = bic;                                               // БИК (Банковский идентификационный код) банка, в котором открыт этот счет (9 цифр)
-        public string CorAccount { get; } = corAccount;                                 // Корреспондентский счет банка (20 цифр)
-        public decimal Balance { get; set; } = balance;                                 // Текущий доступный остаток реальных денег на счете
-        public Currency Currency { get; set; } = (Currency)currency;                    // Валюта счета
-        public decimal FrozenBalance { get; set; } = frozenBalance;                     // Заблокированный или «замороженный» баланс
-        public CardStatus Status { get; set; } = (CardStatus)status;                    // Состояние счета
-        public string Reason { get; set; } = reason;                                    // Причина статуса
-        public DateTime OpenedAt { get; } = openedAt;                                   // Дата открытия счета
-        public DateTime ClosedAt { get; } = closeAt;                                    // Дата закрытия счета
+        public int Id { get; } = id;                                                                 // Уникальный идентификатор счета в БД
+        public int ClientId { get; } = clientId;                                                      // ID владельца счета (физического или юридического лица)
+        public string NameTarget { get; } = $"Расчетный счет #{accountNumber.Substring(12)}";         // Имя для target
+        public string NameSource { get; } = $"Расчетный счет #{accountNumber.Substring(12)}";         // Имя для source
+        public string AccountNumber { get; } = accountNumber;                                         // Номер расчетного счета (20 цифр)
+        public string Bic { get; } = bic;                                                             // БИК (Банковский идентификационный код) банка, в котором открыт этот счет (9 цифр)
+        public string CorAccount { get; } = corAccount;                                               // Корреспондентский счет банка (20 цифр)
+        public decimal Balance { get; set; } = balance;                                               // Текущий доступный остаток реальных денег на счете
+        public Currency Currency { get; set; } = (Currency)currency;                                  // Валюта счета
+        public decimal FrozenBalance { get; set; } = frozenBalance;                                   // Заблокированный или «замороженный» баланс
+        public CardStatus Status { get; set; } = (CardStatus)status;                                  // Состояние счета
+        public string Reason { get; set; } = reason;                                                  // Причина статуса
+        public DateTime OpenedAt { get; } = openedAt;                                                 // Дата открытия счета
+        public DateTime ClosedAt { get; } = closeAt;                                                  // Дата закрытия счета
 
         public bool IsCashbackAllowed { get; } = (isCashbackAllowed == 1);
 

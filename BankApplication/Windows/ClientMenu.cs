@@ -25,41 +25,9 @@ namespace BankApplication
             DoubleBuffered = true;
 
             currentClient = Session.CurrentClient;
-
-            PanelCards.Controls.Clear();
-
-            int y_card = 10;
-            int y_payment = 10;
-            foreach (IBankCard card in currentClient.Cards)
-            {
-                CardItem item = new(card);
-
-                PanelCards.Controls.Add(item);
-                item.Location = new Point((PanelCards.Width - item.Width) / 2, y_card);
-
-                item.OnReplenishButton += OpenReplenishWindow;
-                item.OnPayButton += OpenPayhWindow;
-                item.OnTransferButton += OpenTransferhWindow;
-
-                y_card += item.Height + 30;
-            }
-
-            foreach (PaymentAccount paymant in currentClient.PaymentAccounts)
-            {
-                CardItem item = new(paymant);
-
-                PanelPayment.Controls.Add(item);
-                item.Location = new Point((PanelCards.Width - item.Width) / 2, y_payment);
-
-                item.OnReplenishButton += OpenReplenishWindow;
-                item.OnPayButton += OpenPayhWindow;
-                item.OnTransferButton += OpenTransferhWindow;
-
-                y_payment += item.Height + 30;
-            }
         }
 
-
+        #region Функции для делегатов
         private void OpenReplenishWindow(ITarget currentTarget)
         {
             WindowReplenish wr = new(currentTarget);
@@ -85,7 +53,59 @@ namespace BankApplication
 
             UpdateList();
         }
+        #endregion
 
+        #region Мои карты
+        private void MyCardsButton_Click(object sender, EventArgs e)
+        {
+            PanelPayment.Visible = false;
+            PanelPayment.Controls.Clear();
+
+            int y_card = 10;
+
+            foreach (IBankCard card in currentClient.Cards)
+            {
+                CardItem item = new(card);
+
+                PanelCards.Controls.Add(item);
+                item.Location = new Point((PanelCards.Width - item.Width) / 2, y_card);
+
+                item.OnReplenishButton += OpenReplenishWindow;
+                item.OnPayButton += OpenPayhWindow;
+                item.OnTransferButton += OpenTransferhWindow;
+
+                y_card += item.Height + 30;
+            }
+
+            PanelCards.Visible = true;
+        }
+        #endregion
+
+        #region Мои личные счета
+        private void MyPaymentAccountButton_Click(object sender, EventArgs e)
+        {
+            PanelCards.Visible = false;
+            PanelCards.Controls.Clear();
+
+            int y_payment = 10;
+            
+            foreach (PaymentAccount paymant in currentClient.PaymentAccounts)
+            {
+                CardItem item = new(paymant);
+
+                PanelPayment.Controls.Add(item);
+                item.Location = new Point((PanelCards.Width - item.Width) / 2, y_payment);                
+
+                item.OnReplenishButton += OpenReplenishWindow;
+                item.OnPayButton += OpenPayhWindow;
+                item.OnTransferButton += OpenTransferhWindow;
+
+                y_payment += item.Height + 30;
+            }
+
+            PanelPayment.Visible = true;
+        }
+        #endregion
 
         //---------------------[Кнопка "Закрыть форму"]-----------------------//
         private void CloseButton_Click(object sender, EventArgs e)
@@ -120,14 +140,6 @@ namespace BankApplication
             notification.ShowDialog();
         }
         #endregion
-
-        //----------------------------[Кнопка "Контроль"]-------------------------------//
-        private void dataClient_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show($"{currentClient.Id}\n{currentClient.ClientType}\n{currentClient.Login}\n{currentClient.Password}\n{currentClient.Name1}\n" +
-                            $"{currentClient.Name2}\n{currentClient.Name3}\n{currentClient.DateBirth}\n{currentClient.NumberPhone}\n" +
-                            $"{currentClient.Mail}\n{currentClient.CreateAt}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
 
         #region Обновление спика карт / счетов UpdateList()
         private void UpdateList()
@@ -164,6 +176,7 @@ namespace BankApplication
                 y_payment += item.Height + 30;
             }
         }
+
         #endregion
     }
 }

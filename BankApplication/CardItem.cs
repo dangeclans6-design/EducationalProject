@@ -20,7 +20,7 @@ namespace BankApplication
 
             if (currentTraget is IBankCard card)
             {
-                NameTarget.Text = card.Name;
+                NameTarget.Text = "Карта";
                 NumberTarget.Text = $"Номер: {card.CardNumber}";
                 BalanceTarget.Text = $"{card.Balance} ₽";
                 StatusTarget.Text = $"{card.Status}";
@@ -31,7 +31,7 @@ namespace BankApplication
             }
             if (currentTraget is PaymentAccount payment)
             {
-                NameTarget.Text = payment.NameTarget;
+                NameTarget.Text = "Расчетный счет";
                 NumberTarget.Text = $"Номер: {payment.AccountNumber}";
                 BalanceTarget.Text = $"{payment.Balance} ₽";
                 StatusTarget.Text = $"{payment.Status}";
@@ -46,6 +46,7 @@ namespace BankApplication
         public event Action<ITarget> OnReplenishButton;
         public event Action<ISource> OnPayButton;
         public event Action<ITransferable> OnTransferButton;
+        public event Action<ISource> OnRequisitesButton;
         #endregion
 
         private void ReplenishButton_Click(object sender, EventArgs e)
@@ -93,6 +94,22 @@ namespace BankApplication
                 if (payment.Status != CardStatus.Active) MessageBox.Show($"Счет на данный момент недоступен. Причина: {payment.Reason}.",
                                                                          "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else OnTransferButton?.Invoke(payment);
+            }
+        }
+
+        private void RequisitesButton_Click(object sender, EventArgs e)
+        {
+            if (currentTarget is IBankCard card)
+            {
+                if (card.Status != CardStatus.Active) MessageBox.Show($"Карта на данный момент недоступна. Причина: {card.Reason}.",
+                                                                      "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else OnRequisitesButton?.Invoke(card);
+            }
+            else if (currentTarget is PaymentAccount payment)
+            {
+                if (payment.Status != CardStatus.Active) MessageBox.Show($"Счет на данный момент недоступен. Причина: {payment.Reason}.",
+                                                                         "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else OnRequisitesButton?.Invoke(payment);
             }
         }
     }

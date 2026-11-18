@@ -41,11 +41,11 @@
             UpdatePageClientMenu = new ReaLTaiizor.Controls.CyberButton();
             OpenRequestButton = new ReaLTaiizor.Controls.CyberButton();
             cyberButton2 = new ReaLTaiizor.Controls.CyberButton();
-            dataClient = new ReaLTaiizor.Controls.CyberButton();
             PanelCards = new ReaLTaiizor.Controls.Panel();
-            bigLabel1 = new ReaLTaiizor.Controls.BigLabel();
-            bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
             PanelPayment = new ReaLTaiizor.Controls.Panel();
+            MyCardsButton = new ReaLTaiizor.Controls.CyberButton();
+            MyPaymentAccountButton = new ReaLTaiizor.Controls.CyberButton();
+            spaceSeparatorHorizontal1 = new ReaLTaiizor.Controls.SpaceSeparatorHorizontal();
             SuspendLayout();
             // 
             // bigLabel3
@@ -54,7 +54,7 @@
             bigLabel3.BackColor = System.Drawing.Color.Transparent;
             bigLabel3.Font = new System.Drawing.Font("Segoe UI", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
             bigLabel3.ForeColor = System.Drawing.Color.Azure;
-            bigLabel3.Location = new System.Drawing.Point(471, 10);
+            bigLabel3.Location = new System.Drawing.Point(347, -3);
             bigLabel3.Name = "bigLabel3";
             bigLabel3.Size = new System.Drawing.Size(403, 65);
             bigLabel3.TabIndex = 12;
@@ -69,7 +69,7 @@
             CloseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             CloseButton.InactiveColorA = System.Drawing.Color.FromArgb(253, 252, 252);
             CloseButton.InactiveColorB = System.Drawing.Color.FromArgb(239, 237, 236);
-            CloseButton.Location = new System.Drawing.Point(1387, 10);
+            CloseButton.Location = new System.Drawing.Point(844, 10);
             CloseButton.Name = "CloseButton";
             CloseButton.PressedColorA = System.Drawing.Color.FromArgb(226, 226, 226);
             CloseButton.PressedColorB = System.Drawing.Color.FromArgb(237, 237, 237);
@@ -359,12 +359,12 @@
             UpdatePageClientMenu.Lighting = false;
             UpdatePageClientMenu.LinearGradient_Background = false;
             UpdatePageClientMenu.LinearGradientPen = false;
-            UpdatePageClientMenu.Location = new System.Drawing.Point(1236, 10);
+            UpdatePageClientMenu.Location = new System.Drawing.Point(757, 10);
             UpdatePageClientMenu.Name = "UpdatePageClientMenu";
             UpdatePageClientMenu.PenWidth = 15;
             UpdatePageClientMenu.Rounding = true;
             UpdatePageClientMenu.RoundingInt = 20;
-            UpdatePageClientMenu.Size = new System.Drawing.Size(130, 25);
+            UpdatePageClientMenu.Size = new System.Drawing.Size(81, 25);
             UpdatePageClientMenu.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             UpdatePageClientMenu.TabIndex = 40;
             UpdatePageClientMenu.Tag = "Cyber1";
@@ -454,111 +454,140 @@
             cyberButton2.Timer_Effect_1 = 5;
             cyberButton2.Timer_RGB = 300;
             // 
-            // dataClient
-            // 
-            dataClient.Alpha = 20;
-            dataClient.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
-            dataClient.BackColor = System.Drawing.Color.Transparent;
-            dataClient.Background = true;
-            dataClient.Background_WidthPen = 4F;
-            dataClient.BackgroundPen = true;
-            dataClient.ColorBackground = System.Drawing.Color.Transparent;
-            dataClient.ColorBackground_1 = System.Drawing.Color.White;
-            dataClient.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            dataClient.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            dataClient.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            dataClient.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            dataClient.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            dataClient.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            dataClient.Effect_1 = true;
-            dataClient.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            dataClient.Effect_1_Transparency = 25;
-            dataClient.Effect_2 = true;
-            dataClient.Effect_2_ColorBackground = System.Drawing.Color.White;
-            dataClient.Effect_2_Transparency = 20;
-            dataClient.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            dataClient.ForeColor = System.Drawing.Color.Linen;
-            dataClient.Lighting = false;
-            dataClient.LinearGradient_Background = false;
-            dataClient.LinearGradientPen = false;
-            dataClient.Location = new System.Drawing.Point(1067, 10);
-            dataClient.Name = "dataClient";
-            dataClient.PenWidth = 15;
-            dataClient.Rounding = true;
-            dataClient.RoundingInt = 20;
-            dataClient.Size = new System.Drawing.Size(152, 54);
-            dataClient.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            dataClient.TabIndex = 42;
-            dataClient.Tag = "Cyber1";
-            dataClient.TextButton = "Контроль";
-            dataClient.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            dataClient.Timer_Effect_1 = 5;
-            dataClient.Timer_RGB = 300;
-            dataClient.Click += dataClient_Click;
-            // 
             // PanelCards
             // 
             PanelCards.AutoScroll = true;
-            PanelCards.BackColor = System.Drawing.Color.Gray;
+            PanelCards.BackColor = System.Drawing.Color.FromArgb(30, 30, 30);
             PanelCards.EdgeColor = System.Drawing.Color.FromArgb(30, 30, 30);
-            PanelCards.Location = new System.Drawing.Point(282, 148);
+            PanelCards.Location = new System.Drawing.Point(282, 193);
             PanelCards.Name = "PanelCards";
             PanelCards.Padding = new System.Windows.Forms.Padding(5);
-            PanelCards.Size = new System.Drawing.Size(531, 420);
+            PanelCards.Size = new System.Drawing.Size(556, 375);
             PanelCards.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             PanelCards.TabIndex = 45;
             PanelCards.Tag = "30; 30; 30";
             PanelCards.Text = "panel2";
             // 
-            // bigLabel1
-            // 
-            bigLabel1.AutoSize = true;
-            bigLabel1.BackColor = System.Drawing.Color.Transparent;
-            bigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel1.ForeColor = System.Drawing.Color.Azure;
-            bigLabel1.Location = new System.Drawing.Point(388, 91);
-            bigLabel1.Name = "bigLabel1";
-            bigLabel1.Size = new System.Drawing.Size(239, 45);
-            bigLabel1.TabIndex = 46;
-            bigLabel1.Text = "Личные карты";
-            // 
-            // bigLabel2
-            // 
-            bigLabel2.AutoSize = true;
-            bigLabel2.BackColor = System.Drawing.Color.Transparent;
-            bigLabel2.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel2.ForeColor = System.Drawing.Color.Azure;
-            bigLabel2.Location = new System.Drawing.Point(1006, 91);
-            bigLabel2.Name = "bigLabel2";
-            bigLabel2.Size = new System.Drawing.Size(231, 45);
-            bigLabel2.TabIndex = 47;
-            bigLabel2.Text = "Личные счета";
-            // 
             // PanelPayment
             // 
             PanelPayment.AutoScroll = true;
-            PanelPayment.BackColor = System.Drawing.Color.Gray;
+            PanelPayment.BackColor = System.Drawing.Color.FromArgb(30, 30, 30);
             PanelPayment.EdgeColor = System.Drawing.Color.FromArgb(30, 30, 30);
-            PanelPayment.Location = new System.Drawing.Point(849, 148);
+            PanelPayment.Location = new System.Drawing.Point(282, 193);
             PanelPayment.Name = "PanelPayment";
             PanelPayment.Padding = new System.Windows.Forms.Padding(5);
-            PanelPayment.Size = new System.Drawing.Size(552, 420);
+            PanelPayment.Size = new System.Drawing.Size(556, 375);
             PanelPayment.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             PanelPayment.TabIndex = 46;
             PanelPayment.Tag = "30; 30; 30";
             PanelPayment.Text = "panel2";
+            // 
+            // MyCardsButton
+            // 
+            MyCardsButton.Alpha = 20;
+            MyCardsButton.BackColor = System.Drawing.Color.Transparent;
+            MyCardsButton.Background = true;
+            MyCardsButton.Background_WidthPen = 4F;
+            MyCardsButton.BackgroundPen = true;
+            MyCardsButton.ColorBackground = System.Drawing.Color.Transparent;
+            MyCardsButton.ColorBackground_1 = System.Drawing.Color.White;
+            MyCardsButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            MyCardsButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
+            MyCardsButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
+            MyCardsButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
+            MyCardsButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            MyCardsButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
+            MyCardsButton.Effect_1 = true;
+            MyCardsButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
+            MyCardsButton.Effect_1_Transparency = 25;
+            MyCardsButton.Effect_2 = true;
+            MyCardsButton.Effect_2_ColorBackground = System.Drawing.Color.White;
+            MyCardsButton.Effect_2_Transparency = 20;
+            MyCardsButton.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold);
+            MyCardsButton.ForeColor = System.Drawing.Color.Tan;
+            MyCardsButton.Lighting = false;
+            MyCardsButton.LinearGradient_Background = false;
+            MyCardsButton.LinearGradientPen = false;
+            MyCardsButton.Location = new System.Drawing.Point(342, 91);
+            MyCardsButton.Name = "MyCardsButton";
+            MyCardsButton.PenWidth = 15;
+            MyCardsButton.Rounding = true;
+            MyCardsButton.RoundingInt = 20;
+            MyCardsButton.Size = new System.Drawing.Size(177, 65);
+            MyCardsButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            MyCardsButton.TabIndex = 47;
+            MyCardsButton.Tag = "Cyber";
+            MyCardsButton.TextButton = "Личные карты";
+            MyCardsButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            MyCardsButton.Timer_Effect_1 = 5;
+            MyCardsButton.Timer_RGB = 300;
+            MyCardsButton.Click += MyCardsButton_Click;
+            // 
+            // MyPaymentAccountButton
+            // 
+            MyPaymentAccountButton.Alpha = 20;
+            MyPaymentAccountButton.BackColor = System.Drawing.Color.Transparent;
+            MyPaymentAccountButton.Background = true;
+            MyPaymentAccountButton.Background_WidthPen = 4F;
+            MyPaymentAccountButton.BackgroundPen = true;
+            MyPaymentAccountButton.ColorBackground = System.Drawing.Color.Transparent;
+            MyPaymentAccountButton.ColorBackground_1 = System.Drawing.Color.White;
+            MyPaymentAccountButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            MyPaymentAccountButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
+            MyPaymentAccountButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
+            MyPaymentAccountButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
+            MyPaymentAccountButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            MyPaymentAccountButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
+            MyPaymentAccountButton.Effect_1 = true;
+            MyPaymentAccountButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
+            MyPaymentAccountButton.Effect_1_Transparency = 25;
+            MyPaymentAccountButton.Effect_2 = true;
+            MyPaymentAccountButton.Effect_2_ColorBackground = System.Drawing.Color.White;
+            MyPaymentAccountButton.Effect_2_Transparency = 20;
+            MyPaymentAccountButton.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold);
+            MyPaymentAccountButton.ForeColor = System.Drawing.Color.Tan;
+            MyPaymentAccountButton.Lighting = false;
+            MyPaymentAccountButton.LinearGradient_Background = false;
+            MyPaymentAccountButton.LinearGradientPen = false;
+            MyPaymentAccountButton.Location = new System.Drawing.Point(599, 91);
+            MyPaymentAccountButton.Name = "MyPaymentAccountButton";
+            MyPaymentAccountButton.PenWidth = 15;
+            MyPaymentAccountButton.Rounding = true;
+            MyPaymentAccountButton.RoundingInt = 20;
+            MyPaymentAccountButton.Size = new System.Drawing.Size(177, 65);
+            MyPaymentAccountButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            MyPaymentAccountButton.TabIndex = 48;
+            MyPaymentAccountButton.Tag = "Cyber";
+            MyPaymentAccountButton.TextButton = "Личные счета";
+            MyPaymentAccountButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            MyPaymentAccountButton.Timer_Effect_1 = 5;
+            MyPaymentAccountButton.Timer_RGB = 300;
+            MyPaymentAccountButton.Click += MyPaymentAccountButton_Click;
+            // 
+            // spaceSeparatorHorizontal1
+            // 
+            spaceSeparatorHorizontal1.Customization = "Kioq/yoqKv8jIyP/Kioq/w==";
+            spaceSeparatorHorizontal1.Font = new System.Drawing.Font("Verdana", 8F);
+            spaceSeparatorHorizontal1.Image = null;
+            spaceSeparatorHorizontal1.Location = new System.Drawing.Point(311, 173);
+            spaceSeparatorHorizontal1.Name = "spaceSeparatorHorizontal1";
+            spaceSeparatorHorizontal1.NoRounding = false;
+            spaceSeparatorHorizontal1.Size = new System.Drawing.Size(500, 4);
+            spaceSeparatorHorizontal1.TabIndex = 49;
+            spaceSeparatorHorizontal1.Text = "spaceSeparatorHorizontal1";
+            spaceSeparatorHorizontal1.Transparent = false;
             // 
             // ClientMenu
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
-            ClientSize = new System.Drawing.Size(1416, 598);
+            ClientSize = new System.Drawing.Size(875, 586);
+            Controls.Add(spaceSeparatorHorizontal1);
+            Controls.Add(MyPaymentAccountButton);
+            Controls.Add(MyCardsButton);
             Controls.Add(PanelPayment);
-            Controls.Add(bigLabel2);
-            Controls.Add(bigLabel1);
             Controls.Add(PanelCards);
-            Controls.Add(dataClient);
             Controls.Add(cyberButton2);
             Controls.Add(OpenRequestButton);
             Controls.Add(UpdatePageClientMenu);
@@ -596,10 +625,10 @@
         private ReaLTaiizor.Controls.CyberButton UpdatePageClientMenu;
         private ReaLTaiizor.Controls.CyberButton OpenRequestButton;
         private ReaLTaiizor.Controls.CyberButton cyberButton2;
-        private ReaLTaiizor.Controls.CyberButton dataClient;
         private ReaLTaiizor.Controls.Panel PanelCards;
-        private ReaLTaiizor.Controls.BigLabel bigLabel1;
-        private ReaLTaiizor.Controls.BigLabel bigLabel2;
         private ReaLTaiizor.Controls.Panel PanelPayment;
+        private ReaLTaiizor.Controls.CyberButton MyCardsButton;
+        private ReaLTaiizor.Controls.CyberButton MyPaymentAccountButton;
+        private ReaLTaiizor.Controls.SpaceSeparatorHorizontal spaceSeparatorHorizontal1;
     }
 }
