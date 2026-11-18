@@ -22,7 +22,6 @@ namespace BankApplication
 
             MainLabel.Text = source switch
             {
-                IBankCard card => $"Реквизиты карты: {card.Name}",
                 PaymentAccount payment => $"Реквизиты счета: {payment.NameSource}",
                 _ => "Реквизиты"
             };

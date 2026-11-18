@@ -25,35 +25,7 @@ namespace BankApplication
             DoubleBuffered = true;
 
             currentClient = Session.CurrentClient;
-        }
-
-        #region Функции для делегатов
-        private void OpenReplenishWindow(ITarget currentTarget)
-        {
-            WindowReplenish wr = new(currentTarget);
-
-            wr.ShowDialog();
-
-            UpdateList();
-        }
-        private void OpenPayhWindow(ISource currentSource)
-        {
-            WindowPay wr = new(currentSource);
-
-            wr.ShowDialog();
-
-            UpdateList();
-        }
-
-        private void OpenTransferhWindow(ITransferable currentSource)
-        {
-            TransferWindow wr = new(currentSource);
-
-            wr.ShowDialog();
-
-            UpdateList();
-        }
-        #endregion
+        }        
 
         #region Мои карты
         private void MyCardsButton_Click(object sender, EventArgs e)
@@ -99,11 +71,41 @@ namespace BankApplication
                 item.OnReplenishButton += OpenReplenishWindow;
                 item.OnPayButton += OpenPayhWindow;
                 item.OnTransferButton += OpenTransferhWindow;
+                item.OnRequisitesButton += OpenRequisieshWindow;
 
                 y_payment += item.Height + 30;
             }
 
             PanelPayment.Visible = true;
+        }
+        #endregion
+
+        #region Функции для делегатов
+        private void OpenReplenishWindow(ITarget currentTarget)
+        {
+            WindowReplenish wr = new(currentTarget);
+            wr.ShowDialog();
+            UpdateList();
+        }
+        private void OpenPayhWindow(ISource currentSource)
+        {
+            WindowPay wr = new(currentSource);
+            wr.ShowDialog();
+            UpdateList();
+        }
+
+        private void OpenTransferhWindow(ITransferable currentSource)
+        {
+            TransferWindow wr = new(currentSource);
+            wr.ShowDialog();
+            UpdateList();
+        }
+
+        private void OpenRequisieshWindow(ISource currentSource)
+        {
+            Requisites wr = new(currentSource);
+            wr.ShowDialog();
+            UpdateList();
         }
         #endregion
 
@@ -172,6 +174,7 @@ namespace BankApplication
                 item.OnReplenishButton += OpenReplenishWindow;
                 item.OnPayButton += OpenPayhWindow;
                 item.OnTransferButton += OpenTransferhWindow;
+                item.OnRequisitesButton += OpenRequisieshWindow;
 
                 y_payment += item.Height + 30;
             }

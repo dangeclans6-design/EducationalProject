@@ -527,7 +527,7 @@ namespace BankApplication
     public class PaymentAccount(int id, int clientId, string accountNumber, string bic, string corAccount, decimal balance, int currency, decimal frozenBalance, int status, string reason,
                                 DateTime openedAt, DateTime closeAt, int isCashbackAllowed) : ITarget, ITransferable
     {
-        public int Id { get; } = id;                                                                 // Уникальный идентификатор счета в БД
+        public int Id { get; } = id;                                                                  // Уникальный идентификатор счета в БД
         public int ClientId { get; } = clientId;                                                      // ID владельца счета (физического или юридического лица)
         public string NameTarget { get; } = $"Расчетный счет *{accountNumber.Substring(16)}";         // Имя для target
         public string NameSource { get; } = $"Расчетный счет *{accountNumber.Substring(16)}";         // Имя для source
