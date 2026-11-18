@@ -29,16 +29,11 @@
         private void InitializeComponent()
         {
             NameTarget = new ReaLTaiizor.Controls.BigLabel();
-            panel1 = new ReaLTaiizor.Controls.Panel();
+            MainPanel = new ReaLTaiizor.Controls.Panel();
             StatusTarget = new ReaLTaiizor.Controls.BigLabel();
-            BlockButton = new ReaLTaiizor.Controls.Button();
-            RequisitesButton = new ReaLTaiizor.Controls.Button();
-            TransferMoneyButton = new ReaLTaiizor.Controls.Button();
-            PayButton = new ReaLTaiizor.Controls.Button();
-            ReplenishButton = new ReaLTaiizor.Controls.Button();
             BalanceTarget = new ReaLTaiizor.Controls.BigLabel();
             NumberTarget = new ReaLTaiizor.Controls.BigLabel();
-            panel1.SuspendLayout();
+            MainPanel.SuspendLayout();
             SuspendLayout();
             // 
             // NameTarget
@@ -54,27 +49,22 @@
             NameTarget.TabIndex = 0;
             NameTarget.Text = "Карта";
             // 
-            // panel1
+            // MainPanel
             // 
-            panel1.BackColor = System.Drawing.SystemColors.WindowFrame;
-            panel1.Controls.Add(StatusTarget);
-            panel1.Controls.Add(BlockButton);
-            panel1.Controls.Add(RequisitesButton);
-            panel1.Controls.Add(TransferMoneyButton);
-            panel1.Controls.Add(PayButton);
-            panel1.Controls.Add(ReplenishButton);
-            panel1.Controls.Add(BalanceTarget);
-            panel1.Controls.Add(NumberTarget);
-            panel1.Controls.Add(NameTarget);
-            panel1.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
-            panel1.Location = new System.Drawing.Point(-6, -4);
-            panel1.Margin = new System.Windows.Forms.Padding(2);
-            panel1.Name = "panel1";
-            panel1.Padding = new System.Windows.Forms.Padding(4);
-            panel1.Size = new System.Drawing.Size(481, 124);
-            panel1.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            panel1.TabIndex = 1;
-            panel1.Text = "panel1";
+            MainPanel.BackColor = System.Drawing.SystemColors.WindowFrame;
+            MainPanel.Controls.Add(StatusTarget);
+            MainPanel.Controls.Add(BalanceTarget);
+            MainPanel.Controls.Add(NumberTarget);
+            MainPanel.Controls.Add(NameTarget);
+            MainPanel.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
+            MainPanel.Location = new System.Drawing.Point(0, 0);
+            MainPanel.Margin = new System.Windows.Forms.Padding(2);
+            MainPanel.Name = "MainPanel";
+            MainPanel.Padding = new System.Windows.Forms.Padding(4);
+            MainPanel.Size = new System.Drawing.Size(461, 120);
+            MainPanel.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            MainPanel.TabIndex = 1;
+            MainPanel.Text = "panel1";
             // 
             // StatusTarget
             // 
@@ -88,110 +78,6 @@
             StatusTarget.Size = new System.Drawing.Size(68, 25);
             StatusTarget.TabIndex = 8;
             StatusTarget.Text = "Статус";
-            // 
-            // BlockButton
-            // 
-            BlockButton.BackColor = System.Drawing.Color.DimGray;
-            BlockButton.BorderColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            BlockButton.EnteredBorderColor = System.Drawing.Color.Maroon;
-            BlockButton.EnteredColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            BlockButton.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            BlockButton.Image = null;
-            BlockButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            BlockButton.InactiveColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            BlockButton.Location = new System.Drawing.Point(352, 88);
-            BlockButton.Margin = new System.Windows.Forms.Padding(2);
-            BlockButton.Name = "BlockButton";
-            BlockButton.PressedBorderColor = System.Drawing.Color.Maroon;
-            BlockButton.PressedColor = System.Drawing.Color.Maroon;
-            BlockButton.Size = new System.Drawing.Size(103, 30);
-            BlockButton.TabIndex = 7;
-            BlockButton.Text = "Заблокировать";
-            BlockButton.TextAlignment = System.Drawing.StringAlignment.Center;
-            // 
-            // RequisitesButton
-            // 
-            RequisitesButton.BackColor = System.Drawing.Color.DimGray;
-            RequisitesButton.BorderColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            RequisitesButton.EnteredBorderColor = System.Drawing.Color.LightGray;
-            RequisitesButton.EnteredColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            RequisitesButton.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            RequisitesButton.Image = null;
-            RequisitesButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            RequisitesButton.InactiveColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            RequisitesButton.Location = new System.Drawing.Point(264, 88);
-            RequisitesButton.Margin = new System.Windows.Forms.Padding(2);
-            RequisitesButton.Name = "RequisitesButton";
-            RequisitesButton.PressedBorderColor = System.Drawing.Color.LightGray;
-            RequisitesButton.PressedColor = System.Drawing.Color.LightGray;
-            RequisitesButton.Size = new System.Drawing.Size(84, 30);
-            RequisitesButton.TabIndex = 6;
-            RequisitesButton.Text = "Реквизиты";
-            RequisitesButton.TextAlignment = System.Drawing.StringAlignment.Center;
-            RequisitesButton.Click += RequisitesButton_Click;
-            // 
-            // TransferMoneyButton
-            // 
-            TransferMoneyButton.BackColor = System.Drawing.Color.DimGray;
-            TransferMoneyButton.BorderColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            TransferMoneyButton.EnteredBorderColor = System.Drawing.Color.Tan;
-            TransferMoneyButton.EnteredColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            TransferMoneyButton.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            TransferMoneyButton.Image = null;
-            TransferMoneyButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            TransferMoneyButton.InactiveColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            TransferMoneyButton.Location = new System.Drawing.Point(178, 88);
-            TransferMoneyButton.Margin = new System.Windows.Forms.Padding(2);
-            TransferMoneyButton.Name = "TransferMoneyButton";
-            TransferMoneyButton.PressedBorderColor = System.Drawing.Color.Tan;
-            TransferMoneyButton.PressedColor = System.Drawing.Color.Tan;
-            TransferMoneyButton.Size = new System.Drawing.Size(82, 30);
-            TransferMoneyButton.TabIndex = 5;
-            TransferMoneyButton.Text = "Перевести";
-            TransferMoneyButton.TextAlignment = System.Drawing.StringAlignment.Center;
-            TransferMoneyButton.Click += TransferMoneyButton_Click;
-            // 
-            // PayButton
-            // 
-            PayButton.BackColor = System.Drawing.Color.DimGray;
-            PayButton.BorderColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            PayButton.EnteredBorderColor = System.Drawing.Color.Tan;
-            PayButton.EnteredColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            PayButton.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            PayButton.Image = null;
-            PayButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            PayButton.InactiveColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            PayButton.Location = new System.Drawing.Point(102, 88);
-            PayButton.Margin = new System.Windows.Forms.Padding(2);
-            PayButton.Name = "PayButton";
-            PayButton.PressedBorderColor = System.Drawing.Color.Tan;
-            PayButton.PressedColor = System.Drawing.Color.Tan;
-            PayButton.Size = new System.Drawing.Size(72, 30);
-            PayButton.TabIndex = 4;
-            PayButton.Text = "Оплатить";
-            PayButton.TextAlignment = System.Drawing.StringAlignment.Center;
-            PayButton.Click += PayButton_Click;
-            // 
-            // ReplenishButton
-            // 
-            ReplenishButton.BackColor = System.Drawing.Color.DimGray;
-            ReplenishButton.BorderColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            ReplenishButton.EnteredBorderColor = System.Drawing.Color.Tan;
-            ReplenishButton.EnteredColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            ReplenishButton.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            ReplenishButton.Image = null;
-            ReplenishButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            ReplenishButton.InactiveColor = System.Drawing.Color.FromArgb(32, 34, 37);
-            ReplenishButton.Location = new System.Drawing.Point(15, 88);
-            ReplenishButton.Margin = new System.Windows.Forms.Padding(2);
-            ReplenishButton.Name = "ReplenishButton";
-            ReplenishButton.PressedBorderColor = System.Drawing.Color.Tan;
-            ReplenishButton.PressedColor = System.Drawing.Color.Tan;
-            ReplenishButton.Size = new System.Drawing.Size(83, 30);
-            ReplenishButton.TabIndex = 3;
-            ReplenishButton.Text = "Пополнить";
-            ReplenishButton.TextAlignment = System.Drawing.StringAlignment.Center;
-            ReplenishButton.Click += ReplenishButton_Click;
             // 
             // BalanceTarget
             // 
@@ -223,26 +109,21 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            Controls.Add(panel1);
+            Controls.Add(MainPanel);
             Margin = new System.Windows.Forms.Padding(2);
             Name = "CardItem";
             Size = new System.Drawing.Size(461, 120);
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
+            MainPanel.ResumeLayout(false);
+            MainPanel.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
         private ReaLTaiizor.Controls.BigLabel BalanceTarget;
-        private ReaLTaiizor.Controls.Panel panel1;
+        private ReaLTaiizor.Controls.Panel MainPanel;
         private ReaLTaiizor.Controls.BigLabel NumberTarget;
         private ReaLTaiizor.Controls.BigLabel NameTarget;
-        private ReaLTaiizor.Controls.Button BlockButton;
-        private ReaLTaiizor.Controls.Button RequisitesButton;
-        private ReaLTaiizor.Controls.Button TransferMoneyButton;
-        private ReaLTaiizor.Controls.Button ReplenishButton;
-        private ReaLTaiizor.Controls.Button PayButton;
         private ReaLTaiizor.Controls.BigLabel StatusTarget;
     }
 }

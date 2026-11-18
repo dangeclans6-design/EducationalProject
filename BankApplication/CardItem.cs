@@ -6,19 +6,28 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using ReaLTaiizor.Controls;
 
 namespace BankApplication
 {
     public partial class CardItem : UserControl
     {
-        private readonly ITarget currentTarget;
-        public CardItem(ITarget currentTraget)
+        private ITarget CurrentTarget { get; }
+        private List<string> NameButtonForCard { get; } = ["Пополнить", "Оплатить", "Перевести", "Заблокировать"];
+        private List<string> NameButtonForPayment { get; } = ["Пополнить", "Оплатить", "Перевести", "Реквизиты","Заблокировать"];
+
+
+        public CardItem(ITarget currentTarget)
         {
             InitializeComponent();
 
-            this.currentTarget = currentTraget;
+            CurrentTarget = currentTarget;
 
-            if (currentTraget is IBankCard card)
+            int width = Size.Width;
+            int height = Size.Height;            
+
+            #region Отрисовка кнопок для карт
+            if (currentTarget is IBankCard card)
             {
                 NameTarget.Text = "Карта";
                 NumberTarget.Text = $"Номер: {card.CardNumber}";
@@ -28,8 +37,53 @@ namespace BankApplication
                 if (card.Status == CardStatus.Active) StatusTarget.ForeColor = Color.Green;
                 if (card.Status == CardStatus.Frozen) StatusTarget.ForeColor = Color.Tan;
                 if (card.Status == CardStatus.Closed) StatusTarget.ForeColor = Color.Red;
+
+                int walk = 10;
+                foreach (string nameButton in NameButtonForCard)
+                {
+                    var button = new ReaLTaiizor.Controls.Button()
+                    {
+                        BackColor = Color.Transparent,
+                        BorderColor = Color.FromArgb(32, 34, 37),
+                        EnteredColor = Color.FromArgb(32, 34, 37),
+                        EnteredBorderColor = nameButton switch
+                        {
+                            "Заблокировать" => Color.Maroon,
+                            "Реквизиты" => Color.LightGray,
+                            _ => Color.Tan
+                        },
+                        PressedBorderColor = nameButton switch
+                        {
+                            "Заблокировать" => Color.Maroon,
+                            "Реквизиты" => Color.LightGray,
+                            _ => Color.Tan
+                        },
+                        PressedColor = nameButton switch
+                        {
+                            "Заблокировать" => Color.Maroon,
+                            "Реквизиты" => Color.LightGray,
+                            _ => Color.Tan
+                        },
+
+                        Size = new Size(103, 30),
+                        Text = nameButton,
+                        Font = new Font("Segoe UI", 10f),
+
+                        Tag = nameButton,
+                    };
+
+                    button.Location = new Point(walk, height - button.Size.Height - 10);
+                    button.Click += CardItemButton_Click;
+
+                    MainPanel.Controls.Add(button);
+                    walk += button.Size.Width + 10; // Шаг кнопки 
+                }
+
             }
-            if (currentTraget is PaymentAccount payment)
+            #endregion
+
+            #region Отрисовка кнопок для счетов
+            else if (currentTarget is PaymentAccount payment)
             {
                 NameTarget.Text = "Расчетный счет";
                 NumberTarget.Text = $"Номер: {payment.AccountNumber}";
@@ -39,7 +93,49 @@ namespace BankApplication
                 if (payment.Status == CardStatus.Active) StatusTarget.ForeColor = Color.Green;
                 if (payment.Status == CardStatus.Frozen) StatusTarget.ForeColor = Color.Tan;
                 if (payment.Status == CardStatus.Closed) StatusTarget.ForeColor = Color.Red;
+
+                int walk = 5;
+                foreach (string nameButton in NameButtonForPayment)
+                {
+                    var button = new ReaLTaiizor.Controls.Button()
+                    {
+                        BackColor = Color.Transparent,
+                        BorderColor = Color.FromArgb(32, 34, 37),
+                        EnteredColor = Color.FromArgb(32, 34, 37),
+                        EnteredBorderColor = nameButton switch
+                        {
+                            "Заблокировать" => Color.Maroon,
+                            "Реквизиты" => Color.LightGray,
+                            _ => Color.Tan
+                        },
+                        PressedBorderColor = nameButton switch
+                        {
+                            "Заблокировать" => Color.Maroon,
+                            "Реквизиты" => Color.LightGray,
+                            _ => Color.Tan
+                        },
+                        PressedColor = nameButton switch
+                        {
+                            "Заблокировать" => Color.Maroon,
+                            "Реквизиты" => Color.LightGray,
+                            _ => Color.Tan
+                        },
+
+                        Size = new Size(85, 30), // Размер кнопки
+                        Text = nameButton,
+                        Font = new Font("Segoe UI", 8f),
+
+                        Tag = nameButton,
+                    };
+
+                    button.Location = new Point(walk, height - button.Size.Height - 10);
+                    button.Click += CardItemButton_Click;
+
+                    MainPanel.Controls.Add(button);
+                    walk += button.Size.Width + 5; // Шаг кнопки 
+                }
             }
+            #endregion
         }
 
         #region Делегаты
@@ -49,67 +145,30 @@ namespace BankApplication
         public event Action<ISource> OnRequisitesButton;
         #endregion
 
-        private void ReplenishButton_Click(object sender, EventArgs e)
+        private void CardItemButton_Click(object sender, EventArgs e)
         {
-            if (currentTarget is IBankCard card)
-            {
-                if (card.Status != CardStatus.Active) MessageBox.Show($"Карта на данный момент недоступна. Причина: {card.Reason}.",
-                                                                      "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else OnReplenishButton?.Invoke(currentTarget);          // Безопасный (првоеряет на null) вызов делегата (вызов функции, которая на него подписана)
-            }
-            else if (currentTarget is PaymentAccount payment)
-            {
-                if (payment.Status != CardStatus.Active) MessageBox.Show($"Счет на данный момент недоступен. Причина: {payment.Reason}.",
-                                                                         "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else OnReplenishButton?.Invoke(currentTarget);          // Безопасный (првоеряет на null) вызов делегата (вызов функции, которая на него подписана)
-            }
+            var clickButton = (Control)sender;
+            var nameButton = (string)clickButton.Tag;
 
-        }
-        private void PayButton_Click(object sender, EventArgs e)
-        {
-            if (currentTarget is IBankCard card)
+            if (CurrentTarget is IBankCard card)
             {
-                if (card.Status != CardStatus.Active) MessageBox.Show($"Карта на данный момент недоступна. Причина: {card.Reason}.",
-                                                                      "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else OnPayButton?.Invoke(card);
-            }
-            else if (currentTarget is PaymentAccount payment)
-            {
-                if (payment.Status != CardStatus.Active) MessageBox.Show($"Счет на данный момент недоступен. Причина: {payment.Reason}.",
-                                                                         "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else OnPayButton?.Invoke(payment);
-            }
-        }
+                if (card.Status != CardStatus.Active) throw new Exception($"Карта на данный момент недоступна. Причина: {card.Reason}.");
 
-        private void TransferMoneyButton_Click(object sender, EventArgs e)
-        {
-            if (currentTarget is IBankCard card)
-            {
-                if (card.Status != CardStatus.Active) MessageBox.Show($"Карта на данный момент недоступна. Причина: {card.Reason}.",
-                                                                      "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else OnTransferButton?.Invoke(card);
-            }
-            else if (currentTarget is PaymentAccount payment)
-            {
-                if (payment.Status != CardStatus.Active) MessageBox.Show($"Счет на данный момент недоступен. Причина: {payment.Reason}.",
-                                                                         "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else OnTransferButton?.Invoke(payment);
-            }
-        }
+                if (nameButton == "Пополнить") OnReplenishButton?.Invoke(card);
+                else if (nameButton == "Оплатить") OnPayButton?.Invoke(card);
+                else if (nameButton == "Перевести") OnTransferButton?.Invoke(card);
+                else if (nameButton == "Заблокировать") MessageBox.Show("Пока пусто");
 
-        private void RequisitesButton_Click(object sender, EventArgs e)
-        {
-            if (currentTarget is IBankCard card)
-            {
-                if (card.Status != CardStatus.Active) MessageBox.Show($"Карта на данный момент недоступна. Причина: {card.Reason}.",
-                                                                      "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else OnRequisitesButton?.Invoke(card);
             }
-            else if (currentTarget is PaymentAccount payment)
+            else if (CurrentTarget is PaymentAccount payment)
             {
-                if (payment.Status != CardStatus.Active) MessageBox.Show($"Счет на данный момент недоступен. Причина: {payment.Reason}.",
-                                                                         "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else OnRequisitesButton?.Invoke(payment);
+                if (payment.Status != CardStatus.Active) throw new Exception($"Счет на данный момент недоступен. Причина: {payment.Reason}.");
+
+                if (nameButton == "Пополнить") OnReplenishButton?.Invoke(payment);
+                else if (nameButton == "Оплатить") OnPayButton?.Invoke(payment);
+                else if (nameButton == "Перевести") OnTransferButton?.Invoke(payment);
+                else if (nameButton == "Реквизиты") OnRequisitesButton?.Invoke(payment);
+                else if (nameButton == "Заблокировать") MessageBox.Show("Пока пусто");
             }
         }
     }

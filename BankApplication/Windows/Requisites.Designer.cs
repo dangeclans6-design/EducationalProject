@@ -32,8 +32,9 @@
             CloseButton = new ReaLTaiizor.Controls.DungeonButtonLeft();
             MainLabel = new ReaLTaiizor.Controls.BigLabel();
             bigLabel1 = new ReaLTaiizor.Controls.BigLabel();
-            panel2 = new ReaLTaiizor.Controls.Panel();
-            panel2.SuspendLayout();
+            RequisitesCard = new ReaLTaiizor.Controls.Panel();
+            bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
+            RequisitesCard.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
@@ -82,24 +83,37 @@
             bigLabel1.BackColor = System.Drawing.Color.Transparent;
             bigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
             bigLabel1.ForeColor = System.Drawing.Color.Tan;
-            bigLabel1.Location = new System.Drawing.Point(30, 25);
+            bigLabel1.Location = new System.Drawing.Point(1, 6);
             bigLabel1.Name = "bigLabel1";
-            bigLabel1.Size = new System.Drawing.Size(272, 32);
+            bigLabel1.Size = new System.Drawing.Size(91, 32);
             bigLabel1.TabIndex = 107;
-            bigLabel1.Text = "Выберите карту / счет:";
+            bigLabel1.Text = "Номер";
             // 
-            // panel2
+            // RequisitesCard
             // 
-            panel2.BackColor = System.Drawing.Color.FromArgb(39, 51, 63);
-            panel2.Controls.Add(bigLabel1);
-            panel2.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
-            panel2.Location = new System.Drawing.Point(57, 64);
-            panel2.Name = "panel2";
-            panel2.Padding = new System.Windows.Forms.Padding(5);
-            panel2.Size = new System.Drawing.Size(503, 371);
-            panel2.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            panel2.TabIndex = 108;
-            panel2.Text = "panel2";
+            RequisitesCard.BackColor = System.Drawing.Color.FromArgb(39, 51, 63);
+            RequisitesCard.Controls.Add(bigLabel2);
+            RequisitesCard.Controls.Add(bigLabel1);
+            RequisitesCard.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
+            RequisitesCard.Location = new System.Drawing.Point(57, 64);
+            RequisitesCard.Name = "RequisitesCard";
+            RequisitesCard.Padding = new System.Windows.Forms.Padding(5);
+            RequisitesCard.Size = new System.Drawing.Size(503, 371);
+            RequisitesCard.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            RequisitesCard.TabIndex = 108;
+            RequisitesCard.Text = "panel2";
+            // 
+            // bigLabel2
+            // 
+            bigLabel2.AutoSize = true;
+            bigLabel2.BackColor = System.Drawing.Color.Transparent;
+            bigLabel2.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            bigLabel2.ForeColor = System.Drawing.Color.Tan;
+            bigLabel2.Location = new System.Drawing.Point(206, 169);
+            bigLabel2.Name = "bigLabel2";
+            bigLabel2.Size = new System.Drawing.Size(91, 32);
+            bigLabel2.TabIndex = 108;
+            bigLabel2.Text = "Номер";
             // 
             // Requisites
             // 
@@ -107,7 +121,7 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
             ClientSize = new System.Drawing.Size(568, 450);
-            Controls.Add(panel2);
+            Controls.Add(RequisitesCard);
             Controls.Add(MainLabel);
             Controls.Add(CloseButton);
             Controls.Add(panel1);
@@ -117,8 +131,8 @@
             TextColor = System.Drawing.Color.White;
             ThemeName = "MetroDark";
             Load += Requisites_Load;
-            panel2.ResumeLayout(false);
-            panel2.PerformLayout();
+            RequisitesCard.ResumeLayout(false);
+            RequisitesCard.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -129,6 +143,7 @@
         private ReaLTaiizor.Controls.DungeonButtonLeft CloseButton;
         private ReaLTaiizor.Controls.BigLabel MainLabel;
         private ReaLTaiizor.Controls.BigLabel bigLabel1;
-        private ReaLTaiizor.Controls.Panel panel2;
+        private ReaLTaiizor.Controls.Panel RequisitesCard;
+        private ReaLTaiizor.Controls.BigLabel bigLabel2;
     }
 }

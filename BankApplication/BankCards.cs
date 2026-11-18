@@ -529,8 +529,8 @@ namespace BankApplication
     {
         public int Id { get; } = id;                                                                 // Уникальный идентификатор счета в БД
         public int ClientId { get; } = clientId;                                                      // ID владельца счета (физического или юридического лица)
-        public string NameTarget { get; } = $"Расчетный счет #{accountNumber.Substring(12)}";         // Имя для target
-        public string NameSource { get; } = $"Расчетный счет #{accountNumber.Substring(12)}";         // Имя для source
+        public string NameTarget { get; } = $"Расчетный счет *{accountNumber.Substring(16)}";         // Имя для target
+        public string NameSource { get; } = $"Расчетный счет *{accountNumber.Substring(16)}";         // Имя для source
         public string AccountNumber { get; } = accountNumber;                                         // Номер расчетного счета (20 цифр)
         public string Bic { get; } = bic;                                                             // БИК (Банковский идентификационный код) банка, в котором открыт этот счет (9 цифр)
         public string CorAccount { get; } = corAccount;                                               // Корреспондентский счет банка (20 цифр)
