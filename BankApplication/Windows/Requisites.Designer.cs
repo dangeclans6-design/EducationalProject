@@ -31,9 +31,14 @@
             panel1 = new System.Windows.Forms.Panel();
             CloseButton = new ReaLTaiizor.Controls.DungeonButtonLeft();
             MainLabel = new ReaLTaiizor.Controls.BigLabel();
-            bigLabel1 = new ReaLTaiizor.Controls.BigLabel();
+            AccountNumber = new ReaLTaiizor.Controls.BigLabel();
             RequisitesCard = new ReaLTaiizor.Controls.Panel();
-            bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
+            OpenedAt = new ReaLTaiizor.Controls.BigLabel();
+            Reason = new ReaLTaiizor.Controls.BigLabel();
+            Status = new ReaLTaiizor.Controls.BigLabel();
+            Currency = new ReaLTaiizor.Controls.BigLabel();
+            CorAccount = new ReaLTaiizor.Controls.BigLabel();
+            Bic = new ReaLTaiizor.Controls.BigLabel();
             RequisitesCard.SuspendLayout();
             SuspendLayout();
             // 
@@ -42,7 +47,7 @@
             panel1.BackColor = System.Drawing.Color.Tan;
             panel1.Location = new System.Drawing.Point(-7, -6);
             panel1.Name = "panel1";
-            panel1.Size = new System.Drawing.Size(47, 470);
+            panel1.Size = new System.Drawing.Size(47, 523);
             panel1.TabIndex = 99;
             // 
             // CloseButton
@@ -64,63 +69,129 @@
             CloseButton.TabIndex = 100;
             CloseButton.Text = "X";
             CloseButton.TextAlignment = System.Drawing.StringAlignment.Center;
+            CloseButton.Click += CloseButton_Click;
             // 
             // MainLabel
             // 
             MainLabel.AutoSize = true;
             MainLabel.BackColor = System.Drawing.Color.Transparent;
-            MainLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            MainLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
             MainLabel.ForeColor = System.Drawing.Color.Azure;
-            MainLabel.Location = new System.Drawing.Point(58, -6);
+            MainLabel.Location = new System.Drawing.Point(57, 9);
             MainLabel.Name = "MainLabel";
-            MainLabel.Size = new System.Drawing.Size(160, 40);
+            MainLabel.Size = new System.Drawing.Size(133, 32);
             MainLabel.TabIndex = 101;
             MainLabel.Text = "Реквизиты";
             // 
-            // bigLabel1
+            // AccountNumber
             // 
-            bigLabel1.AutoSize = true;
-            bigLabel1.BackColor = System.Drawing.Color.Transparent;
-            bigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel1.ForeColor = System.Drawing.Color.Tan;
-            bigLabel1.Location = new System.Drawing.Point(1, 6);
-            bigLabel1.Name = "bigLabel1";
-            bigLabel1.Size = new System.Drawing.Size(91, 32);
-            bigLabel1.TabIndex = 107;
-            bigLabel1.Text = "Номер";
+            AccountNumber.AutoSize = true;
+            AccountNumber.BackColor = System.Drawing.Color.Transparent;
+            AccountNumber.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            AccountNumber.ForeColor = System.Drawing.Color.Tan;
+            AccountNumber.Location = new System.Drawing.Point(1, 6);
+            AccountNumber.Name = "AccountNumber";
+            AccountNumber.Size = new System.Drawing.Size(199, 32);
+            AccountNumber.TabIndex = 107;
+            AccountNumber.Text = "Номер аккаунта";
             // 
             // RequisitesCard
             // 
-            RequisitesCard.BackColor = System.Drawing.Color.FromArgb(39, 51, 63);
-            RequisitesCard.Controls.Add(bigLabel2);
-            RequisitesCard.Controls.Add(bigLabel1);
-            RequisitesCard.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
+            RequisitesCard.BackColor = System.Drawing.Color.FromArgb(30, 30, 30);
+            RequisitesCard.Controls.Add(OpenedAt);
+            RequisitesCard.Controls.Add(Reason);
+            RequisitesCard.Controls.Add(Status);
+            RequisitesCard.Controls.Add(Currency);
+            RequisitesCard.Controls.Add(CorAccount);
+            RequisitesCard.Controls.Add(Bic);
+            RequisitesCard.Controls.Add(AccountNumber);
+            RequisitesCard.EdgeColor = System.Drawing.Color.FromArgb(30, 30, 30);
             RequisitesCard.Location = new System.Drawing.Point(57, 64);
             RequisitesCard.Name = "RequisitesCard";
             RequisitesCard.Padding = new System.Windows.Forms.Padding(5);
-            RequisitesCard.Size = new System.Drawing.Size(503, 371);
+            RequisitesCard.Size = new System.Drawing.Size(503, 434);
             RequisitesCard.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             RequisitesCard.TabIndex = 108;
             RequisitesCard.Text = "panel2";
             // 
-            // bigLabel2
+            // OpenedAt
             // 
-            bigLabel2.AutoSize = true;
-            bigLabel2.BackColor = System.Drawing.Color.Transparent;
-            bigLabel2.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel2.ForeColor = System.Drawing.Color.Tan;
-            bigLabel2.Location = new System.Drawing.Point(206, 169);
-            bigLabel2.Name = "bigLabel2";
-            bigLabel2.Size = new System.Drawing.Size(91, 32);
-            bigLabel2.TabIndex = 108;
-            bigLabel2.Text = "Номер";
+            OpenedAt.AutoSize = true;
+            OpenedAt.BackColor = System.Drawing.Color.Transparent;
+            OpenedAt.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            OpenedAt.ForeColor = System.Drawing.Color.Tan;
+            OpenedAt.Location = new System.Drawing.Point(8, 397);
+            OpenedAt.Name = "OpenedAt";
+            OpenedAt.Size = new System.Drawing.Size(95, 32);
+            OpenedAt.TabIndex = 115;
+            OpenedAt.Text = "Создан";
+            // 
+            // Reason
+            // 
+            Reason.AutoSize = true;
+            Reason.BackColor = System.Drawing.Color.Transparent;
+            Reason.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            Reason.ForeColor = System.Drawing.Color.Tan;
+            Reason.Location = new System.Drawing.Point(1, 242);
+            Reason.Name = "Reason";
+            Reason.Size = new System.Drawing.Size(115, 32);
+            Reason.TabIndex = 114;
+            Reason.Text = "Причина";
+            // 
+            // Status
+            // 
+            Status.AutoSize = true;
+            Status.BackColor = System.Drawing.Color.Transparent;
+            Status.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            Status.ForeColor = System.Drawing.Color.Tan;
+            Status.Location = new System.Drawing.Point(1, 193);
+            Status.Name = "Status";
+            Status.Size = new System.Drawing.Size(85, 32);
+            Status.TabIndex = 113;
+            Status.Text = "Статус";
+            // 
+            // Currency
+            // 
+            Currency.AutoSize = true;
+            Currency.BackColor = System.Drawing.Color.Transparent;
+            Currency.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            Currency.ForeColor = System.Drawing.Color.Tan;
+            Currency.Location = new System.Drawing.Point(1, 146);
+            Currency.Name = "Currency";
+            Currency.Size = new System.Drawing.Size(98, 32);
+            Currency.TabIndex = 111;
+            Currency.Text = "Валюта";
+            // 
+            // CorAccount
+            // 
+            CorAccount.AutoSize = true;
+            CorAccount.BackColor = System.Drawing.Color.Transparent;
+            CorAccount.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            CorAccount.ForeColor = System.Drawing.Color.Tan;
+            CorAccount.Location = new System.Drawing.Point(1, 100);
+            CorAccount.Name = "CorAccount";
+            CorAccount.Size = new System.Drawing.Size(171, 32);
+            CorAccount.TabIndex = 109;
+            CorAccount.Text = "Кор. аккаунта";
+            // 
+            // Bic
+            // 
+            Bic.AutoSize = true;
+            Bic.BackColor = System.Drawing.Color.Transparent;
+            Bic.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            Bic.ForeColor = System.Drawing.Color.Tan;
+            Bic.Location = new System.Drawing.Point(1, 54);
+            Bic.Name = "Bic";
+            Bic.Size = new System.Drawing.Size(55, 32);
+            Bic.TabIndex = 108;
+            Bic.Text = "Бик";
             // 
             // Requisites
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
-            ClientSize = new System.Drawing.Size(568, 450);
+            ClientSize = new System.Drawing.Size(568, 513);
             Controls.Add(RequisitesCard);
             Controls.Add(MainLabel);
             Controls.Add(CloseButton);
@@ -142,8 +213,13 @@
         private System.Windows.Forms.Panel panel1;
         private ReaLTaiizor.Controls.DungeonButtonLeft CloseButton;
         private ReaLTaiizor.Controls.BigLabel MainLabel;
-        private ReaLTaiizor.Controls.BigLabel bigLabel1;
+        private ReaLTaiizor.Controls.BigLabel AccountNumber;
         private ReaLTaiizor.Controls.Panel RequisitesCard;
-        private ReaLTaiizor.Controls.BigLabel bigLabel2;
+        private ReaLTaiizor.Controls.BigLabel Bic;
+        private ReaLTaiizor.Controls.BigLabel OpenedAt;
+        private ReaLTaiizor.Controls.BigLabel Reason;
+        private ReaLTaiizor.Controls.BigLabel Status;
+        private ReaLTaiizor.Controls.BigLabel Currency;
+        private ReaLTaiizor.Controls.BigLabel CorAccount;
     }
 }

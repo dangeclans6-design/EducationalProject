@@ -148,7 +148,7 @@ namespace BankApplication
         private void CardItemButton_Click(object sender, EventArgs e)
         {
             var clickButton = (Control)sender;
-            var nameButton = (string)clickButton.Tag;
+            var nameButton = clickButton.Tag?.ToString();
 
             if (CurrentTarget is IBankCard card)
             {
