@@ -27,6 +27,40 @@ namespace BankApplication
 
         public List<BankCard> Cards { get; set; } = cards;
         public List<PaymentAccount> PaymentAccounts { get; set; } = paymentAccount;
+
+        public async Task<StructChangeDataClient> PrepareChangeDataClient(string newData, ChangeDataClient type)
+        {
+            if (type == ChangeDataClient.Login)
+            {
+                await TryReg.TryLoginReg(newData);
+                return new StructChangeDataClient(Id, Login, newData, Password, Password, Mail, Mail);
+            }
+            else if (type == ChangeDataClient.Password)
+            {
+                TryReg.TryPasswordReg(newData);
+                return new StructChangeDataClient(Id, Login, Login, Password, newData, Mail, Mail);
+            }
+            else
+            {
+                await TryReg.TryMailReg(newData);
+                return new StructChangeDataClient(Id, Login, Login, Password, Password, Mail, newData);
+            }
+        }
+
+        public async Task FuncChangeDataClient(StructChangeDataClient preview)
+        {
+            bool IsDbUpdate = await DataBase.ChangeDataClient(preview);
+
+            if (IsDbUpdate)
+            {
+                Login = preview.NewLogin;
+                Password = preview.NewPassword;
+                Mail = preview.NewMail;
+            }
+            else throw new Exception("Что-то пошло не так. Повторите пропытку позже.");
+
+        }
+
     }
 
     public class Admin(int id, string login, string password, string secureCode, int status, List<RequestAdmin> myRequest, List<RequestAdmin> request, List<RequestAdminFull> requestFull)
@@ -267,6 +301,7 @@ namespace BankApplication
         }
         #endregion
 
+        #region Проверка суммы для перевода
         public static (string Message, decimal AmountTransfer, Color ColorText, bool IsTransferAmount) TryTransferAmount(string amount)
         {
             amount = amount.Replace('.', ',');
@@ -287,6 +322,7 @@ namespace BankApplication
                 return (message, amountResult, color, false);
             }
         }
+        #endregion
     }
     #endregion
 }

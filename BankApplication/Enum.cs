@@ -48,6 +48,26 @@ namespace BankApplication
         EUR = 2         // Валюта евро
     }
 
+    public enum ChangeDataClient
+    {
+        Login = 0,          // Изменить логин
+        Password = 1,       // Изменить пароль
+        Mail = 2            // Изменить почту
+    }
+
+    public readonly struct StructChangeDataClient(int idClient, string currentLogin, string newLogin, string currentPassword, string newPassword, string currentMail, string newMail)
+    {
+        public readonly int IdClient = idClient;
+        public readonly string CurrentLogin = currentLogin;
+        public readonly string NewLogin = newLogin;
+        public readonly string CurrentPassword = currentPassword;
+        public readonly string NewPassword = newPassword;
+        public readonly string CurrentMail = currentMail;
+        public readonly string NewMail = newMail;
+
+    }
+
+
     #region Классы-хранилища для методов перевода
     public class BasePrepareTransfer(decimal amount, decimal newBalance, ITarget target)
     {

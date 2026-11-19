@@ -25,7 +25,7 @@ namespace BankApplication
             DoubleBuffered = true;
 
             currentClient = Session.CurrentClient;
-        }        
+        }
 
         #region Мои карты
         private void MyCardsButton_Click(object sender, EventArgs e)
@@ -53,20 +53,20 @@ namespace BankApplication
         }
         #endregion
 
-        #region Мои личные счета
+        #region Мои счета
         private void MyPaymentAccountButton_Click(object sender, EventArgs e)
         {
             PanelCards.Visible = false;
             PanelCards.Controls.Clear();
 
             int y_payment = 10;
-            
+
             foreach (PaymentAccount paymant in currentClient.PaymentAccounts)
             {
                 CardItem item = new(paymant);
 
                 PanelPayment.Controls.Add(item);
-                item.Location = new Point((PanelCards.Width - item.Width) / 2, y_payment);                
+                item.Location = new Point((PanelCards.Width - item.Width) / 2, y_payment);
 
                 item.OnReplenishButton += OpenReplenishWindow;
                 item.OnPayButton += OpenPayhWindow;
@@ -180,6 +180,14 @@ namespace BankApplication
             }
         }
 
+        #endregion
+
+        #region Настройки аккаунта
+        private void AccountSettingsButton_Click(object sender, EventArgs e)
+        {
+            AccountSettingsWindow accountSettings = new();
+            accountSettings.ShowDialog();
+        }
         #endregion
     }
 }

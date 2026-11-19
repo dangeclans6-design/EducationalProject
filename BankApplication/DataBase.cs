@@ -866,6 +866,46 @@ namespace BankApplication
         #endregion
 
 
+        #region Изменить данные клиента
+        public async static Task<bool> ChangeDataClient(StructChangeDataClient preview)
+        {
+            var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
+
+            await using var connection = new MySqlConnection(builder.ConnectionString);
+            await connection.OpenAsync();
+
+            try
+            {
+                await using var cmdUpdate = connection.CreateCommand();
+                cmdUpdate.CommandText = @"
+                    UPDATE Client
+                    SET Login = @newLogin, Password = @newPassword, Mail = @newMail
+                    WHERE Id = @idClient
+                    AND Login = @currentLogin          
+                    AND Password = @currentPassword
+                    AND Mail = @currentMail";
+                cmdUpdate.Parameters.AddWithValue("newLogin", preview.NewLogin);
+                cmdUpdate.Parameters.AddWithValue("newPassword", preview.NewPassword);
+                cmdUpdate.Parameters.AddWithValue("newMail", preview.NewMail);
+                cmdUpdate.Parameters.AddWithValue("idClient", preview.IdClient);
+                cmdUpdate.Parameters.AddWithValue("currentLogin", preview.CurrentLogin);
+                cmdUpdate.Parameters.AddWithValue("currentPassword", preview.CurrentPassword);
+                cmdUpdate.Parameters.AddWithValue("currentMail", preview.CurrentMail);
+
+                int updateRows = await cmdUpdate.ExecuteNonQueryAsync();
+
+                if (updateRows == 0) return false;
+               
+                return true;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        #endregion
+
+
 
 
 

@@ -40,7 +40,7 @@
             NotificationsButton = new ReaLTaiizor.Controls.CyberButton();
             UpdatePageClientMenu = new ReaLTaiizor.Controls.CyberButton();
             OpenRequestButton = new ReaLTaiizor.Controls.CyberButton();
-            cyberButton2 = new ReaLTaiizor.Controls.CyberButton();
+            AccountSettingsButton = new ReaLTaiizor.Controls.CyberButton();
             PanelCards = new ReaLTaiizor.Controls.Panel();
             PanelPayment = new ReaLTaiizor.Controls.Panel();
             MyCardsButton = new ReaLTaiizor.Controls.CyberButton();
@@ -414,45 +414,46 @@
             OpenRequestButton.Timer_Effect_1 = 5;
             OpenRequestButton.Timer_RGB = 300;
             // 
-            // cyberButton2
+            // AccountSettingsButton
             // 
-            cyberButton2.Alpha = 20;
-            cyberButton2.BackColor = System.Drawing.Color.Transparent;
-            cyberButton2.Background = true;
-            cyberButton2.Background_WidthPen = 4F;
-            cyberButton2.BackgroundPen = true;
-            cyberButton2.ColorBackground = System.Drawing.Color.Transparent;
-            cyberButton2.ColorBackground_1 = System.Drawing.Color.White;
-            cyberButton2.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            cyberButton2.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            cyberButton2.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            cyberButton2.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            cyberButton2.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            cyberButton2.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            cyberButton2.Effect_1 = true;
-            cyberButton2.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            cyberButton2.Effect_1_Transparency = 25;
-            cyberButton2.Effect_2 = true;
-            cyberButton2.Effect_2_ColorBackground = System.Drawing.Color.White;
-            cyberButton2.Effect_2_Transparency = 20;
-            cyberButton2.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold);
-            cyberButton2.ForeColor = System.Drawing.Color.Tan;
-            cyberButton2.Lighting = false;
-            cyberButton2.LinearGradient_Background = false;
-            cyberButton2.LinearGradientPen = false;
-            cyberButton2.Location = new System.Drawing.Point(54, 419);
-            cyberButton2.Name = "cyberButton2";
-            cyberButton2.PenWidth = 15;
-            cyberButton2.Rounding = true;
-            cyberButton2.RoundingInt = 20;
-            cyberButton2.Size = new System.Drawing.Size(177, 65);
-            cyberButton2.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            cyberButton2.TabIndex = 44;
-            cyberButton2.Tag = "Cyber";
-            cyberButton2.TextButton = "Настройки аккаунта";
-            cyberButton2.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            cyberButton2.Timer_Effect_1 = 5;
-            cyberButton2.Timer_RGB = 300;
+            AccountSettingsButton.Alpha = 20;
+            AccountSettingsButton.BackColor = System.Drawing.Color.Transparent;
+            AccountSettingsButton.Background = true;
+            AccountSettingsButton.Background_WidthPen = 4F;
+            AccountSettingsButton.BackgroundPen = true;
+            AccountSettingsButton.ColorBackground = System.Drawing.Color.Transparent;
+            AccountSettingsButton.ColorBackground_1 = System.Drawing.Color.White;
+            AccountSettingsButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            AccountSettingsButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
+            AccountSettingsButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
+            AccountSettingsButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
+            AccountSettingsButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
+            AccountSettingsButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
+            AccountSettingsButton.Effect_1 = true;
+            AccountSettingsButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
+            AccountSettingsButton.Effect_1_Transparency = 25;
+            AccountSettingsButton.Effect_2 = true;
+            AccountSettingsButton.Effect_2_ColorBackground = System.Drawing.Color.White;
+            AccountSettingsButton.Effect_2_Transparency = 20;
+            AccountSettingsButton.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold);
+            AccountSettingsButton.ForeColor = System.Drawing.Color.Tan;
+            AccountSettingsButton.Lighting = false;
+            AccountSettingsButton.LinearGradient_Background = false;
+            AccountSettingsButton.LinearGradientPen = false;
+            AccountSettingsButton.Location = new System.Drawing.Point(54, 419);
+            AccountSettingsButton.Name = "AccountSettingsButton";
+            AccountSettingsButton.PenWidth = 15;
+            AccountSettingsButton.Rounding = true;
+            AccountSettingsButton.RoundingInt = 20;
+            AccountSettingsButton.Size = new System.Drawing.Size(177, 65);
+            AccountSettingsButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            AccountSettingsButton.TabIndex = 44;
+            AccountSettingsButton.Tag = "Cyber";
+            AccountSettingsButton.TextButton = "Настройки аккаунта";
+            AccountSettingsButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            AccountSettingsButton.Timer_Effect_1 = 5;
+            AccountSettingsButton.Timer_RGB = 300;
+            AccountSettingsButton.Click += AccountSettingsButton_Click;
             // 
             // PanelCards
             // 
@@ -588,7 +589,7 @@
             Controls.Add(MyCardsButton);
             Controls.Add(PanelPayment);
             Controls.Add(PanelCards);
-            Controls.Add(cyberButton2);
+            Controls.Add(AccountSettingsButton);
             Controls.Add(OpenRequestButton);
             Controls.Add(UpdatePageClientMenu);
             Controls.Add(NotificationsButton);
@@ -624,7 +625,7 @@
         private ReaLTaiizor.Controls.CyberButton NotificationsButton;
         private ReaLTaiizor.Controls.CyberButton UpdatePageClientMenu;
         private ReaLTaiizor.Controls.CyberButton OpenRequestButton;
-        private ReaLTaiizor.Controls.CyberButton cyberButton2;
+        private ReaLTaiizor.Controls.CyberButton AccountSettingsButton;
         private ReaLTaiizor.Controls.Panel PanelCards;
         private ReaLTaiizor.Controls.Panel PanelPayment;
         private ReaLTaiizor.Controls.CyberButton MyCardsButton;
