@@ -94,7 +94,7 @@ namespace BankApplication
             NewText.Visible = true;
             
             New.Visible = true;
-            New.Tag = ChangeDataClient.Login;
+            New.Tag = EnumChangeDataClient.Login;
         }
         private void ChangePasswordButton_Click(object sender, EventArgs e)
         {
@@ -102,7 +102,7 @@ namespace BankApplication
             NewText.Visible = true;
 
             New.Visible = true;
-            New.Tag = ChangeDataClient.Password;
+            New.Tag = EnumChangeDataClient.Password;
         }
         private void ChangeMailButton_Click(object sender, EventArgs e)
         {
@@ -110,7 +110,7 @@ namespace BankApplication
             NewText.Visible = true;
 
             New.Visible = true;
-            New.Tag = ChangeDataClient.Mail;
+            New.Tag = EnumChangeDataClient.Mail;
         }
 
         #region Подтвердить
@@ -118,12 +118,12 @@ namespace BankApplication
         {
             try
             {
-                var preview = await CurrentClient.PrepareChangeDataClient(New.Text, (ChangeDataClient)New.Tag);
+                var preview = await CurrentClient.PrepareChangeDataClient(New.Text, (EnumChangeDataClient)New.Tag);
 
                 string message = New.Tag switch
                 {
-                    ChangeDataClient.Login => $"Вы действительно желаете изменить текущий логин ({CurrentClient.Login}) на новый ({New.Text})?)",
-                    ChangeDataClient.Password => $"Вы действительно желаете изменить текущий пароль ({CurrentClient.Password}) на новый ({New.Text})?)",
+                    EnumChangeDataClient.Login => $"Вы действительно желаете изменить текущий логин ({CurrentClient.Login}) на новый ({New.Text})?)",
+                    EnumChangeDataClient.Password => $"Вы действительно желаете изменить текущий пароль ({CurrentClient.Password}) на новый ({New.Text})?)",
                     _ => $"Вы действительно желаете изменить текущую почту ({CurrentClient.Mail}) на новую ({New.Text})?)"
                 };
 
@@ -131,12 +131,12 @@ namespace BankApplication
 
                 if (result == DialogResult.Yes)
                 {
-                    await CurrentClient.FuncChangeDataClient(preview);
+                    await CurrentClient.ChangeDataClient(preview);
 
                     string messageConfirm = New.Tag switch
                     {
-                        ChangeDataClient.Login => $"Вы успешно изменили логин!",
-                        ChangeDataClient.Password => $"Вы успешно изменили пароль!",
+                        EnumChangeDataClient.Login => $"Вы успешно изменили логин!",
+                        EnumChangeDataClient.Password => $"Вы успешно изменили пароль!",
                         _ => $"Вы успешно изменили почту!"
                     };
 

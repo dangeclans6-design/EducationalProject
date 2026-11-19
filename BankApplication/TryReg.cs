@@ -28,14 +28,14 @@ namespace BankApplication
         public List<BankCard> Cards { get; set; } = cards;
         public List<PaymentAccount> PaymentAccounts { get; set; } = paymentAccount;
 
-        public async Task<StructChangeDataClient> PrepareChangeDataClient(string newData, ChangeDataClient type)
+        public async Task<StructChangeDataClient> PrepareChangeDataClient(string newData, EnumChangeDataClient type)
         {
-            if (type == ChangeDataClient.Login)
+            if (type == EnumChangeDataClient.Login)
             {
                 await TryReg.TryLoginReg(newData);
                 return new StructChangeDataClient(Id, Login, newData, Password, Password, Mail, Mail);
             }
-            else if (type == ChangeDataClient.Password)
+            else if (type == EnumChangeDataClient.Password)
             {
                 TryReg.TryPasswordReg(newData);
                 return new StructChangeDataClient(Id, Login, Login, Password, newData, Mail, Mail);
@@ -46,8 +46,7 @@ namespace BankApplication
                 return new StructChangeDataClient(Id, Login, Login, Password, Password, Mail, newData);
             }
         }
-
-        public async Task FuncChangeDataClient(StructChangeDataClient preview)
+        public async Task ChangeDataClient(StructChangeDataClient preview)
         {
             bool IsDbUpdate = await DataBase.ChangeDataClient(preview);
 

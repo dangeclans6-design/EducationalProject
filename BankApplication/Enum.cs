@@ -48,7 +48,7 @@ namespace BankApplication
         EUR = 2         // Валюта евро
     }
 
-    public enum ChangeDataClient
+    public enum EnumChangeDataClient
     {
         Login = 0,          // Изменить логин
         Password = 1,       // Изменить пароль
