@@ -24,6 +24,8 @@ namespace BankApplication
         private (int Id, string Adress, decimal DebtAmount)? tupleReader;           // Кортеж с данными по ЛС
 
 
+
+
         private int? M = null;
 
         public WindowPay(ISource currentSource)
