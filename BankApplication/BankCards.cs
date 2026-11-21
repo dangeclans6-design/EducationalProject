@@ -157,16 +157,16 @@ namespace BankApplication
 
             if (withdraw && canDeposit)
             {
-                decimal newBalance = Balance - amount;                          // Заранее вычисляем новый баланс
-                CashBackStatus status = CashBackStatus.NoCashback;              // По умолчанию кешбека нет
+                decimal newBalanceSource = Balance - amount;                          // Заранее вычисляем новый баланс
+                CashBackStatus status;                                          // По умолчанию кешбека нет
 
-                decimal cashback = 0;                                           // По умолчанию кешбек равен 0
+                decimal cashbackAmount = 0;                                           // По умолчанию кешбек равен 0
                 decimal newCashback = Cashback;                                 // По умолчанию новый кешбек равен старому
 
                 if (IsCashbackEnabled && target.IsCashbackAllowed && amount >= 10000)
                 {
-                    cashback = amount * 0.01m;
-                    newCashback = Cashback + cashback;
+                    cashbackAmount = amount * 0.01m;
+                    newCashback = Cashback + cashbackAmount;
 
                     if (newCashback > LimitCashback)
                     {
@@ -177,7 +177,7 @@ namespace BankApplication
                 }
                 else status = CashBackStatus.NoCashback;
 
-                return new DebitCardPreparePay(amount, newBalance, target, cashback, newCashback, status);
+                return new DebitCardPreparePay(amount, newBalanceSource, target, Id, Balance, Cashback, cashbackAmount, newCashback, status);
             }
             else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
         }
@@ -188,23 +188,15 @@ namespace BankApplication
 
             if (debitPreview.Target is PaymentAccount payment)
             {
-                decimal newBalanceTarget = payment.Balance + debitPreview.Amount;
+                decimal newBalanceTarget = payment.Balance + debitPreview.Amount;                
 
-                decimal newCashback = debitPreview.CashBackStatus switch
-                {
-                    CashBackStatus.LimitExceede => LimitCashback,
-                    CashBackStatus.NormalCashback => debitPreview.NewCashback,
-                    _ => Cashback
-                };
-
-                bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(debitPreview.NewBalance, newCashback, Id, Balance, Cashback, payment.Id, newBalanceTarget, payment.Balance);
+                bool IsDbUpdate = await DataBase.PayDebitCardToPaymentAccount(debitPreview, payment.Id, payment.Balance, newBalanceTarget);
 
                 if (!IsDbUpdate)
                     throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");
 
-                Cashback = newCashback;
-                Balance = debitPreview.NewBalance;
-                payment.Balance = newBalanceTarget;
+                Cashback = debitPreview.NewCashback;
+                Balance = debitPreview.NewBalanceSource;
             }
             /*
             Тут иного развития события не может быть (else), так как оплата может происходить только на счет
@@ -636,11 +628,11 @@ namespace BankApplication
                 {
                     decimal newBalanceTarget = target.Balance + paymountPreview.Amount;
 
-                    bool IsDbUpdate = await DataBase.PayPaymentToPaymentAccount(Id, paymountPreview.NewBalance, Balance, target.Id, newBalanceTarget, target.Balance);
+                    bool IsDbUpdate = await DataBase.PayPaymentToPaymentAccount(Id, paymountPreview.NewBalanceSource, Balance, target.Id, newBalanceTarget, target.Balance);
 
                     if (IsDbUpdate)
                     {
-                        Balance = paymountPreview.NewBalance;
+                        Balance = paymountPreview.NewBalanceSource;
                         target.Balance = newBalanceTarget;
                     }
                     else throw new Exception($"Произошла непредвиденная ошибка!\nПожалуйста, обновите страницу или повторите попытку позже.");

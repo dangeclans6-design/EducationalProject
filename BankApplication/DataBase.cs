@@ -43,8 +43,7 @@ namespace BankApplication
         //--------------------------------------------------//
 
         #region Оплата услуг с дебетовой карты на расчетный счет (кешбек есть / нет)
-        public async static Task<bool> PayDebitCardToPaymentAccount(decimal newBalanceSource, decimal newCashbackSource, int id, decimal currentBalanceSource,
-                                                    decimal currentCashbackSource, int idPayment, decimal newBalanceTarget, decimal currentBalanceTarget)
+        public async static Task<bool> PayDebitCardToPaymentAccount(DebitCardPreparePay debitPreview, int paymentId, decimal currentBalanceTarget, decimal newBalanceTarget)
         {
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
 
@@ -67,11 +66,11 @@ namespace BankApplication
                     AND Status = 1
                     AND Reason IS NULL
                     AND CashBack = @currentCashbackSource";
-                cmdSource.Parameters.AddWithValue("newBalanceSource", newBalanceSource);
-                cmdSource.Parameters.AddWithValue("newCashbackSource", newCashbackSource);
-                cmdSource.Parameters.AddWithValue("id", id);
-                cmdSource.Parameters.AddWithValue("currentBalanceSource", currentBalanceSource); ;
-                cmdSource.Parameters.AddWithValue("currentCashbackSource", currentCashbackSource);
+                cmdSource.Parameters.AddWithValue("newBalanceSource", debitPreview.NewBalanceSource);
+                cmdSource.Parameters.AddWithValue("newCashbackSource", debitPreview.NewCashback);
+                cmdSource.Parameters.AddWithValue("id", debitPreview.CardIdSource);
+                cmdSource.Parameters.AddWithValue("currentBalanceSource", debitPreview.CurrentBalance); ;
+                cmdSource.Parameters.AddWithValue("currentCashbackSource", debitPreview.CurrentCashback);
 
                 int sourceRows = await cmdSource.ExecuteNonQueryAsync();
 
@@ -89,7 +88,7 @@ namespace BankApplication
                     AND Balance = @currentBalanceTarget
                     AND Status = 1";
                 cmdTarget.Parameters.AddWithValue("newBalanceTarget", newBalanceTarget);
-                cmdTarget.Parameters.AddWithValue("idPayment", idPayment);
+                cmdTarget.Parameters.AddWithValue("idPayment", paymentId);
                 cmdTarget.Parameters.AddWithValue("currentBalanceTarget", currentBalanceTarget);
 
                 int targetRows = await cmdTarget.ExecuteNonQueryAsync();

@@ -55,6 +55,13 @@ namespace BankApplication
         Mail = 2            // Изменить почту
     }
 
+    public enum PaymentType
+    {
+        Store = 1,          // Обычная покупка в магазине (без ЛС и долга, возможен кэшбэк)
+        UtilityBill = 2,    // Услуги с задолженностью по ЛС (ЖКХ, интернет, налоги)
+        MobileTopUp = 3     // Пополнение по номеру без системы долгов (например, мобильная связь)
+    }
+
     public readonly struct StructChangeDataClient(int idClient, string currentLogin, string newLogin, string currentPassword, string newPassword, string currentMail, string newMail)
     {
         public readonly int IdClient = idClient;
@@ -96,16 +103,19 @@ namespace BankApplication
     #endregion
 
     #region Классы-хранилища для методов оплаты
-    public abstract class BasePreparePay(decimal amount, decimal newBalance, ITarget target)
+    public abstract class BasePreparePay(decimal amount, decimal newBalanceSource, ITarget target)
     {
-        public decimal Amount { get; } = amount;                        // Сумма оплаты
-        public decimal NewBalance { get; } = newBalance;                    // Заранее вычесленный новый баланс
-        public ITarget Target { get; } = target;                        // Цель (target). Куда "уходят" деньги
+        public decimal Amount { get; } = amount;                                        // Сумма оплаты
+        public decimal NewBalanceSource { get; } = newBalanceSource;                    // Заранее вычесленный новый баланс
+        public ITarget Target { get; } = target;                                        // Цель (target). Куда "уходят" деньги
     }
 
-    public class DebitCardPreparePay(decimal amount, decimal newBalance, ITarget target, decimal cashback, decimal newCashback, CashBackStatus cashBackStatus) : BasePreparePay(amount, newBalance, target)
+    public class DebitCardPreparePay(decimal amount, decimal newBalanceSource, ITarget target, int cardIdSource,  decimal currentBalanceSource, decimal currentCashbackSource, decimal cashbackAmount, decimal newCashback, CashBackStatus cashBackStatus) : BasePreparePay(amount, newBalanceSource, target)
     {
-        public decimal Cashback { get; } = cashback;
+        public int CardIdSource { get; } = cardIdSource;
+        public decimal CurrentBalance { get; } = currentBalanceSource;
+        public decimal CurrentCashback { get; } = currentCashbackSource;
+        public decimal CashbackAmount { get; } = cashbackAmount;
         public decimal NewCashback { get; } = newCashback;
         public CashBackStatus CashBackStatus { get; } = cashBackStatus;
     }

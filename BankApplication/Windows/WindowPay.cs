@@ -65,14 +65,7 @@ namespace BankApplication
         {
             try
             {
-                TryReg.TryPersonalAccount(PersonalAccount.Text);
-
-                #region Другой способ реализации
-                /*
-                if (target is not PaymentAccount) return;
-                var tupleReader = await FindPersonalAccount((target as PaymentAccount).Id, PersonalAccount.Text.Trim());
-                */
-                #endregion
+                TryReg.TryPersonalAccount(PersonalAccount.Text);                
 
                 tupleReader = await FindPersonalAccount(serviceProviders.paymentAccount[choiseIndexService].Id, PersonalAccount.Text.Trim());
 
@@ -129,9 +122,9 @@ namespace BankApplication
                 {
                     DebitCardPreparePay debit => debit.CashBackStatus switch
                     {
-                        CashBackStatus.NormalCashback => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Ваш кешбек составит {debit.Cashback} рублей.",
+                        CashBackStatus.NormalCashback => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Ваш кешбек составит {debit.CashbackAmount} рублей.",
                         CashBackStatus.LimitExceede => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Учтите, после оплаты Вы достигнете лимита по кешбеку. Часть, которая не войдет в лимит, сгорит!",
-                        _ => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Кешбек по данной операции начислен не будет (сумма оплаты менее 10000 рублей)."
+                        _ => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей?{nl}Кешбек по данной операции начислен не будет."
                     },
 
                     _ => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей?"
