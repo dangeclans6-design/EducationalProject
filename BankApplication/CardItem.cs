@@ -39,7 +39,7 @@ namespace BankApplication
                 if (card.Status == CardStatus.Closed) StatusTarget.ForeColor = Color.Red;
 
                 int walk = 10;
-                foreach (string nameButton in NameButtonForCard)
+                foreach (var nameButton in NameButtonForCard)
                 {
                     var button = new ReaLTaiizor.Controls.Button()
                     {

@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media.Media3D;
 using static BankApplication.DataBase;
 
 namespace BankApplication
@@ -18,8 +20,11 @@ namespace BankApplication
         private List<ServiceProviders> AllServices { get; set; } = [];                   // Сервисы для оплаты + их реквизиты
         private ServiceProviders SelectedService;                                   // Выбранная организация
         private Stack<int?> NavigationHistory = new();                              // История переходов для кнопки "Назад"
-        private int? CurrentParentId { get; } = null;                               // Текущий уровень (null = главный экран категорий)
+        private int? CurrentParentId { get; set; }                              // Текущий уровень (null = главный экран категорий)
         private (int Id, string Adress, decimal DebtAmount)? tupleReader;           // Кортеж с данными по ЛС
+
+
+        private int? M = null;
 
         public WindowPay(ISource currentSource)
         {
@@ -33,8 +38,76 @@ namespace BankApplication
         private async void WindowPay_Load(object sender, EventArgs e)
         {
             AllServices = await FindServiceProviders(); // Ищем все сервисы
+            RenderCategoryLevel(null);
         }
         #endregion
+
+        private void RenderCategoryLevel(int? parentId)
+        {
+            CurrentParentId = parentId;
+            
+            while (PanelService.Controls.Count > 0)         // Безопасно уничтожаем старые кнопки перед созданием новых
+            {
+                PanelService.Controls[0].Dispose();
+            }
+
+            var currentItem = AllServices.Where(s => s.ParentId == parentId).ToList();
+
+            foreach (var item in currentItem)
+            {
+                var button = new ReaLTaiizor.Controls.Button()
+                {
+                    BackColor = Color.Transparent,
+                    BorderColor = Color.FromArgb(32, 34, 37),
+                    EnteredColor = Color.FromArgb(32, 34, 37),
+                    EnteredBorderColor = Color.Tan,
+                    PressedBorderColor = Color.Tan,
+                    PressedColor = Color.Tan,
+
+                    Size = new Size(300, 80),
+                    Text = item.ServiceName,
+                    Font = new Font("Segoe UI", 20f),
+
+                    Tag = item,         // Прячем весь объект ServiceProviders внутрь кнопки
+                };
+
+                button.Click += CategoryItem_Click;
+                PanelService.Controls.Add(button);
+            }
+        }
+
+        private void CategoryItem_Click(object sender, EventArgs e)
+        {
+            var button = (Control)sender;
+            var clickedItem = (ServiceProviders)button.Tag;
+
+            if (clickedItem.PaymentAccount == null)
+            {
+                NavigationHistory.Push(CurrentParentId);
+
+                RenderCategoryLevel(clickedItem.Id);
+            }
+            else
+            {
+                SelectedService = (ServiceProviders)button.Tag;
+                PanelService.Visible = false;
+                PanelPay.Visible = true;
+            }
+        }
+
+        private void BackButton_Click(object sender, EventArgs e)
+        {
+            if (PanelPay.Visible)
+            {                
+                PanelPay.Visible = false;
+
+                RenderCategoryLevel(CurrentParentId);
+                PanelService.Visible = true;
+                return;
+            }
+
+            if (NavigationHistory.Count > 0) RenderCategoryLevel(NavigationHistory.Pop());
+        }
 
 
 
@@ -50,48 +123,48 @@ namespace BankApplication
         {
             try
             {
-                var currentRequisites = serviceProviders.paymentAccount[choiseIndexService];
-                decimal amount = TryReg.TryDecimal(Amount.Text);
-                var preview = currentSource.PreparePay(amount, target);
+                //var currentRequisites = serviceProviders.paymentAccount[choiseIndexService];
+                //decimal amount = TryReg.TryDecimal(Amount.Text);
+                //var preview = currentSource.PreparePay(amount, target);
 
-                string nl = Environment.NewLine;
-                string requisites = $"Способ оплаты: {currentSource.NameSource}{nl}" +
-                                    $"Сумма оплаты: {amount} рублей{nl}{nl}" +
-                                    $"Реквизиты:{nl}" +
-                                    $"Номер счета: {currentRequisites.AccountNumber}{nl}" +
-                                    $"БИК: {currentRequisites.Bic}{nl}" +
-                                    $"Кор. счет: {currentRequisites.CorAccount}";
+                //string nl = Environment.NewLine;
+                //string requisites = $"Способ оплаты: {currentSource.NameSource}{nl}" +
+                //                    $"Сумма оплаты: {amount} рублей{nl}{nl}" +
+                //                    $"Реквизиты:{nl}" +
+                //                    $"Номер счета: {currentRequisites.AccountNumber}{nl}" +
+                //                    $"БИК: {currentRequisites.Bic}{nl}" +
+                //                    $"Кор. счет: {currentRequisites.CorAccount}";
 
-                string message = preview switch
-                {
-                    DebitCardPreparePay debit => debit.CashBackStatus switch
-                    {
-                        CashBackStatus.NormalCashback => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Ваш кешбек составит {debit.CashbackAmount} рублей.",
-                        CashBackStatus.LimitExceede => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Учтите, после оплаты Вы достигнете лимита по кешбеку. Часть, которая не войдет в лимит, сгорит!",
-                        _ => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей?{nl}Кешбек по данной операции начислен не будет."
-                    },
+                //string message = preview switch
+                //{
+                //    DebitCardPreparePay debit => debit.CashBackStatus switch
+                //    {
+                //        CashBackStatus.NormalCashback => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Ваш кешбек составит {debit.CashbackAmount} рублей.",
+                //        CashBackStatus.LimitExceede => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей? Учтите, после оплаты Вы достигнете лимита по кешбеку. Часть, которая не войдет в лимит, сгорит!",
+                //        _ => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей?{nl}Кешбек по данной операции начислен не будет."
+                //    },
 
-                    _ => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей?"
-                };
+                //    _ => $"{requisites}{nl}{nl}Вы дейтвительно хотите оплатить {amount} рублей?"
+                //};
 
-                DialogResult result = MessageBox.Show(message, "Подтверждение оплаты", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                //DialogResult result = MessageBox.Show(message, "Подтверждение оплаты", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                if (result == DialogResult.Yes)
-                {                    
-                    await currentSource.Pay(preview);
+                //if (result == DialogResult.Yes)
+                //{                    
+                //    await currentSource.Pay(preview);
 
-                    string payMessage = $"Вы успешно оплатили {amount} рублей.";
+                //    string payMessage = $"Вы успешно оплатили {amount} рублей.";
 
-                    MessageBox.Show(payMessage, "Оплата", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //    MessageBox.Show(payMessage, "Оплата", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    Close();
-                }
-                else return;                
+                //    Close();
+                //}
+                //else return;                
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }            
+            }
         }
         #endregion
     }

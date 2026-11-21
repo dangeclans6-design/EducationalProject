@@ -517,7 +517,7 @@ namespace BankApplication
     */
     #endregion
     public class PaymentAccount(int id, int clientId, string accountNumber, string bic, string corAccount, decimal balance, int currency, decimal frozenBalance, int status, string reason,
-                                DateTime openedAt, DateTime closeAt, int isCashbackAllowed) : ITarget, ITransferable
+                                DateTime openedAt, DateTime? closeAt, int isCashbackAllowed) : ITarget, ITransferable
     {
         public int Id { get; } = id;                                                                  // Уникальный идентификатор счета в БД
         public int ClientId { get; } = clientId;                                                      // ID владельца счета (физического или юридического лица)
@@ -532,7 +532,7 @@ namespace BankApplication
         public CardStatus Status { get; set; } = (CardStatus)status;                                  // Состояние счета
         public string Reason { get; set; } = reason;                                                  // Причина статуса
         public DateTime OpenedAt { get; } = openedAt;                                                 // Дата открытия счета
-        public DateTime ClosedAt { get; } = closeAt;                                                  // Дата закрытия счета
+        public DateTime? ClosedAt { get; } = closeAt;                                                  // Дата закрытия счета
 
         public bool IsCashbackAllowed { get; } = (isCashbackAllowed == 1);
 
@@ -661,7 +661,7 @@ namespace BankApplication
         public int Id { get; } = id;                                                    // ID услуги в БД
         public int? ParentId { get; } = parentId;                                       // ID родителя (может быть NULL, если это начало иерархии)
         public string ServiceName { get; } = serviceName;                               // Название услуги
-        public PaymentType? PaymentType { get; } = (PaymentType)paymentType;            // Тип услуги (может быть NULL)
+        public PaymentType? PaymentType { get; } = (PaymentType?)paymentType;            // Тип услуги (может быть NULL)
         public PaymentAccount PaymentAccount { get; } = paymentAccount;                 // Расчетный счет (может быть NULL если это не конечная услуга, а папка)
     }
     #endregion
