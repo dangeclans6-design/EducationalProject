@@ -28,32 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
             bigLabel3 = new ReaLTaiizor.Controls.BigLabel();
-            PersonalAccount = new ReaLTaiizor.Controls.DungeonRichTextBox();
-            FindData = new ReaLTaiizor.Controls.CyberButton();
             panel1 = new System.Windows.Forms.Panel();
             CloseButton = new ReaLTaiizor.Controls.DungeonButtonLeft();
-            BoxTarget = new ReaLTaiizor.Controls.MaterialComboBox();
-            Txt1 = new ReaLTaiizor.Controls.BigLabel();
-            PayButton = new ReaLTaiizor.Controls.CyberButton();
-            bigLabel1 = new ReaLTaiizor.Controls.BigLabel();
-            Txt2 = new ReaLTaiizor.Controls.BigLabel();
-            Amount = new ReaLTaiizor.Controls.DungeonRichTextBox();
-            bigLabel4 = new ReaLTaiizor.Controls.BigLabel();
+            PanelService = new System.Windows.Forms.FlowLayoutPanel();
             SuspendLayout();
-            // 
-            // bigLabel2
-            // 
-            bigLabel2.AutoSize = true;
-            bigLabel2.BackColor = System.Drawing.Color.Transparent;
-            bigLabel2.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel2.ForeColor = System.Drawing.Color.Tan;
-            bigLabel2.Location = new System.Drawing.Point(58, 169);
-            bigLabel2.Name = "bigLabel2";
-            bigLabel2.Size = new System.Drawing.Size(372, 32);
-            bigLabel2.TabIndex = 97;
-            bigLabel2.Text = "Введите номер лицевого счета:";
             // 
             // bigLabel3
             // 
@@ -61,76 +40,18 @@
             bigLabel3.BackColor = System.Drawing.Color.Transparent;
             bigLabel3.Font = new System.Drawing.Font("Segoe UI", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
             bigLabel3.ForeColor = System.Drawing.Color.Azure;
-            bigLabel3.Location = new System.Drawing.Point(307, -5);
+            bigLabel3.Location = new System.Drawing.Point(273, -5);
             bigLabel3.Name = "bigLabel3";
             bigLabel3.Size = new System.Drawing.Size(152, 50);
             bigLabel3.TabIndex = 96;
             bigLabel3.Text = "Оплата";
-            // 
-            // PersonalAccount
-            // 
-            PersonalAccount.AutoWordSelection = false;
-            PersonalAccount.BackColor = System.Drawing.Color.Transparent;
-            PersonalAccount.BorderColor = System.Drawing.Color.FromArgb(180, 180, 180);
-            PersonalAccount.EdgeColor = System.Drawing.Color.White;
-            PersonalAccount.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            PersonalAccount.ForeColor = System.Drawing.Color.Black;
-            PersonalAccount.Location = new System.Drawing.Point(63, 217);
-            PersonalAccount.Name = "PersonalAccount";
-            PersonalAccount.ReadOnly = false;
-            PersonalAccount.Size = new System.Drawing.Size(605, 36);
-            PersonalAccount.TabIndex = 95;
-            PersonalAccount.TextBackColor = System.Drawing.Color.White;
-            PersonalAccount.WordWrap = true;
-            // 
-            // FindData
-            // 
-            FindData.Alpha = 20;
-            FindData.BackColor = System.Drawing.Color.Transparent;
-            FindData.Background = true;
-            FindData.Background_WidthPen = 4F;
-            FindData.BackgroundPen = true;
-            FindData.ColorBackground = System.Drawing.Color.Transparent;
-            FindData.ColorBackground_1 = System.Drawing.Color.White;
-            FindData.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            FindData.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            FindData.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            FindData.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            FindData.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            FindData.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            FindData.Effect_1 = true;
-            FindData.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            FindData.Effect_1_Transparency = 25;
-            FindData.Effect_2 = true;
-            FindData.Effect_2_ColorBackground = System.Drawing.Color.White;
-            FindData.Effect_2_Transparency = 20;
-            FindData.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            FindData.ForeColor = System.Drawing.Color.Tan;
-            FindData.Lighting = false;
-            FindData.LinearGradient_Background = false;
-            FindData.LinearGradientPen = false;
-            FindData.Location = new System.Drawing.Point(63, 457);
-            FindData.Name = "FindData";
-            FindData.PenWidth = 15;
-            FindData.Rounding = true;
-            FindData.RoundingInt = 20;
-            FindData.Size = new System.Drawing.Size(241, 83);
-            FindData.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            FindData.TabIndex = 94;
-            FindData.Tag = "Cyber";
-            FindData.TextButton = "Найти";
-            FindData.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            FindData.Timer_Effect_1 = 5;
-            FindData.Timer_RGB = 300;
-            FindData.Visible = false;
-            FindData.Click += FindData_Click;
             // 
             // panel1
             // 
             panel1.BackColor = System.Drawing.Color.Tan;
             panel1.Location = new System.Drawing.Point(-6, -5);
             panel1.Name = "panel1";
-            panel1.Size = new System.Drawing.Size(47, 566);
+            panel1.Size = new System.Drawing.Size(47, 850);
             panel1.TabIndex = 93;
             // 
             // CloseButton
@@ -154,154 +75,23 @@
             CloseButton.TextAlignment = System.Drawing.StringAlignment.Center;
             CloseButton.Click += CloseButton_Click;
             // 
-            // BoxTarget
+            // PanelService
             // 
-            BoxTarget.AutoResize = false;
-            BoxTarget.BackColor = System.Drawing.Color.Tan;
-            BoxTarget.Depth = 0;
-            BoxTarget.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            BoxTarget.DropDownHeight = 174;
-            BoxTarget.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            BoxTarget.DropDownWidth = 121;
-            BoxTarget.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            BoxTarget.ForeColor = System.Drawing.Color.FromArgb(222, 0, 0, 0);
-            BoxTarget.FormattingEnabled = true;
-            BoxTarget.IntegralHeight = false;
-            BoxTarget.ItemHeight = 43;
-            BoxTarget.Location = new System.Drawing.Point(63, 100);
-            BoxTarget.MaxDropDownItems = 4;
-            BoxTarget.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            BoxTarget.Name = "BoxTarget";
-            BoxTarget.Size = new System.Drawing.Size(605, 49);
-            BoxTarget.StartIndex = 0;
-            BoxTarget.TabIndex = 98;
-            BoxTarget.SelectedIndexChanged += BoxTarget_SelectedIndexChanged;
-            // 
-            // Txt1
-            // 
-            Txt1.AutoSize = true;
-            Txt1.BackColor = System.Drawing.Color.Transparent;
-            Txt1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            Txt1.ForeColor = System.Drawing.Color.Red;
-            Txt1.Location = new System.Drawing.Point(63, 265);
-            Txt1.Name = "Txt1";
-            Txt1.Size = new System.Drawing.Size(186, 21);
-            Txt1.TabIndex = 99;
-            Txt1.Text = "Лицевой счет не найден";
-            Txt1.Visible = false;
-            // 
-            // PayButton
-            // 
-            PayButton.Alpha = 20;
-            PayButton.BackColor = System.Drawing.Color.Transparent;
-            PayButton.Background = true;
-            PayButton.Background_WidthPen = 4F;
-            PayButton.BackgroundPen = true;
-            PayButton.ColorBackground = System.Drawing.Color.Transparent;
-            PayButton.ColorBackground_1 = System.Drawing.Color.White;
-            PayButton.ColorBackground_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            PayButton.ColorBackground_Pen = System.Drawing.Color.LightSlateGray;
-            PayButton.ColorLighting = System.Drawing.Color.FromArgb(255, 224, 192);
-            PayButton.ColorPen_1 = System.Drawing.Color.FromArgb(37, 52, 68);
-            PayButton.ColorPen_2 = System.Drawing.Color.FromArgb(41, 63, 86);
-            PayButton.CyberButtonStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            PayButton.Effect_1 = true;
-            PayButton.Effect_1_ColorBackground = System.Drawing.Color.FromArgb(29, 200, 238);
-            PayButton.Effect_1_Transparency = 25;
-            PayButton.Effect_2 = true;
-            PayButton.Effect_2_ColorBackground = System.Drawing.Color.White;
-            PayButton.Effect_2_Transparency = 20;
-            PayButton.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            PayButton.ForeColor = System.Drawing.Color.Tan;
-            PayButton.Lighting = false;
-            PayButton.LinearGradient_Background = false;
-            PayButton.LinearGradientPen = false;
-            PayButton.Location = new System.Drawing.Point(427, 457);
-            PayButton.Name = "PayButton";
-            PayButton.PenWidth = 15;
-            PayButton.Rounding = true;
-            PayButton.RoundingInt = 20;
-            PayButton.Size = new System.Drawing.Size(241, 83);
-            PayButton.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            PayButton.TabIndex = 100;
-            PayButton.Tag = "Cyber";
-            PayButton.TextButton = "Оплатить";
-            PayButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            PayButton.Timer_Effect_1 = 5;
-            PayButton.Timer_RGB = 300;
-            PayButton.Visible = false;
-            PayButton.Click += PayButton_Click;
-            // 
-            // bigLabel1
-            // 
-            bigLabel1.AutoSize = true;
-            bigLabel1.BackColor = System.Drawing.Color.Transparent;
-            bigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel1.ForeColor = System.Drawing.Color.Tan;
-            bigLabel1.Location = new System.Drawing.Point(58, 55);
-            bigLabel1.Name = "bigLabel1";
-            bigLabel1.Size = new System.Drawing.Size(343, 32);
-            bigLabel1.TabIndex = 101;
-            bigLabel1.Text = "Выберите услугу для оплаты:";
-            // 
-            // Txt2
-            // 
-            Txt2.AutoSize = true;
-            Txt2.BackColor = System.Drawing.Color.Transparent;
-            Txt2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            Txt2.ForeColor = System.Drawing.Color.Red;
-            Txt2.Location = new System.Drawing.Point(63, 295);
-            Txt2.Name = "Txt2";
-            Txt2.Size = new System.Drawing.Size(186, 21);
-            Txt2.TabIndex = 102;
-            Txt2.Text = "Лицевой счет не найден";
-            Txt2.Visible = false;
-            // 
-            // Amount
-            // 
-            Amount.AutoWordSelection = false;
-            Amount.BackColor = System.Drawing.Color.Transparent;
-            Amount.BorderColor = System.Drawing.Color.FromArgb(180, 180, 180);
-            Amount.EdgeColor = System.Drawing.Color.White;
-            Amount.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            Amount.ForeColor = System.Drawing.Color.Black;
-            Amount.Location = new System.Drawing.Point(63, 388);
-            Amount.Name = "Amount";
-            Amount.ReadOnly = false;
-            Amount.Size = new System.Drawing.Size(605, 36);
-            Amount.TabIndex = 103;
-            Amount.TextBackColor = System.Drawing.Color.White;
-            Amount.WordWrap = true;
-            // 
-            // bigLabel4
-            // 
-            bigLabel4.AutoSize = true;
-            bigLabel4.BackColor = System.Drawing.Color.Transparent;
-            bigLabel4.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel4.ForeColor = System.Drawing.Color.Tan;
-            bigLabel4.Location = new System.Drawing.Point(63, 340);
-            bigLabel4.Name = "bigLabel4";
-            bigLabel4.Size = new System.Drawing.Size(185, 32);
-            bigLabel4.TabIndex = 104;
-            bigLabel4.Text = "Сумма оплаты:";
+            PanelService.AutoScroll = true;
+            PanelService.BackColor = System.Drawing.Color.DarkGray;
+            PanelService.Location = new System.Drawing.Point(56, 73);
+            PanelService.Name = "PanelService";
+            PanelService.Size = new System.Drawing.Size(612, 398);
+            PanelService.TabIndex = 97;
             // 
             // WindowPay
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
-            ClientSize = new System.Drawing.Size(682, 555);
-            Controls.Add(bigLabel4);
-            Controls.Add(Amount);
-            Controls.Add(Txt2);
-            Controls.Add(bigLabel1);
-            Controls.Add(PayButton);
-            Controls.Add(Txt1);
-            Controls.Add(BoxTarget);
-            Controls.Add(bigLabel2);
+            ClientSize = new System.Drawing.Size(682, 839);
+            Controls.Add(PanelService);
             Controls.Add(bigLabel3);
-            Controls.Add(PersonalAccount);
-            Controls.Add(FindData);
             Controls.Add(panel1);
             Controls.Add(CloseButton);
             Name = "WindowPay";
@@ -314,19 +104,9 @@
         }
 
         #endregion
-
-        private ReaLTaiizor.Controls.BigLabel bigLabel2;
         private ReaLTaiizor.Controls.BigLabel bigLabel3;
-        private ReaLTaiizor.Controls.DungeonRichTextBox PersonalAccount;
-        private ReaLTaiizor.Controls.CyberButton FindData;
         private System.Windows.Forms.Panel panel1;
         private ReaLTaiizor.Controls.DungeonButtonLeft CloseButton;
-        private ReaLTaiizor.Controls.MaterialComboBox BoxTarget;
-        private ReaLTaiizor.Controls.BigLabel Txt1;
-        private ReaLTaiizor.Controls.CyberButton PayButton;
-        private ReaLTaiizor.Controls.BigLabel bigLabel1;
-        private ReaLTaiizor.Controls.BigLabel Txt2;
-        private ReaLTaiizor.Controls.DungeonRichTextBox Amount;
-        private ReaLTaiizor.Controls.BigLabel bigLabel4;
+        private System.Windows.Forms.FlowLayoutPanel PanelService;
     }
 }

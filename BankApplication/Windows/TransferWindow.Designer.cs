@@ -36,14 +36,14 @@
             spaceSeparatorHorizontal1 = new ReaLTaiizor.Controls.SpaceSeparatorHorizontal();
             spaceSeparatorHorizontal2 = new ReaLTaiizor.Controls.SpaceSeparatorHorizontal();
             PanelSelf = new ReaLTaiizor.Controls.Panel();
-            bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
-            InfoText = new ReaLTaiizor.Controls.BigLabel();
-            bigLabel1 = new ReaLTaiizor.Controls.BigLabel();
-            TransferSelfButton = new ReaLTaiizor.Controls.CyberButton();
-            InfoTransferText = new ReaLTaiizor.Controls.BigLabel();
             Amount = new System.Windows.Forms.TextBox();
+            InfoTransferText = new ReaLTaiizor.Controls.BigLabel();
             panel3 = new ReaLTaiizor.Controls.Panel();
             BoxTarget = new ReaLTaiizor.Controls.MaterialComboBox();
+            TransferSelfButton = new ReaLTaiizor.Controls.CyberButton();
+            bigLabel1 = new ReaLTaiizor.Controls.BigLabel();
+            InfoText = new ReaLTaiizor.Controls.BigLabel();
+            bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
             PanelSelf.SuspendLayout();
             panel3.SuspendLayout();
             SuspendLayout();
@@ -199,7 +199,7 @@
             // 
             // PanelSelf
             // 
-            PanelSelf.BackColor = System.Drawing.Color.FromArgb(30, 30, 30);
+            PanelSelf.BackColor = System.Drawing.Color.FromArgb(55, 55, 55);
             PanelSelf.Controls.Add(Amount);
             PanelSelf.Controls.Add(InfoTransferText);
             PanelSelf.Controls.Add(panel3);
@@ -218,42 +218,61 @@
             PanelSelf.Text = "panel2";
             PanelSelf.Visible = false;
             // 
-            // bigLabel2
+            // Amount
             // 
-            bigLabel2.AutoSize = true;
-            bigLabel2.BackColor = System.Drawing.Color.Transparent;
-            bigLabel2.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel2.ForeColor = System.Drawing.Color.Tan;
-            bigLabel2.Location = new System.Drawing.Point(15, 218);
-            bigLabel2.Name = "bigLabel2";
-            bigLabel2.Size = new System.Drawing.Size(211, 32);
-            bigLabel2.TabIndex = 103;
-            bigLabel2.Text = "Сумма перевода:";
+            Amount.Location = new System.Drawing.Point(15, 270);
+            Amount.Name = "Amount";
+            Amount.Size = new System.Drawing.Size(580, 27);
+            Amount.TabIndex = 109;
+            Amount.KeyUp += Amount_TextChanged;
             // 
-            // InfoText
+            // InfoTransferText
             // 
-            InfoText.AutoSize = true;
-            InfoText.BackColor = System.Drawing.Color.Transparent;
-            InfoText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            InfoText.ForeColor = System.Drawing.Color.Red;
-            InfoText.Location = new System.Drawing.Point(15, 318);
-            InfoText.Name = "InfoText";
-            InfoText.Size = new System.Drawing.Size(48, 21);
-            InfoText.TabIndex = 105;
-            InfoText.Text = "Текст";
-            InfoText.Visible = false;
+            InfoTransferText.AutoSize = true;
+            InfoTransferText.BackColor = System.Drawing.Color.Transparent;
+            InfoTransferText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
+            InfoTransferText.ForeColor = System.Drawing.Color.Tan;
+            InfoTransferText.Location = new System.Drawing.Point(15, 138);
+            InfoTransferText.Name = "InfoTransferText";
+            InfoTransferText.Size = new System.Drawing.Size(48, 21);
+            InfoTransferText.TabIndex = 108;
+            InfoTransferText.Text = "Текст";
+            InfoTransferText.Visible = false;
             // 
-            // bigLabel1
+            // panel3
             // 
-            bigLabel1.AutoSize = true;
-            bigLabel1.BackColor = System.Drawing.Color.Transparent;
-            bigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel1.ForeColor = System.Drawing.Color.Tan;
-            bigLabel1.Location = new System.Drawing.Point(10, 5);
-            bigLabel1.Name = "bigLabel1";
-            bigLabel1.Size = new System.Drawing.Size(272, 32);
-            bigLabel1.TabIndex = 106;
-            bigLabel1.Text = "Выберите карту / счет:";
+            panel3.BackColor = System.Drawing.Color.Linen;
+            panel3.Controls.Add(BoxTarget);
+            panel3.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
+            panel3.Location = new System.Drawing.Point(15, 70);
+            panel3.Name = "panel3";
+            panel3.Padding = new System.Windows.Forms.Padding(5);
+            panel3.Size = new System.Drawing.Size(580, 49);
+            panel3.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            panel3.TabIndex = 107;
+            panel3.Text = "panel3";
+            // 
+            // BoxTarget
+            // 
+            BoxTarget.AutoResize = false;
+            BoxTarget.BackColor = System.Drawing.Color.FromArgb(255, 255, 255);
+            BoxTarget.Depth = 0;
+            BoxTarget.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            BoxTarget.DropDownHeight = 174;
+            BoxTarget.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            BoxTarget.DropDownWidth = 121;
+            BoxTarget.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            BoxTarget.ForeColor = System.Drawing.Color.FromArgb(222, 0, 0, 0);
+            BoxTarget.FormattingEnabled = true;
+            BoxTarget.IntegralHeight = false;
+            BoxTarget.ItemHeight = 43;
+            BoxTarget.Location = new System.Drawing.Point(0, 0);
+            BoxTarget.MaxDropDownItems = 4;
+            BoxTarget.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
+            BoxTarget.Name = "BoxTarget";
+            BoxTarget.Size = new System.Drawing.Size(580, 49);
+            BoxTarget.StartIndex = 0;
+            BoxTarget.TabIndex = 0;
             // 
             // TransferSelfButton
             // 
@@ -296,61 +315,42 @@
             TransferSelfButton.Timer_RGB = 300;
             TransferSelfButton.Click += TransferSelfButton_Click;
             // 
-            // InfoTransferText
+            // bigLabel1
             // 
-            InfoTransferText.AutoSize = true;
-            InfoTransferText.BackColor = System.Drawing.Color.Transparent;
-            InfoTransferText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            InfoTransferText.ForeColor = System.Drawing.Color.Tan;
-            InfoTransferText.Location = new System.Drawing.Point(15, 138);
-            InfoTransferText.Name = "InfoTransferText";
-            InfoTransferText.Size = new System.Drawing.Size(48, 21);
-            InfoTransferText.TabIndex = 108;
-            InfoTransferText.Text = "Текст";
-            InfoTransferText.Visible = false;
+            bigLabel1.AutoSize = true;
+            bigLabel1.BackColor = System.Drawing.Color.Transparent;
+            bigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            bigLabel1.ForeColor = System.Drawing.Color.Tan;
+            bigLabel1.Location = new System.Drawing.Point(10, 5);
+            bigLabel1.Name = "bigLabel1";
+            bigLabel1.Size = new System.Drawing.Size(272, 32);
+            bigLabel1.TabIndex = 106;
+            bigLabel1.Text = "Выберите карту / счет:";
             // 
-            // Amount
+            // InfoText
             // 
-            Amount.Location = new System.Drawing.Point(15, 270);
-            Amount.Name = "Amount";
-            Amount.Size = new System.Drawing.Size(580, 27);
-            Amount.TabIndex = 109;
-            Amount.KeyUp += Amount_TextChanged;
+            InfoText.AutoSize = true;
+            InfoText.BackColor = System.Drawing.Color.Transparent;
+            InfoText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
+            InfoText.ForeColor = System.Drawing.Color.Red;
+            InfoText.Location = new System.Drawing.Point(15, 318);
+            InfoText.Name = "InfoText";
+            InfoText.Size = new System.Drawing.Size(48, 21);
+            InfoText.TabIndex = 105;
+            InfoText.Text = "Текст";
+            InfoText.Visible = false;
             // 
-            // panel3
+            // bigLabel2
             // 
-            panel3.BackColor = System.Drawing.Color.Linen;
-            panel3.Controls.Add(BoxTarget);
-            panel3.EdgeColor = System.Drawing.Color.FromArgb(32, 41, 50);
-            panel3.Location = new System.Drawing.Point(15, 70);
-            panel3.Name = "panel3";
-            panel3.Padding = new System.Windows.Forms.Padding(5);
-            panel3.Size = new System.Drawing.Size(580, 49);
-            panel3.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            panel3.TabIndex = 107;
-            panel3.Text = "panel3";
-            // 
-            // BoxTarget
-            // 
-            BoxTarget.AutoResize = false;
-            BoxTarget.BackColor = System.Drawing.Color.FromArgb(255, 255, 255);
-            BoxTarget.Depth = 0;
-            BoxTarget.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            BoxTarget.DropDownHeight = 174;
-            BoxTarget.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            BoxTarget.DropDownWidth = 121;
-            BoxTarget.Font = new System.Drawing.Font("Roboto Medium", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            BoxTarget.ForeColor = System.Drawing.Color.FromArgb(222, 0, 0, 0);
-            BoxTarget.FormattingEnabled = true;
-            BoxTarget.IntegralHeight = false;
-            BoxTarget.ItemHeight = 43;
-            BoxTarget.Location = new System.Drawing.Point(0, 0);
-            BoxTarget.MaxDropDownItems = 4;
-            BoxTarget.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            BoxTarget.Name = "BoxTarget";
-            BoxTarget.Size = new System.Drawing.Size(580, 49);
-            BoxTarget.StartIndex = 0;
-            BoxTarget.TabIndex = 0;
+            bigLabel2.AutoSize = true;
+            bigLabel2.BackColor = System.Drawing.Color.Transparent;
+            bigLabel2.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            bigLabel2.ForeColor = System.Drawing.Color.Tan;
+            bigLabel2.Location = new System.Drawing.Point(15, 218);
+            bigLabel2.Name = "bigLabel2";
+            bigLabel2.Size = new System.Drawing.Size(211, 32);
+            bigLabel2.TabIndex = 103;
+            bigLabel2.Text = "Сумма перевода:";
             // 
             // TransferWindow
             // 
