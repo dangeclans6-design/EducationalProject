@@ -656,12 +656,12 @@ namespace BankApplication
     #endregion
 
     #region ServiceProviders
-    public class ServiceProviders(int id, int parentId, string serviceName, int PaymentType, PaymentAccount paymentAccount)
+    public class ServiceProviders(int id, int? parentId, string serviceName, int? paymentType, PaymentAccount paymentAccount)
     {
         public int Id { get; } = id;                                                    // ID услуги в БД
         public int? ParentId { get; } = parentId;                                       // ID родителя (может быть NULL, если это начало иерархии)
         public string ServiceName { get; } = serviceName;                               // Название услуги
-        public PaymentType? PaymentType { get; } = (PaymentType)PaymentType;            // Тип услуги (может быть NULL)
+        public PaymentType? PaymentType { get; } = (PaymentType)paymentType;            // Тип услуги (может быть NULL)
         public PaymentAccount PaymentAccount { get; } = paymentAccount;                 // Расчетный счет (может быть NULL если это не конечная услуга, а папка)
     }
     #endregion

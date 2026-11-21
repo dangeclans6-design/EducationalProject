@@ -392,15 +392,9 @@ namespace BankApplication
         #endregion
 
         #region Поиск услуг для оплаты и их реквизитов
-        public struct StructServiceProviders(List<string> serviceProviders, List<PaymentAccount> paymentAccount)
+        public async static Task<List<ServiceProviders>> FindServiceProviders()
         {
-            public List<string> serviceProviders = serviceProviders;
-            public List<PaymentAccount> paymentAccount = paymentAccount;
-        }
-        public async static Task<StructServiceProviders> FindServiceProviders()
-        {
-            List<string> serviceProviders = [];
-            List<PaymentAccount> paymentAccount = [];
+            List<ServiceProviders> serviceProviders = [];
 
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
 
@@ -411,37 +405,46 @@ namespace BankApplication
             await using var cmdSelect = connection.CreateCommand();
 
             cmdSelect.CommandText = @"
-                    SELECT sp.ServiceName, pa.*
+                    SELECT sp.*, pa.*
                     FROM ServiceProviders sp
-                    JOIN PaymentAccount pa ON sp.PaymentAccountId = pa.Id";
+                    LEFT JOIN PaymentAccount pa ON sp.PaymentAccountId = pa.Id";
 
             await using (var reader = await cmdSelect.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    string serviceName = reader.GetString(0);
+                    int id = reader.GetInt32(0);
+                    int? parentId = reader.IsDBNull(1) ? null : reader.GetInt32(1);
+                    string serviceName = reader.GetString(2);
+                    int? paymountAccountId = reader.IsDBNull(3) ? null : reader.GetInt32(3);
+                    int? paymentType = reader.IsDBNull(4) ? null : reader.GetInt32(4);
 
-                    int paymentAccountId = reader.GetInt32(1);
-                    int clientId = reader.GetInt32(2);
-                    string accountNumber = reader.GetString(3);
-                    string bic = reader.GetString(4);
-                    string corAccount = reader.GetString(5);
-                    decimal balance = reader.GetDecimal(6);
-                    int currency = reader.GetInt32(7);
-                    decimal frozenBalance = reader.GetDecimal(8);
-                    int status = reader.GetInt32(9);
-                    string reason = reader.IsDBNull(10) ? default : reader.GetString(10);
-                    DateTime openedAt = reader.GetDateTime(11);
-                    DateTime closedAt = reader.IsDBNull(12) ? default : reader.GetDateTime(12);
-                    int isCashbackAllowed = reader.GetInt32(13);
+                    if (paymountAccountId != null)
+                    {
+                        int idPayment = reader.GetInt32(5);
+                        int clientId = reader.GetInt32(6);
+                        string accountNumber = reader.GetString(7);
+                        string bic = reader.GetString(8);
+                        string corAccount = reader.GetString(9);
+                        decimal balance = reader.GetDecimal(10);
+                        int currency = reader.GetInt32(11);
+                        decimal frozenBalance = reader.GetDecimal(12);
+                        int status = reader.GetInt32(13);
+                        string reason = reader.IsDBNull(14) ? null : reader.GetString(14);
+                        DateTime openedAt = reader.GetDateTime(15);
+                        DateTime? closedAt = reader.IsDBNull(16) ? null : reader.GetDateTime(16);
+                        int isCashbackAllowed = reader.GetInt32(17);
 
-                    serviceProviders.Add(serviceName);
-                    paymentAccount.Add(new PaymentAccount(paymentAccountId, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt, isCashbackAllowed));
+                        var paymentAccount = new PaymentAccount(idPayment, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt, isCashbackAllowed);
+
+                        serviceProviders.Add(new ServiceProviders(id, parentId, serviceName, paymentType, paymentAccount));
+                    }
+                    else serviceProviders.Add(new ServiceProviders(id, parentId, serviceName, paymentType, null));                                        
                 }
             }
-            #endregion
 
-            return new StructServiceProviders(serviceProviders, paymentAccount);
+            return serviceProviders;
+            #endregion
         }
         #endregion
 

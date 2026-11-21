@@ -15,7 +15,7 @@ namespace BankApplication
     public partial class WindowPay : MetroForm
     {
         private readonly ISource currentSource;                                 // Источник (откуда уйдет деньги)
-        private StructServiceProviders serviceProviders;                        // Сервисы для оплаты + их реквизиты
+        private List<ServiceProviders> serviceProviders;                        // Сервисы для оплаты + их реквизиты
         private PaymentAccount target;                                          // Счет оплаты (цель) (можно использовать ITarget target, но в логике программы, на данный момент, невозможен иной сценарий)
         private int choiseIndexService;                                         // Индекс выбранной услуги оплаты
         private (int Id, string Adress, decimal DebtAmount)? tupleReader;       // Кортеж с данными по ЛС
