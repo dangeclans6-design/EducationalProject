@@ -55,11 +55,11 @@ namespace BankApplication
         Mail = 2            // Изменить почту
     }
 
-    public enum PaymentType
+    public enum PaymentCategories
     {
-        Store = 1,          // Обычная покупка в магазине (без ЛС и долга, возможен кэшбэк)
-        UtilityBill = 2,    // Услуги с задолженностью по ЛС (ЖКХ, интернет, налоги)
-        MobileTopUp = 3     // Пополнение по номеру без системы долгов (например, мобильная связь)
+        UtilitiesServices = 0,          // ЖКХ
+        MobileCommunication = 1         // Мобильная связь
+
     }
 
     public readonly struct StructChangeDataClient(int idClient, string currentLogin, string newLogin, string currentPassword, string newPassword, string currentMail, string newMail)

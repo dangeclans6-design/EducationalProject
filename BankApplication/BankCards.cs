@@ -474,14 +474,26 @@ namespace BankApplication
     }
     #endregion
 
-    #region ServiceProviders
-    public class ServiceProviders(int id, int? keyDraw, string serviceName, int? paymentType, PaymentAccount paymentAccount)
+    #region Категории для оплаты
+    public interface IPayCatalog
     {
-        public int Id { get; } = id;                                                    // ID услуги в БД
-        public int? KeyDraw { get; } = keyDraw;                                       // Ключ для отрисовки (может быть NULL, если это начало иерархии)
-        public string ServiceName { get; } = serviceName;                               // Название услуги
-        public PaymentType? PaymentType { get; } = (PaymentType?)paymentType;            // Тип услуги (может быть NULL)
-        public PaymentAccount PaymentAccount { get; } = paymentAccount;                 // Расчетный счет (может быть NULL если это не конечная услуга, а папка)
+        public int Id {  get; }
+        public string Name { get; }
+    }
+
+    public class PayCategories(int id, string name) : IPayCatalog
+    {
+        public int Id { get; } = id;
+        public PaymentCategories CategoryType { get; } = (PaymentCategories)id;
+        public string Name { get; } = name;
+    }
+
+    public class PayCatalog(int id, int keyDraw, string name, PaymentAccount paymentAccount) : IPayCatalog
+    {
+        public int Id { get; } = id;
+        public int KeyDraw { get; } = keyDraw;
+        public string Name { get; } = name;
+        public PaymentAccount PaymentAccount { get; } = paymentAccount;
     }
     #endregion
 

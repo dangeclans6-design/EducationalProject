@@ -143,7 +143,6 @@
             BackButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             BackButton.Timer_Effect_1 = 5;
             BackButton.Timer_RGB = 300;
-            BackButton.Click += BackButton_Click;
             // 
             // bigLabel2
             // 
