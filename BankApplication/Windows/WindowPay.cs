@@ -20,13 +20,10 @@ namespace BankApplication
         private List<ServiceProviders> AllServices { get; set; } = [];                   // Сервисы для оплаты + их реквизиты
         private ServiceProviders SelectedService;                                   // Выбранная организация
         private Stack<int?> NavigationHistory = new();                              // История переходов для кнопки "Назад"
-        private int? CurrentParentId { get; set; }                              // Текущий уровень (null = главный экран категорий)
+        private int? CurrentKeyDraw { get; set; }                              // Текущий уровень (null = главный экран категорий)
         private (int Id, string Adress, decimal DebtAmount)? tupleReader;           // Кортеж с данными по ЛС
 
 
-
-
-        private int? M = null;
 
         public WindowPay(ISource currentSource)
         {
@@ -39,21 +36,19 @@ namespace BankApplication
         #region Загрузка формы
         private async void WindowPay_Load(object sender, EventArgs e)
         {
-            AllServices = await FindServiceProviders(); // Ищем все сервисы
+            AllServices = await FindServiceProviders();
             RenderCategoryLevel(null);
         }
         #endregion
 
-        private void RenderCategoryLevel(int? parentId)
+        private void RenderCategoryLevel(int? keyDraw)
         {
-            CurrentParentId = parentId;
-            
-            while (PanelService.Controls.Count > 0)         // Безопасно уничтожаем старые кнопки перед созданием новых
-            {
-                PanelService.Controls[0].Dispose();
-            }
+            CurrentKeyDraw = keyDraw;
 
-            var currentItem = AllServices.Where(s => s.ParentId == parentId).ToList();
+            // Безопасно уничтожаем старые кнопки перед созданием новых
+            while (PanelService.Controls.Count > 0) PanelService.Controls[0].Dispose();
+
+            var currentItem = AllServices.Where(elem => elem.KeyDraw == keyDraw).ToList();
 
             foreach (var item in currentItem)
             {
@@ -85,13 +80,13 @@ namespace BankApplication
 
             if (clickedItem.PaymentAccount == null)
             {
-                NavigationHistory.Push(CurrentParentId);
+                NavigationHistory.Push(CurrentKeyDraw);
 
                 RenderCategoryLevel(clickedItem.Id);
             }
             else
             {
-                SelectedService = (ServiceProviders)button.Tag;
+                SelectedService = clickedItem;
                 PanelService.Visible = false;
                 PanelPay.Visible = true;
             }
@@ -103,7 +98,7 @@ namespace BankApplication
             {                
                 PanelPay.Visible = false;
 
-                RenderCategoryLevel(CurrentParentId);
+                RenderCategoryLevel(CurrentKeyDraw);
                 PanelService.Visible = true;
                 return;
             }

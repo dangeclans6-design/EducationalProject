@@ -414,7 +414,7 @@ namespace BankApplication
                 while (await reader.ReadAsync())
                 {
                     int id = reader.GetInt32(0);
-                    int? parentId = reader.IsDBNull(1) ? null : reader.GetInt32(1);
+                    int? keyDraw = reader.IsDBNull(1) ? null : reader.GetInt32(1);
                     string serviceName = reader.GetString(2);
                     int? paymountAccountId = reader.IsDBNull(3) ? null : reader.GetInt32(3);
                     int? paymentType = reader.IsDBNull(4) ? null : reader.GetInt32(4);
@@ -437,9 +437,9 @@ namespace BankApplication
 
                         var paymentAccount = new PaymentAccount(idPayment, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt, isCashbackAllowed);
 
-                        serviceProviders.Add(new ServiceProviders(id, parentId, serviceName, paymentType, paymentAccount));
+                        serviceProviders.Add(new ServiceProviders(id, keyDraw, serviceName, paymentType, paymentAccount));
                     }
-                    else serviceProviders.Add(new ServiceProviders(id, parentId, serviceName, paymentType, null));                                        
+                    else serviceProviders.Add(new ServiceProviders(id, keyDraw, serviceName, paymentType, null));                                        
                 }
             }
 
