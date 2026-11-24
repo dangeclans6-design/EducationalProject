@@ -19,12 +19,13 @@ namespace BankApplication
         private ISource CurrentSource { get; }                                      // Источник
         private List<IPayCatalog> PayCatalog { get; set; } = null;                    // Весь каталог
         private List<PayCatalog> CurrentCatalog { get; set; } = null;                 // Текущий каталог (по выбранной категории)
-        private PaymentCategories CurrentCategories { get; set; }                   // Текущаю категория
-        private Stack<int> History { get; set; } = [];                              // История 
+        private PaymentCategories? CurrentCategories { get; set; }                   // Текущаю категория
+        private Stack<int> History { get; set; } = [];                              // История
+        private int CurrentKeyDraw { get; set; }
 
 
         private int XPanelCategories { get; set; }
-        private int YPanelCategories { get; set; }        
+        private int YPanelCategories { get; set; }
 
         public WindowPay(ISource currentSource)
         {
@@ -42,7 +43,7 @@ namespace BankApplication
         {
             PayCatalog = await FindPayCatalogAndPayment();
 
-            var categories = PayCatalog.Where(elem => elem is PayCategories)?.ToList();             // Выбрать из всего каталога только категории (знак ? - на тот случай если окажется пустым)
+            var categories = PayCatalog.OfType<PayCategories>()?.ToList();             // Выбрать из всего каталога только категории (знак ? - на тот случай если окажется пустым)
 
             int walk = 30;
             foreach (var category in categories)
@@ -75,14 +76,52 @@ namespace BankApplication
         private async void Category_Click(object sender, EventArgs e)
         {
             var currentControl = (Control)sender;
-            var currentCategory = (IPayCatalog)currentControl.Tag ?? throw new Exception("Непредвиденная ошибка. повторите попытку позже.");
+            var currentItem = (IPayCatalog)currentControl.Tag ?? throw new Exception("Непредвиденная ошибка. повторите попытку позже.");
 
-            if (currentCategory is PayCategories)
+            while (PanelCategories.Controls.Count > 0) PanelCategories.Controls[0]?.Dispose();
+
+            if (currentItem is PayCategories)
             {
-                CurrentCatalog = PayCatalog.OfType<PayCatalog>().Where(elem => (elem.CategoryType == currentCategory.CategoryType)).ToList();
-                var currentKeyDraw = CurrentCatalog.Where(elem => elem.KeyDraw == 0).ToList();
+                CurrentCatalog = PayCatalog.OfType<PayCatalog>().Where(elem => (elem.CategoryType == currentItem.CategoryType))?.ToList();
+                CurrentCategories = currentItem.CategoryType;
 
-                while (PanelCategories.Controls.Count > 0) PanelCategories.Controls[0].Dispose();
+                var currentKeyDraw = CurrentCatalog.Where(elem => elem.KeyDraw == 0)?.ToList();
+                CurrentKeyDraw = 0;
+
+                int walk = 30;
+                foreach (var catalog in currentKeyDraw)
+                {
+                    var button = new ReaLTaiizor.Controls.Button()
+                    {
+                        BackColor = Color.Transparent,
+                        BorderColor = Color.FromArgb(32, 34, 37),
+                        EnteredColor = Color.FromArgb(15, 15, 15),
+                        EnteredBorderColor = Color.FromArgb(32, 34, 37),
+                        PressedBorderColor = Color.FromArgb(32, 34, 37),
+                        PressedColor = Color.FromArgb(26, 26, 26),
+
+                        Size = new Size(400, 80),
+                        Text = catalog.Name,
+                        Font = new Font("Segoe UI", 18f),
+
+                        Tag = catalog
+                    };
+
+                    PanelCategories.Controls.Add(button);
+                    button.Location = new Point(XPanelCategories / 2 - button.Size.Width / 2, walk);
+                    button.Click += Category_Click;
+
+                    walk += 110;                    
+                }
+
+                BackButton.Visible = true;
+            }
+            else if (currentItem is PayCatalog)
+            {
+                var currentKeyDraw = CurrentCatalog.Where(elem => elem.KeyDraw == currentItem.Id)?.ToList();
+
+                History.Push(CurrentKeyDraw);
+                CurrentKeyDraw = currentItem.Id;
 
                 int walk = 30;
                 foreach (var catalog in currentKeyDraw)
@@ -112,6 +151,46 @@ namespace BankApplication
             }
         }
 
+        #region Назад
+        private void BackButton_Click(object sender, EventArgs e)
+        {
+            if (CurrentCategories != null && History.Count == 0)
+            {
+                while (PanelCategories.Controls.Count > 0) PanelCategories.Controls[0]?.Dispose();
+
+                var categories = PayCatalog.OfType<PayCategories>()?.ToList();
+
+                int walk = 30;
+                foreach (var category in categories)
+                {
+                    var button = new ReaLTaiizor.Controls.Button()
+                    {
+                        BackColor = Color.Transparent,
+                        BorderColor = Color.FromArgb(32, 34, 37),
+                        EnteredColor = Color.FromArgb(15, 15, 15),
+                        EnteredBorderColor = Color.FromArgb(32, 34, 37),
+                        PressedBorderColor = Color.FromArgb(32, 34, 37),
+                        PressedColor = Color.FromArgb(26, 26, 26),
+
+                        Size = new Size(400, 80),
+                        Text = category.Name,
+                        Font = new Font("Segoe UI", 18f),
+
+                        Tag = category
+                    };
+
+                    PanelCategories.Controls.Add(button);
+                    button.Location = new Point(XPanelCategories / 2 - button.Size.Width / 2, walk);
+                    button.Click += Category_Click;
+
+                    walk += 110;
+
+                    BackButton.Visible = false;
+                }
+            }
+        }
+        #endregion
+
         #region Закрыть
         private void CloseButton_Click(object sender, EventArgs e)
         {
@@ -124,7 +203,7 @@ namespace BankApplication
         {
             try
             {
-                             
+
             }
             catch (Exception ex)
             {

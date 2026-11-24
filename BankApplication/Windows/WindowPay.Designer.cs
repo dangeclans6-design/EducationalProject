@@ -135,6 +135,7 @@
             BackButton.Timer_Effect_1 = 5;
             BackButton.Timer_RGB = 300;
             BackButton.Visible = false;
+            BackButton.Click += BackButton_Click;
             // 
             // bigLabel2
             // 
