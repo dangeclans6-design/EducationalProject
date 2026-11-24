@@ -16,20 +16,21 @@ namespace BankApplication
 {
     public partial class WindowPay : MetroForm
     {
-        private readonly ISource currentSource;                                     // Источник
+        private ISource currentSource { get; };                                     // Источник
+        private List<IPayCatalog> payCatalog { get; set; } = [];                    // Каталог
 
         public WindowPay(ISource currentSource)
         {
             InitializeComponent();
             DoubleBuffered = true;
 
-            this.currentSource = currentSource;
+            this.currentSource = currentSource;            
         }
 
         #region Загрузка формы
         private async void WindowPay_Load(object sender, EventArgs e)
         {
-
+            payCatalog = await FindPayCatalogAndPayment();
         }
         #endregion
 

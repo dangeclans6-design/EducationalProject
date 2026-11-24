@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using System;
 using System.Collections;
@@ -391,61 +392,78 @@ namespace BankApplication
         }
         #endregion
 
-        // ПЕРЕПИСАТЬ
         #region Поиск услуг для оплаты и их реквизитов
-        public async static Task<List<ServiceProviders>> FindServiceProviders()
+        public async static Task<List<IPayCatalog>> FindPayCatalogAndPayment()
         {
-            List<ServiceProviders> serviceProviders = [];
+            List<IPayCatalog> payCatalog = [];
 
             var builder = new MySqlConnectionStringBuilder { Server = Server, UserID = UserID, Password = Password, Database = Database, AllowPublicKeyRetrieval = true };
 
             await using var connection = new MySqlConnection(builder.ConnectionString);
             await connection.OpenAsync();
 
-            #region Действие 1: Поиск всех доступных сервисов для оплаты
-            await using var cmdSelect = connection.CreateCommand();
+            #region Действие 1: Категории
+            await using var cmdSelectCategories = connection.CreateCommand();
+            cmdSelectCategories.CommandText = @"
+                    SELECT Id, Name
+                    FROM Categories";
 
-            cmdSelect.CommandText = @"
-                    SELECT sp.*, pa.*
-                    FROM ServiceProviders sp
-                    LEFT JOIN PaymentAccount pa ON sp.PaymentAccountId = pa.Id";
-
-            await using (var reader = await cmdSelect.ExecuteReaderAsync())
+            await using (var readerCategories = await cmdSelectCategories.ExecuteReaderAsync())
             {
-                while (await reader.ReadAsync())
+                while (await readerCategories.ReadAsync())
                 {
-                    int id = reader.GetInt32(0);
-                    int? keyDraw = reader.IsDBNull(1) ? null : reader.GetInt32(1);
-                    string serviceName = reader.GetString(2);
-                    int? paymountAccountId = reader.IsDBNull(3) ? null : reader.GetInt32(3);
-                    int? paymentType = reader.IsDBNull(4) ? null : reader.GetInt32(4);
+                    int id = readerCategories.GetInt32(0);
+                    string name = readerCategories.GetString(1);
 
-                    if (paymountAccountId != null)
-                    {
-                        int idPayment = reader.GetInt32(5);
-                        int clientId = reader.GetInt32(6);
-                        string accountNumber = reader.GetString(7);
-                        string bic = reader.GetString(8);
-                        string corAccount = reader.GetString(9);
-                        decimal balance = reader.GetDecimal(10);
-                        int currency = reader.GetInt32(11);
-                        decimal frozenBalance = reader.GetDecimal(12);
-                        int status = reader.GetInt32(13);
-                        string reason = reader.IsDBNull(14) ? null : reader.GetString(14);
-                        DateTime openedAt = reader.GetDateTime(15);
-                        DateTime? closedAt = reader.IsDBNull(16) ? null : reader.GetDateTime(16);
-                        int isCashbackAllowed = reader.GetInt32(17);
-
-                        var paymentAccount = new PaymentAccount(idPayment, clientId, accountNumber, bic, corAccount, balance, currency, frozenBalance, status, reason, openedAt, closedAt, isCashbackAllowed);
-
-                        serviceProviders.Add(new ServiceProviders(id, keyDraw, serviceName, paymentType, paymentAccount));
-                    }
-                    else serviceProviders.Add(new ServiceProviders(id, keyDraw, serviceName, paymentType, null));                                        
+                    payCatalog.Add(new PayCategories(id, name));
                 }
             }
-
-            return serviceProviders;
             #endregion
+
+            #region Действие 2: Каталог
+            await using var cmdSelectCatalog = connection.CreateCommand();
+            cmdSelectCatalog.CommandText = @"
+                    SELECT cat.*, pa.*
+                    FROM Catalog cat
+                    LEFT JOIN PaymentAccount pa ON cat.PaymentAccountId = pa.Id";
+
+            await using (var readerCatalog = await cmdSelectCatalog.ExecuteReaderAsync())
+            {
+                while (await readerCatalog.ReadAsync())
+                {
+                    int id = readerCatalog.GetInt32(0);
+                    int categories = readerCatalog.GetInt32(1);
+                    int keyDraw = readerCatalog.GetInt32(2);
+                    string name = readerCatalog.GetString(3);
+                    int? paymentAccountId = readerCatalog.IsDBNull(4) ? null : readerCatalog.GetInt32(4);
+
+                    if (paymentAccountId != null)
+                    {
+                        int idPayment = readerCatalog.GetInt32(5);
+                        int clientId = readerCatalog.GetInt32(6);
+                        string accountNumber = readerCatalog.GetString(7);
+                        string bic = readerCatalog.GetString(8);
+                        string corAccount = readerCatalog.GetString(9);
+                        decimal balance = readerCatalog.GetDecimal(10);
+                        int currency = readerCatalog.GetInt32(11);
+                        decimal frozenBalance = readerCatalog.GetDecimal(12);
+                        int status = readerCatalog.GetInt32(13);
+                        string reason = readerCatalog.IsDBNull(14) ? null : readerCatalog.GetString(14);
+                        DateTime openedAt = readerCatalog.GetDateTime(15);
+                        DateTime? closedAt = readerCatalog.IsDBNull(16) ? null : readerCatalog.GetDateTime(16);
+                        int isCashbackAllowed = readerCatalog.GetInt32(17);
+
+                        var paymentAccount = new PaymentAccount(idPayment, clientId, accountNumber, bic, corAccount, balance,
+                                                                currency, frozenBalance, status, reason, openedAt, closedAt, isCashbackAllowed);
+
+                        payCatalog.Add(new PayCatalog(id, categories, keyDraw, name, paymentAccount));
+                    }
+                    else payCatalog.Add(new PayCatalog(id, categories, keyDraw, name, null));
+                }
+            }
+            #endregion
+
+            return payCatalog;            
         }
         #endregion
 

@@ -57,8 +57,9 @@ namespace BankApplication
 
     public enum PaymentCategories
     {
-        UtilitiesServices = 0,          // ЖКХ
-        MobileCommunication = 1         // Мобильная связь
+        UtilitiesServices = 0,           // ЖКХ
+        MobileCommunication = 1,         // Мобильная связь
+        InternetAndTelevision = 2        // Интернет, ТВ и телефония
 
     }
 
