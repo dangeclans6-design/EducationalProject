@@ -31,11 +31,11 @@
             bigLabel3 = new ReaLTaiizor.Controls.BigLabel();
             panel1 = new System.Windows.Forms.Panel();
             CloseButton = new ReaLTaiizor.Controls.DungeonButtonLeft();
-            PanelService = new System.Windows.Forms.FlowLayoutPanel();
             password_auth = new ReaLTaiizor.Controls.DungeonRichTextBox();
             BackButton = new ReaLTaiizor.Controls.CyberButton();
             bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
             PanelPay = new System.Windows.Forms.FlowLayoutPanel();
+            PanelCategories = new System.Windows.Forms.Panel();
             SuspendLayout();
             // 
             // bigLabel3
@@ -78,15 +78,6 @@
             CloseButton.Text = "X";
             CloseButton.TextAlignment = System.Drawing.StringAlignment.Center;
             CloseButton.Click += CloseButton_Click;
-            // 
-            // PanelService
-            // 
-            PanelService.AutoScroll = true;
-            PanelService.BackColor = System.Drawing.Color.DarkGray;
-            PanelService.Location = new System.Drawing.Point(56, 73);
-            PanelService.Name = "PanelService";
-            PanelService.Size = new System.Drawing.Size(612, 398);
-            PanelService.TabIndex = 97;
             // 
             // password_auth
             // 
@@ -143,6 +134,7 @@
             BackButton.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             BackButton.Timer_Effect_1 = 5;
             BackButton.Timer_RGB = 300;
+            BackButton.Visible = false;
             // 
             // bigLabel2
             // 
@@ -166,15 +158,23 @@
             PanelPay.TabIndex = 98;
             PanelPay.Visible = false;
             // 
+            // PanelCategories
+            // 
+            PanelCategories.BackColor = System.Drawing.SystemColors.ControlDark;
+            PanelCategories.Location = new System.Drawing.Point(56, 73);
+            PanelCategories.Name = "PanelCategories";
+            PanelCategories.Size = new System.Drawing.Size(611, 386);
+            PanelCategories.TabIndex = 99;
+            // 
             // WindowPay
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
             ClientSize = new System.Drawing.Size(682, 839);
+            Controls.Add(PanelCategories);
             Controls.Add(PanelPay);
             Controls.Add(password_auth);
-            Controls.Add(PanelService);
             Controls.Add(BackButton);
             Controls.Add(bigLabel2);
             Controls.Add(bigLabel3);
@@ -193,10 +193,10 @@
         private ReaLTaiizor.Controls.BigLabel bigLabel3;
         private System.Windows.Forms.Panel panel1;
         private ReaLTaiizor.Controls.DungeonButtonLeft CloseButton;
-        private System.Windows.Forms.FlowLayoutPanel PanelService;
         private ReaLTaiizor.Controls.DungeonRichTextBox password_auth;
         private ReaLTaiizor.Controls.CyberButton BackButton;
         private ReaLTaiizor.Controls.BigLabel bigLabel2;
         private System.Windows.Forms.FlowLayoutPanel PanelPay;
+        private System.Windows.Forms.Panel PanelCategories;
     }
 }

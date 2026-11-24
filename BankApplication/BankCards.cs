@@ -351,7 +351,7 @@ namespace BankApplication
         public CardStatus Status { get; set; } = (CardStatus)status;                                  // Состояние счета
         public string Reason { get; set; } = reason;                                                  // Причина статуса
         public DateTime OpenedAt { get; } = openedAt;                                                 // Дата открытия счета
-        public DateTime? ClosedAt { get; } = closeAt;                                                  // Дата закрытия счета
+        public DateTime? ClosedAt { get; } = closeAt;                                                 // Дата закрытия счета
 
         public bool IsCashbackAllowed { get; } = (isCashbackAllowed == 1);
 
@@ -479,18 +479,20 @@ namespace BankApplication
     {
         public int Id {  get; }
         public string Name { get; }
+        public PaymentCategories CategoryType { get; }
     }
 
     public class PayCategories(int id, string name) : IPayCatalog
     {
-        public int Id { get; } = id;
-        public PaymentCategories CategoryType { get; } = (PaymentCategories)id;
+        public int Id { get; } = id;        
         public string Name { get; } = name;
+        public PaymentCategories CategoryType { get; } = (PaymentCategories)id;
     }
 
-    public class PayCatalog(int id, int keyDraw, string name, PaymentAccount paymentAccount) : IPayCatalog
+    public class PayCatalog(int id, int categories, int keyDraw, string name, PaymentAccount paymentAccount) : IPayCatalog
     {
         public int Id { get; } = id;
+        public PaymentCategories CategoryType { get; } = (PaymentCategories)categories;
         public int KeyDraw { get; } = keyDraw;
         public string Name { get; } = name;
         public PaymentAccount PaymentAccount { get; } = paymentAccount;
