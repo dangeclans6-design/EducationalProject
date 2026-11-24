@@ -38,6 +38,13 @@ namespace BankApplication
             YPanelCategories = PanelCategories.Height;
         }
 
+        #region Отрисовка кнопок
+        private void DrawButtons(List<IPayCatalog> item)
+        {
+            // ВЫНЕСТИ ФУНКЦИЮ ОТДЕЛЬНО
+        }
+        #endregion
+
         #region Загрузка формы
         private async void WindowPay_Load(object sender, EventArgs e)
         {
@@ -154,10 +161,10 @@ namespace BankApplication
         #region Назад
         private void BackButton_Click(object sender, EventArgs e)
         {
-            if (CurrentCategories != null && History.Count == 0)
-            {
-                while (PanelCategories.Controls.Count > 0) PanelCategories.Controls[0]?.Dispose();
+            while (PanelCategories.Controls.Count > 0) PanelCategories.Controls[0]?.Dispose();
 
+            if (CurrentCategories != null && History.Count == 0)
+            {                
                 var categories = PayCatalog.OfType<PayCategories>()?.ToList();
 
                 int walk = 30;
@@ -186,6 +193,39 @@ namespace BankApplication
                     walk += 110;
 
                     BackButton.Visible = false;
+                }
+            }
+
+            else if (CurrentCategories != null && History.Count > 0)
+            {
+                var newKeyDraw = History?.Pop();
+
+                var currentKeyDraw = CurrentCatalog.Where(elem => elem.KeyDraw == newKeyDraw)?.ToList();
+
+                int walk = 30;
+                foreach (var catalog in currentKeyDraw)
+                {
+                    var button = new ReaLTaiizor.Controls.Button()
+                    {
+                        BackColor = Color.Transparent,
+                        BorderColor = Color.FromArgb(32, 34, 37),
+                        EnteredColor = Color.FromArgb(15, 15, 15),
+                        EnteredBorderColor = Color.FromArgb(32, 34, 37),
+                        PressedBorderColor = Color.FromArgb(32, 34, 37),
+                        PressedColor = Color.FromArgb(26, 26, 26),
+
+                        Size = new Size(400, 80),
+                        Text = catalog.Name,
+                        Font = new Font("Segoe UI", 18f),
+
+                        Tag = catalog
+                    };
+
+                    PanelCategories.Controls.Add(button);
+                    button.Location = new Point(XPanelCategories / 2 - button.Size.Width / 2, walk);
+                    button.Click += Category_Click;
+
+                    walk += 110;
                 }
             }
         }
