@@ -35,6 +35,7 @@
             TextSupport = new ReaLTaiizor.Controls.BigLabel();
             PanelCategories = new System.Windows.Forms.Panel();
             PaymentAccount = new ReaLTaiizor.Controls.BigTextBox();
+            MainLabel = new ReaLTaiizor.Controls.BigLabel();
             SuspendLayout();
             // 
             // bigLabel3
@@ -126,7 +127,7 @@
             TextSupport.BackColor = System.Drawing.Color.Transparent;
             TextSupport.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
             TextSupport.ForeColor = System.Drawing.Color.Tan;
-            TextSupport.Location = new System.Drawing.Point(47, 578);
+            TextSupport.Location = new System.Drawing.Point(47, 170);
             TextSupport.Name = "TextSupport";
             TextSupport.Size = new System.Drawing.Size(57, 25);
             TextSupport.TabIndex = 86;
@@ -147,7 +148,7 @@
             PaymentAccount.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
             PaymentAccount.ForeColor = System.Drawing.Color.DimGray;
             PaymentAccount.Image = null;
-            PaymentAccount.Location = new System.Drawing.Point(56, 517);
+            PaymentAccount.Location = new System.Drawing.Point(56, 110);
             PaymentAccount.MaxLength = 32767;
             PaymentAccount.Multiline = false;
             PaymentAccount.Name = "PaymentAccount";
@@ -158,12 +159,26 @@
             PaymentAccount.UseSystemPasswordChar = false;
             PaymentAccount.Visible = false;
             // 
+            // MainLabel
+            // 
+            MainLabel.AutoSize = true;
+            MainLabel.BackColor = System.Drawing.Color.Transparent;
+            MainLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            MainLabel.ForeColor = System.Drawing.Color.Tan;
+            MainLabel.Location = new System.Drawing.Point(47, 50);
+            MainLabel.Name = "MainLabel";
+            MainLabel.Size = new System.Drawing.Size(97, 45);
+            MainLabel.TabIndex = 101;
+            MainLabel.Text = "Текст";
+            MainLabel.Visible = false;
+            // 
             // WindowPay
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
             ClientSize = new System.Drawing.Size(682, 839);
+            Controls.Add(MainLabel);
             Controls.Add(PaymentAccount);
             Controls.Add(TextSupport);
             Controls.Add(PanelCategories);
@@ -188,5 +203,6 @@
         private ReaLTaiizor.Controls.BigLabel TextSupport;
         private System.Windows.Forms.Panel PanelCategories;
         private ReaLTaiizor.Controls.BigTextBox PaymentAccount;
+        private ReaLTaiizor.Controls.BigLabel MainLabel;
     }
 }

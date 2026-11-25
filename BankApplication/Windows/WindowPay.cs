@@ -90,7 +90,6 @@ namespace BankApplication
             if (currentItem is PayCategories)
             {
                 CurrentCatalog = PayCatalog.OfType<PayCatalog>().Where(elem => (elem.CategoryType == currentItem.CategoryType))?.ToList();
-
                 CurrentCategories = currentItem.CategoryType;
 
                 var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == 0)?.ToList();
@@ -112,13 +111,20 @@ namespace BankApplication
 
                     DrawButtons(catalog);
                 }
-                else MapWindowPay(item);
+                else
+                {
+                    PanelCategories.Visible = false;
+                    MapWindowPay(item);
+                }
             }
         }
 
         #region Функция для отображения окна оплаты
         private void MapWindowPay(PayCatalog item)
         {
+            MainLabel.Text = item.Name;
+            MainLabel.Visible = true;
+
             if (item.CategoryType == PaymentCategories.UtilitiesServices)
             {
                 TextSupport.Text = item.SupportText;
@@ -131,7 +137,15 @@ namespace BankApplication
         #region Назад
         private void BackButton_Click(object sender, EventArgs e)
         {
-            while (PanelCategories.Controls.Count > 0) PanelCategories.Controls[0]?.Dispose();
+            if (!PanelCategories.Visible)
+            {                
+                TextSupport.Visible = false;
+                PaymentAccount.Visible = false;
+                MainLabel.Visible = false;
+
+                PanelCategories.Visible = true;
+                return;
+            }
 
             if (CurrentCategories != null && History.Count == 0)
             {                
@@ -141,15 +155,17 @@ namespace BankApplication
                 DrawButtons(categories);
 
                 BackButton.Visible = false;
+                return;
             }
 
-            else if (CurrentCategories != null && History.Count > 0)
+            if (CurrentCategories != null && History.Count > 0)
             {
                 var newKeyDraw = History?.Pop();
 
                 var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == newKeyDraw)?.ToList();
 
                 DrawButtons(catalog);
+                return;
             }
         }
         #endregion
