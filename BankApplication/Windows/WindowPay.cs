@@ -39,21 +39,12 @@ namespace BankApplication
         }
 
         #region Отрисовка кнопок
-        private void DrawButtons(List<IPayCatalog> item)
+        private void DrawButtons(IEnumerable<IPayCatalog> item)
         {
-            // ВЫНЕСТИ ФУНКЦИЮ ОТДЕЛЬНО
-        }
-        #endregion
-
-        #region Загрузка формы
-        private async void WindowPay_Load(object sender, EventArgs e)
-        {
-            PayCatalog = await FindPayCatalogAndPayment();
-
-            var categories = PayCatalog.OfType<PayCategories>()?.ToList();             // Выбрать из всего каталога только категории (знак ? - на тот случай если окажется пустым)
+            while (PanelCategories.Controls.Count > 0) PanelCategories.Controls[0]?.Dispose();
 
             int walk = 30;
-            foreach (var category in categories)
+            foreach (var items in item)
             {
                 var button = new ReaLTaiizor.Controls.Button()
                 {
@@ -65,10 +56,10 @@ namespace BankApplication
                     PressedColor = Color.FromArgb(26, 26, 26),
 
                     Size = new Size(400, 80),
-                    Text = category.Name,
+                    Text = items.Name,
                     Font = new Font("Segoe UI", 18f),
 
-                    Tag = category
+                    Tag = items     // "Кладем" данные в кнопку
                 };
 
                 PanelCategories.Controls.Add(button);
@@ -80,81 +71,44 @@ namespace BankApplication
         }
         #endregion
 
+        #region Загрузка формы
+        private async void WindowPay_Load(object sender, EventArgs e)
+        {
+            PayCatalog = await FindPayCatalogAndPayment();
+            var categories = PayCatalog.OfType<PayCategories>()?.ToList();
+
+            DrawButtons(categories);
+        }
+        #endregion
+
         private async void Category_Click(object sender, EventArgs e)
         {
             var currentControl = (Control)sender;
-            var currentItem = (IPayCatalog)currentControl.Tag ?? throw new Exception("Непредвиденная ошибка. повторите попытку позже.");
+            var currentItem = (IPayCatalog)currentControl.Tag ?? throw new Exception("Непредвиденная ошибка. повторите попытку позже.");            
 
-            while (PanelCategories.Controls.Count > 0) PanelCategories.Controls[0]?.Dispose();
-
+            // Если кнопка - это категория
             if (currentItem is PayCategories)
             {
                 CurrentCatalog = PayCatalog.OfType<PayCatalog>().Where(elem => (elem.CategoryType == currentItem.CategoryType))?.ToList();
+
                 CurrentCategories = currentItem.CategoryType;
 
-                var currentKeyDraw = CurrentCatalog.Where(elem => elem.KeyDraw == 0)?.ToList();
+                var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == 0)?.ToList();
                 CurrentKeyDraw = 0;
 
-                int walk = 30;
-                foreach (var catalog in currentKeyDraw)
-                {
-                    var button = new ReaLTaiizor.Controls.Button()
-                    {
-                        BackColor = Color.Transparent,
-                        BorderColor = Color.FromArgb(32, 34, 37),
-                        EnteredColor = Color.FromArgb(15, 15, 15),
-                        EnteredBorderColor = Color.FromArgb(32, 34, 37),
-                        PressedBorderColor = Color.FromArgb(32, 34, 37),
-                        PressedColor = Color.FromArgb(26, 26, 26),
-
-                        Size = new Size(400, 80),
-                        Text = catalog.Name,
-                        Font = new Font("Segoe UI", 18f),
-
-                        Tag = catalog
-                    };
-
-                    PanelCategories.Controls.Add(button);
-                    button.Location = new Point(XPanelCategories / 2 - button.Size.Width / 2, walk);
-                    button.Click += Category_Click;
-
-                    walk += 110;                    
-                }
+                DrawButtons(catalog);
 
                 BackButton.Visible = true;
             }
+            // Если кнопка - это каталог
             else if (currentItem is PayCatalog)
             {
-                var currentKeyDraw = CurrentCatalog.Where(elem => elem.KeyDraw == currentItem.Id)?.ToList();
+                var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == currentItem.Id)?.ToList();
 
                 History.Push(CurrentKeyDraw);
                 CurrentKeyDraw = currentItem.Id;
 
-                int walk = 30;
-                foreach (var catalog in currentKeyDraw)
-                {
-                    var button = new ReaLTaiizor.Controls.Button()
-                    {
-                        BackColor = Color.Transparent,
-                        BorderColor = Color.FromArgb(32, 34, 37),
-                        EnteredColor = Color.FromArgb(15, 15, 15),
-                        EnteredBorderColor = Color.FromArgb(32, 34, 37),
-                        PressedBorderColor = Color.FromArgb(32, 34, 37),
-                        PressedColor = Color.FromArgb(26, 26, 26),
-
-                        Size = new Size(400, 80),
-                        Text = catalog.Name,
-                        Font = new Font("Segoe UI", 18f),
-
-                        Tag = catalog
-                    };
-
-                    PanelCategories.Controls.Add(button);
-                    button.Location = new Point(XPanelCategories / 2 - button.Size.Width / 2, walk);
-                    button.Click += Category_Click;
-
-                    walk += 110;
-                }
+                DrawButtons(catalog);
             }
         }
 
@@ -167,66 +121,19 @@ namespace BankApplication
             {                
                 var categories = PayCatalog.OfType<PayCategories>()?.ToList();
 
-                int walk = 30;
-                foreach (var category in categories)
-                {
-                    var button = new ReaLTaiizor.Controls.Button()
-                    {
-                        BackColor = Color.Transparent,
-                        BorderColor = Color.FromArgb(32, 34, 37),
-                        EnteredColor = Color.FromArgb(15, 15, 15),
-                        EnteredBorderColor = Color.FromArgb(32, 34, 37),
-                        PressedBorderColor = Color.FromArgb(32, 34, 37),
-                        PressedColor = Color.FromArgb(26, 26, 26),
+                // Отрисовывем категории
+                DrawButtons(categories);
 
-                        Size = new Size(400, 80),
-                        Text = category.Name,
-                        Font = new Font("Segoe UI", 18f),
-
-                        Tag = category
-                    };
-
-                    PanelCategories.Controls.Add(button);
-                    button.Location = new Point(XPanelCategories / 2 - button.Size.Width / 2, walk);
-                    button.Click += Category_Click;
-
-                    walk += 110;
-
-                    BackButton.Visible = false;
-                }
+                BackButton.Visible = false;
             }
 
             else if (CurrentCategories != null && History.Count > 0)
             {
                 var newKeyDraw = History?.Pop();
 
-                var currentKeyDraw = CurrentCatalog.Where(elem => elem.KeyDraw == newKeyDraw)?.ToList();
+                var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == newKeyDraw)?.ToList();
 
-                int walk = 30;
-                foreach (var catalog in currentKeyDraw)
-                {
-                    var button = new ReaLTaiizor.Controls.Button()
-                    {
-                        BackColor = Color.Transparent,
-                        BorderColor = Color.FromArgb(32, 34, 37),
-                        EnteredColor = Color.FromArgb(15, 15, 15),
-                        EnteredBorderColor = Color.FromArgb(32, 34, 37),
-                        PressedBorderColor = Color.FromArgb(32, 34, 37),
-                        PressedColor = Color.FromArgb(26, 26, 26),
-
-                        Size = new Size(400, 80),
-                        Text = catalog.Name,
-                        Font = new Font("Segoe UI", 18f),
-
-                        Tag = catalog
-                    };
-
-                    PanelCategories.Controls.Add(button);
-                    button.Location = new Point(XPanelCategories / 2 - button.Size.Width / 2, walk);
-                    button.Click += Category_Click;
-
-                    walk += 110;
-                }
+                DrawButtons(catalog);
             }
         }
         #endregion
