@@ -489,21 +489,22 @@ namespace BankApplication
         public PaymentCategories CategoryType { get; } = (PaymentCategories)id;
     }
 
-    public class PayCatalog(int id, int categories, int keyDraw, string name, PaymentAccount paymentAccount) : IPayCatalog
+    public class PayCatalog(int id, int categories, int keyDraw, string name, PaymentAccount paymentAccount, string supportText) : IPayCatalog
     {
         public int Id { get; } = id;
         public PaymentCategories CategoryType { get; } = (PaymentCategories)categories;
         public int KeyDraw { get; } = keyDraw;
         public string Name { get; } = name;
         public PaymentAccount PaymentAccount { get; } = paymentAccount;
+        public string SupportText { get; } = supportText;
     }
     #endregion
 
 
 
-    #region Request
+        #region Request
 
-    // Класс для отображения данных запроса Клиента
+        // Класс для отображения данных запроса Клиента
     public class Request(int id, int type, string cardNumber, int typeCard, DateTime timestamp, decimal newDeposit)
     {
         public int Id = id;

@@ -31,11 +31,10 @@
             bigLabel3 = new ReaLTaiizor.Controls.BigLabel();
             panel1 = new System.Windows.Forms.Panel();
             CloseButton = new ReaLTaiizor.Controls.DungeonButtonLeft();
-            password_auth = new ReaLTaiizor.Controls.DungeonRichTextBox();
             BackButton = new ReaLTaiizor.Controls.CyberButton();
-            bigLabel2 = new ReaLTaiizor.Controls.BigLabel();
-            PanelPay = new System.Windows.Forms.FlowLayoutPanel();
+            TextSupport = new ReaLTaiizor.Controls.BigLabel();
             PanelCategories = new System.Windows.Forms.Panel();
+            PaymentAccount = new ReaLTaiizor.Controls.BigTextBox();
             SuspendLayout();
             // 
             // bigLabel3
@@ -79,22 +78,6 @@
             CloseButton.TextAlignment = System.Drawing.StringAlignment.Center;
             CloseButton.Click += CloseButton_Click;
             // 
-            // password_auth
-            // 
-            password_auth.AutoWordSelection = false;
-            password_auth.BackColor = System.Drawing.Color.Transparent;
-            password_auth.BorderColor = System.Drawing.Color.FromArgb(180, 180, 180);
-            password_auth.EdgeColor = System.Drawing.Color.White;
-            password_auth.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
-            password_auth.ForeColor = System.Drawing.Color.Black;
-            password_auth.Location = new System.Drawing.Point(182, 558);
-            password_auth.Name = "password_auth";
-            password_auth.ReadOnly = false;
-            password_auth.Size = new System.Drawing.Size(485, 36);
-            password_auth.TabIndex = 88;
-            password_auth.TextBackColor = System.Drawing.Color.White;
-            password_auth.WordWrap = true;
-            // 
             // BackButton
             // 
             BackButton.Alpha = 20;
@@ -137,27 +120,18 @@
             BackButton.Visible = false;
             BackButton.Click += BackButton_Click;
             // 
-            // bigLabel2
+            // TextSupport
             // 
-            bigLabel2.AutoSize = true;
-            bigLabel2.BackColor = System.Drawing.Color.Transparent;
-            bigLabel2.Font = new System.Drawing.Font("Segoe UI Semibold", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
-            bigLabel2.ForeColor = System.Drawing.Color.Azure;
-            bigLabel2.Location = new System.Drawing.Point(56, 493);
-            bigLabel2.Name = "bigLabel2";
-            bigLabel2.Size = new System.Drawing.Size(307, 50);
-            bigLabel2.TabIndex = 86;
-            bigLabel2.Text = "Введите пароль:";
-            // 
-            // PanelPay
-            // 
-            PanelPay.AutoScroll = true;
-            PanelPay.BackColor = System.Drawing.Color.DarkGray;
-            PanelPay.Location = new System.Drawing.Point(56, 493);
-            PanelPay.Name = "PanelPay";
-            PanelPay.Size = new System.Drawing.Size(612, 172);
-            PanelPay.TabIndex = 98;
-            PanelPay.Visible = false;
+            TextSupport.AutoSize = true;
+            TextSupport.BackColor = System.Drawing.Color.Transparent;
+            TextSupport.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            TextSupport.ForeColor = System.Drawing.Color.Tan;
+            TextSupport.Location = new System.Drawing.Point(47, 578);
+            TextSupport.Name = "TextSupport";
+            TextSupport.Size = new System.Drawing.Size(57, 25);
+            TextSupport.TabIndex = 86;
+            TextSupport.Text = "Текст";
+            TextSupport.Visible = false;
             // 
             // PanelCategories
             // 
@@ -167,17 +141,33 @@
             PanelCategories.Size = new System.Drawing.Size(611, 386);
             PanelCategories.TabIndex = 99;
             // 
+            // PaymentAccount
+            // 
+            PaymentAccount.BackColor = System.Drawing.Color.Transparent;
+            PaymentAccount.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 204);
+            PaymentAccount.ForeColor = System.Drawing.Color.DimGray;
+            PaymentAccount.Image = null;
+            PaymentAccount.Location = new System.Drawing.Point(56, 517);
+            PaymentAccount.MaxLength = 32767;
+            PaymentAccount.Multiline = false;
+            PaymentAccount.Name = "PaymentAccount";
+            PaymentAccount.ReadOnly = false;
+            PaymentAccount.Size = new System.Drawing.Size(612, 49);
+            PaymentAccount.TabIndex = 100;
+            PaymentAccount.TextAlignment = System.Windows.Forms.HorizontalAlignment.Left;
+            PaymentAccount.UseSystemPasswordChar = false;
+            PaymentAccount.Visible = false;
+            // 
             // WindowPay
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
             ClientSize = new System.Drawing.Size(682, 839);
+            Controls.Add(PaymentAccount);
+            Controls.Add(TextSupport);
             Controls.Add(PanelCategories);
-            Controls.Add(PanelPay);
-            Controls.Add(password_auth);
             Controls.Add(BackButton);
-            Controls.Add(bigLabel2);
             Controls.Add(bigLabel3);
             Controls.Add(panel1);
             Controls.Add(CloseButton);
@@ -194,10 +184,9 @@
         private ReaLTaiizor.Controls.BigLabel bigLabel3;
         private System.Windows.Forms.Panel panel1;
         private ReaLTaiizor.Controls.DungeonButtonLeft CloseButton;
-        private ReaLTaiizor.Controls.DungeonRichTextBox password_auth;
         private ReaLTaiizor.Controls.CyberButton BackButton;
-        private ReaLTaiizor.Controls.BigLabel bigLabel2;
-        private System.Windows.Forms.FlowLayoutPanel PanelPay;
+        private ReaLTaiizor.Controls.BigLabel TextSupport;
         private System.Windows.Forms.Panel PanelCategories;
+        private ReaLTaiizor.Controls.BigTextBox PaymentAccount;
     }
 }

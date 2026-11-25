@@ -74,7 +74,7 @@ namespace BankApplication
         #region Загрузка формы
         private async void WindowPay_Load(object sender, EventArgs e)
         {
-            PayCatalog = await FindPayCatalogAndPayment();
+            PayCatalog = await FindPayCatCatPayment();
             var categories = PayCatalog.OfType<PayCategories>()?.ToList();
 
             DrawButtons(categories);
@@ -101,16 +101,32 @@ namespace BankApplication
                 BackButton.Visible = true;
             }
             // Если кнопка - это каталог
-            else if (currentItem is PayCatalog)
+            else if (currentItem is PayCatalog item)
             {
-                var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == currentItem.Id)?.ToList();
+                if (item.PaymentAccount == null)
+                {
+                    var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == currentItem.Id)?.ToList();
 
-                History.Push(CurrentKeyDraw);
-                CurrentKeyDraw = currentItem.Id;
+                    History.Push(CurrentKeyDraw);
+                    CurrentKeyDraw = currentItem.Id;
 
-                DrawButtons(catalog);
+                    DrawButtons(catalog);
+                }
+                else MapWindowPay(item);
             }
         }
+
+        #region Функция для отображения окна оплаты
+        private void MapWindowPay(PayCatalog item)
+        {
+            if (item.CategoryType == PaymentCategories.UtilitiesServices)
+            {
+                TextSupport.Text = item.SupportText;
+                TextSupport.Visible = true;
+                PaymentAccount.Visible = true;
+            }
+        }
+        #endregion
 
         #region Назад
         private void BackButton_Click(object sender, EventArgs e)

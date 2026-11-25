@@ -393,7 +393,7 @@ namespace BankApplication
         #endregion
 
         #region Поиск услуг для оплаты и их реквизитов
-        public async static Task<List<IPayCatalog>> FindPayCatalogAndPayment()
+        public async static Task<List<IPayCatalog>> FindPayCatCatPayment()
         {
             List<IPayCatalog> payCatalog = [];
 
@@ -436,29 +436,30 @@ namespace BankApplication
                     int keyDraw = readerCatalog.GetInt32(2);
                     string name = readerCatalog.GetString(3);
                     int? paymentAccountId = readerCatalog.IsDBNull(4) ? null : readerCatalog.GetInt32(4);
+                    string supportText = readerCatalog.IsDBNull(5) ? null : readerCatalog.GetString(5);
 
                     if (paymentAccountId != null)
                     {
-                        int idPayment = readerCatalog.GetInt32(5);
-                        int clientId = readerCatalog.GetInt32(6);
-                        string accountNumber = readerCatalog.GetString(7);
-                        string bic = readerCatalog.GetString(8);
-                        string corAccount = readerCatalog.GetString(9);
-                        decimal balance = readerCatalog.GetDecimal(10);
-                        int currency = readerCatalog.GetInt32(11);
-                        decimal frozenBalance = readerCatalog.GetDecimal(12);
-                        int status = readerCatalog.GetInt32(13);
-                        string reason = readerCatalog.IsDBNull(14) ? null : readerCatalog.GetString(14);
-                        DateTime openedAt = readerCatalog.GetDateTime(15);
-                        DateTime? closedAt = readerCatalog.IsDBNull(16) ? null : readerCatalog.GetDateTime(16);
-                        int isCashbackAllowed = readerCatalog.GetInt32(17);
+                        int idPayment = readerCatalog.GetInt32(6);
+                        int clientId = readerCatalog.GetInt32(7);
+                        string accountNumber = readerCatalog.GetString(8);
+                        string bic = readerCatalog.GetString(9);
+                        string corAccount = readerCatalog.GetString(10);
+                        decimal balance = readerCatalog.GetDecimal(11);
+                        int currency = readerCatalog.GetInt32(12);
+                        decimal frozenBalance = readerCatalog.GetDecimal(13);
+                        int status = readerCatalog.GetInt32(14);
+                        string reason = readerCatalog.IsDBNull(15) ? null : readerCatalog.GetString(14);
+                        DateTime openedAt = readerCatalog.GetDateTime(16);
+                        DateTime? closedAt = readerCatalog.IsDBNull(17) ? null : readerCatalog.GetDateTime(17);
+                        int isCashbackAllowed = readerCatalog.GetInt32(18);
 
                         var paymentAccount = new PaymentAccount(idPayment, clientId, accountNumber, bic, corAccount, balance,
                                                                 currency, frozenBalance, status, reason, openedAt, closedAt, isCashbackAllowed);
 
-                        payCatalog.Add(new PayCatalog(id, categories, keyDraw, name, paymentAccount));
+                        payCatalog.Add(new PayCatalog(id, categories, keyDraw, name, paymentAccount, supportText));
                     }
-                    else payCatalog.Add(new PayCatalog(id, categories, keyDraw, name, null));
+                    else payCatalog.Add(new PayCatalog(id, categories, keyDraw, name, null, supportText));
                 }
             }
             #endregion
