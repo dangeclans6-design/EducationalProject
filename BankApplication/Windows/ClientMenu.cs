@@ -31,7 +31,8 @@ namespace BankApplication
         private void MyCardsButton_Click(object sender, EventArgs e)
         {
             PanelPayment.Visible = false;
-            PanelPayment.Controls.Clear();
+
+            while (PanelPayment.Controls.Count > 0) PanelCards.Controls[0].Dispose();
 
             int y_card = 10;
 
@@ -57,13 +58,14 @@ namespace BankApplication
         private void MyPaymentAccountButton_Click(object sender, EventArgs e)
         {
             PanelCards.Visible = false;
-            PanelCards.Controls.Clear();
+
+            while (PanelCards.Controls.Count > 0) PanelCards.Controls[0].Dispose();
 
             int y_payment = 10;
 
-            foreach (PaymentAccount paymant in currentClient.PaymentAccounts)
+            foreach (PaymentAccount payment in currentClient.PaymentAccounts)
             {
-                CardItem item = new(paymant);
+                CardItem item = new(payment);
 
                 PanelPayment.Controls.Add(item);
                 item.Location = new Point((PanelCards.Width - item.Width) / 2, y_payment);

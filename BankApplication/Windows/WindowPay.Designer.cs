@@ -125,11 +125,11 @@
             // 
             TextSupport.AutoSize = true;
             TextSupport.BackColor = System.Drawing.Color.Transparent;
-            TextSupport.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
+            TextSupport.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 204);
             TextSupport.ForeColor = System.Drawing.Color.Tan;
             TextSupport.Location = new System.Drawing.Point(47, 170);
             TextSupport.Name = "TextSupport";
-            TextSupport.Size = new System.Drawing.Size(57, 25);
+            TextSupport.Size = new System.Drawing.Size(49, 21);
             TextSupport.TabIndex = 86;
             TextSupport.Text = "Текст";
             TextSupport.Visible = false;

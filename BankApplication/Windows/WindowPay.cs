@@ -74,48 +74,62 @@ namespace BankApplication
         #region Загрузка формы
         private async void WindowPay_Load(object sender, EventArgs e)
         {
-            PayCatalog = await FindPayCatCatPayment();
-            var categories = PayCatalog.OfType<PayCategories>()?.ToList();
+            try
+            {
+                PayCatalog = await FindPayCatCatPayment();
+                var categories = PayCatalog.OfType<PayCategories>()?.ToList();
 
-            DrawButtons(categories);
+                DrawButtons(categories);
+            }
+            catch
+            {
+                throw;
+            }            
         }
         #endregion
 
         private async void Category_Click(object sender, EventArgs e)
         {
-            var currentControl = (Control)sender;
-            var currentItem = (IPayCatalog)currentControl.Tag ?? throw new Exception("Непредвиденная ошибка. повторите попытку позже.");            
-
-            // Если кнопка - это категория
-            if (currentItem is PayCategories)
+            try
             {
-                CurrentCatalog = PayCatalog.OfType<PayCatalog>().Where(elem => (elem.CategoryType == currentItem.CategoryType))?.ToList();
-                CurrentCategories = currentItem.CategoryType;
+                var currentControl = (Control)sender;
+                var currentItem = (IPayCatalog)currentControl.Tag ?? throw new Exception("Непредвиденная ошибка. повторите попытку позже.");
 
-                var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == 0)?.ToList();
-                CurrentKeyDraw = 0;
-
-                DrawButtons(catalog);
-
-                BackButton.Visible = true;
-            }
-            // Если кнопка - это каталог
-            else if (currentItem is PayCatalog item)
-            {
-                if (item.PaymentAccount == null)
+                // Если кнопка - это категория
+                if (currentItem is PayCategories)
                 {
-                    var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == currentItem.Id)?.ToList();
+                    CurrentCatalog = PayCatalog.OfType<PayCatalog>().Where(elem => (elem.CategoryType == currentItem.CategoryType))?.ToList();
+                    CurrentCategories = currentItem.CategoryType;
 
-                    History.Push(CurrentKeyDraw);
-                    CurrentKeyDraw = currentItem.Id;
+                    var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == 0)?.ToList();
+                    CurrentKeyDraw = 0;
 
                     DrawButtons(catalog);
+
+                    BackButton.Visible = true;
                 }
-                else
+                // Если кнопка - это каталог
+                else if (currentItem is PayCatalog item)
                 {
-                    PanelCategories.Visible = false;
-                    MapWindowPay(item);
+                    if (item.PaymentAccount == null)
+                    {
+                        var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == currentItem.Id)?.ToList();
+
+                        History.Push(CurrentKeyDraw);
+                        CurrentKeyDraw = currentItem.Id;
+
+                        DrawButtons(catalog);
+                    }
+                    else
+                    {
+                        PanelCategories.Visible = false;
+                        MapWindowPay(item);
+                    }
                 }
+            }
+            catch
+            {
+                throw;
             }
         }
 
@@ -125,47 +139,51 @@ namespace BankApplication
             MainLabel.Text = item.Name;
             MainLabel.Visible = true;
 
-            if (item.CategoryType == PaymentCategories.UtilitiesServices)
-            {
-                TextSupport.Text = item.SupportText;
-                TextSupport.Visible = true;
-                PaymentAccount.Visible = true;
-            }
+            TextSupport.Text = item.SupportText?.ToString();
+            TextSupport.Visible = true;
+            PaymentAccount.Visible = true;
         }
         #endregion
 
         #region Назад
         private void BackButton_Click(object sender, EventArgs e)
         {
-            if (!PanelCategories.Visible)
-            {                
-                TextSupport.Visible = false;
-                PaymentAccount.Visible = false;
-                MainLabel.Visible = false;
-
-                PanelCategories.Visible = true;
-                return;
-            }
-
-            if (CurrentCategories != null && History.Count == 0)
-            {                
-                var categories = PayCatalog.OfType<PayCategories>()?.ToList();
-
-                // Отрисовывем категории
-                DrawButtons(categories);
-
-                BackButton.Visible = false;
-                return;
-            }
-
-            if (CurrentCategories != null && History.Count > 0)
+            try
             {
-                var newKeyDraw = History?.Pop();
+                if (!PanelCategories.Visible)
+                {
+                    TextSupport.Visible = false;
+                    PaymentAccount.Visible = false;
+                    MainLabel.Visible = false;
 
-                var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == newKeyDraw)?.ToList();
+                    PanelCategories.Visible = true;
+                    return;
+                }
 
-                DrawButtons(catalog);
-                return;
+                if (CurrentCategories != null && History.Count == 0)
+                {
+                    var categories = PayCatalog.OfType<PayCategories>()?.ToList();
+
+                    // Отрисовывем категории
+                    DrawButtons(categories);
+
+                    BackButton.Visible = false;
+                    return;
+                }
+
+                if (CurrentCategories != null && History.Count > 0)
+                {
+                    var newKeyDraw = History?.Pop();
+
+                    var catalog = CurrentCatalog.Where(elem => elem.KeyDraw == newKeyDraw)?.ToList();
+
+                    DrawButtons(catalog);
+                    return;
+                }
+            }
+            catch
+            {
+                throw;
             }
         }
         #endregion

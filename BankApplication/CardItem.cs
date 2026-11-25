@@ -12,22 +12,22 @@ namespace BankApplication
 {
     public partial class CardItem : UserControl
     {
-        private ITarget CurrentTarget { get; }
+        private ITarget CurrentItem { get; }
         private List<string> NameButtonForCard { get; } = ["Пополнить", "Оплатить", "Перевести", "Заблокировать"];
         private List<string> NameButtonForPayment { get; } = ["Пополнить", "Оплатить", "Перевести", "Реквизиты","Заблокировать"];
 
 
-        public CardItem(ITarget currentTarget)
+        public CardItem(ITarget currentItem)
         {
             InitializeComponent();
 
-            CurrentTarget = currentTarget;
+            CurrentItem = currentItem;
 
             int width = Size.Width;
             int height = Size.Height;            
 
             #region Отрисовка кнопок для карт
-            if (currentTarget is IBankCard card)
+            if (currentItem is IBankCard card)
             {
                 NameTarget.Text = "Карта";
                 NumberTarget.Text = $"Номер: {card.CardNumber}";
@@ -83,7 +83,7 @@ namespace BankApplication
             #endregion
 
             #region Отрисовка кнопок для счетов
-            else if (currentTarget is PaymentAccount payment)
+            else if (currentItem is PaymentAccount payment)
             {
                 NameTarget.Text = "Расчетный счет";
                 NumberTarget.Text = $"Номер: {payment.AccountNumber}";
@@ -150,7 +150,7 @@ namespace BankApplication
             var clickButton = (Control)sender;
             var nameButton = clickButton.Tag?.ToString();
 
-            if (CurrentTarget is IBankCard card)
+            if (CurrentItem is IBankCard card)
             {
                 if (card.Status != CardStatus.Active) throw new Exception($"Карта на данный момент недоступна. Причина: {card.Reason}.");
 
@@ -160,7 +160,7 @@ namespace BankApplication
                 else if (nameButton == "Заблокировать") MessageBox.Show("Пока пусто");
 
             }
-            else if (CurrentTarget is PaymentAccount payment)
+            else if (CurrentItem is PaymentAccount payment)
             {
                 if (payment.Status != CardStatus.Active) throw new Exception($"Счет на данный момент недоступен. Причина: {payment.Reason}.");
 
